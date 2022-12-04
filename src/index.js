@@ -16,7 +16,6 @@ app.get("/home", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  console.log('req.body', req.body)
   const {userName, password} = req.body
   if(!userName || !password) {
     return res.json({"status": "403", "message": "Nome de usuário e senha obrigatórios"});
@@ -45,9 +44,9 @@ app.get("/profiles/:profileid", (req, res) => {
 
 // create_profile -> http://localhost:3333/create_profile
 app.post("/create_profile", (req, res) => {
-  const { name, userName, description = "", likes = [], changeBooks = [], latestReadings = [], photo = ""} = req.body;
-  if(!name || !userName) {
-    return res.json({"status": "203", "message": "Nome e nome de usuário são obrigatórios!"});
+  const { name, userName, description = "", likes = [], changeBooks = [], latestReadings = [], photo = "", password = ""} = req.body;
+  if(!name || !userName || !password) {
+    return res.json({"status": "203", "message": "Nome de usuário e senha são obrigatórios!"});
   }
 
   if(profiles.some((profile) => userName === profile.userName)){
@@ -62,16 +61,15 @@ app.post("/create_profile", (req, res) => {
     likes,
     changeBooks,
     latestReadings,
-    photo
+    photo,
+    password
   });
   const perfilCreated = [profiles[indexPerfilCreated - 1]]
   return res.json({"status": "200", "result": perfilCreated})
 });
 
 // register_book -> http://localhost:3333/register_book
-app.post(
-  '/register_book',
-  (req, res) => {
+app.post('/register_book', (req, res) => {
     const { name, author, description, photo, profileid } = req.body;
     const bookOwner = profiles.find((profile) => profileid === profile.id);
     if(!name || !author || !description || !photo || !profileid || !bookOwner) {
