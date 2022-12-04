@@ -5,7 +5,7 @@ const books = [
     "author": "William Gibson",
     "description":
       "The sky over the harbor was the color of television tuned to an offline channel.",
-    "photo": "https://i.zst.com.br/thumbs/12/5/c/1458194278.jpg",
+    "photo": "https://cf.shopee.com.br/file/ffda10fee928c031a7664dbc48e9c202",
     "isChange": "false",
     "profile": {
       "id": "0001",
@@ -34,7 +34,7 @@ const books = [
     "author": "John Green",
     "description":
       "Um livro excelente para entender as nossas mentes e ações. E ter mais empatia sobre o que se pode passar na cabeça do coleguinha :)",
-    "photo": "",
+    "photo": "https://m.media-amazon.com/images/I/41kSlyygRwL.jpg",
     "isChange": "true",
     "profile": {
       "id": "0001",
@@ -64,7 +64,7 @@ const books = [
     "description":
       "Extremamente intrigante do começo ao fim. Com uma construção de personagem esplêndida, você fica frisado e quer terminar o mais breve possível. Sem dúvidas uma das melhores leituras de 2022.",
     "photo":
-      "https://miro.medium.com/max/419/1*mSOd9nC_p3fP6cDPUSluAw.jpeg",
+      "https://m.media-amazon.com/images/I/81wT2VTlq9L.jpg",
     "isChange": "false",
     "profile": {
       "id": "0004",
