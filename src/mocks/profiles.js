@@ -2,7 +2,7 @@ const profiles = [
   {
     "id": "0001",
     "name": "Felipe Gomes",
-    "userName": "felipe.ogoms",
+    "userName": "felipe",
     "description":
       "The sky over the harbor was the color of television tuned to an offline channel.",
     "likes": [
