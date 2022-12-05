@@ -81,7 +81,7 @@ app.post('/register_book', (req, res) => {
       author,
       description,
       photo,
-      profileid: {
+      profile: {
         id: bookOwner.id,
         userName: bookOwner.userName
       }
@@ -167,7 +167,6 @@ app.post("/notifications/create_notification", (req, res) => {
   return res.json({"status": "200", "result": notificationCreated});
 });
 
-
 app.put("/profiles/edit_profile", (req, res) => {
   const { profileid, userName, description, photo, likes, latestReadings } = req.body;
   if(!profiles.some((profile) => profile.id === profileid) || !description || !userName || !photo || !likes || !latestReadings) {
@@ -188,7 +187,6 @@ app.put("/profiles/edit_profile", (req, res) => {
   profiles[indexProfile] = profile
   return res.json({"status": "200", "result": [profile]})
 });
-
 
 app.get("/salvos/:perfilid", (req, res) => {
   res.send("Rota de salvos");
