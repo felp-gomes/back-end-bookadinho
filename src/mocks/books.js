@@ -5,19 +5,11 @@ const books = [
     author: "William Gibson",
     description:
       "The sky over the harbor was the color of television tuned to an offline channel.",
-<<<<<<< HEAD
-    "photo": "https://cf.shopee.com.br/file/ffda10fee928c031a7664dbc48e9c202",
-    "isChange": "false",
-    "profile": {
-      "id": "0001",
-      "userName": "felipe.ogoms",
-=======
     photo: "/assets/neuromancer.png",
     isChange: "false",
     profile: {
       id: "0001",
       userName: "felipe.ogoms",
->>>>>>> e2c6d40a30cff252662009379e61b259c0b2464f
     },
   },
   {
@@ -39,19 +31,11 @@ const books = [
     author: "John Green",
     description:
       "Um livro excelente para entender as nossas mentes e ações. E ter mais empatia sobre o que se pode passar na cabeça do coleguinha :)",
-<<<<<<< HEAD
-    "photo": "https://m.media-amazon.com/images/I/41kSlyygRwL.jpg",
-    "isChange": "true",
-    "profile": {
-      "id": "0001",
-      "userName": "felipe.ogoms",
-=======
     photo: "/assets/turtles.jpg",
     isChange: "true",
     profile: {
       id: "0001",
       userName: "felipe.ogoms",
->>>>>>> e2c6d40a30cff252662009379e61b259c0b2464f
     },
   },
   {
@@ -73,14 +57,6 @@ const books = [
     author: "Emily X.R. Pan",
     description:
       "Extremamente intrigante do começo ao fim. Com uma construção de personagem esplêndida, você fica frisado e quer terminar o mais breve possível. Sem dúvidas uma das melhores leituras de 2022.",
-<<<<<<< HEAD
-    "photo":
-      "https://m.media-amazon.com/images/I/81wT2VTlq9L.jpg",
-    "isChange": "false",
-    "profile": {
-      "id": "0004",
-      "userName": "paulacynthia",
-=======
     photo: "/assets/asExtraodinariasCoresDoAmanha.png",
     isChange: "false",
     profile: {
@@ -112,7 +88,6 @@ const books = [
     profile: {
       id: "0004",
       userName: "paulacynthia",
->>>>>>> e2c6d40a30cff252662009379e61b259c0b2464f
     },
   },
 ];
