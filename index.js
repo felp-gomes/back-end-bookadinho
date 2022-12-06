@@ -6,6 +6,7 @@ const { profiles } = require("./mocks/profiles");
 const { chats } = require("./mocks/chats");
 const { notifications } = require("./mocks/notifications");
 const time = new Date().toISOString();
+const PORT = process.env.PORT || 4000
 
 app.use(cors());
 app.use(express.json());
@@ -262,6 +263,6 @@ app.get("/books/registered_books/:profileid", (req, res) => {
   return res.json({ status: "200", result: booksUser });
 });
 
-app.listen(4000, () => {
+app.listen(PORT, () => {
   console.log("Servidor on :)");
 });
