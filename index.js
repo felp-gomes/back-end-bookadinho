@@ -107,7 +107,7 @@ app.post("/register_book", (req, res) => {
     author,
     description,
     photo,
-    profileid: {
+    profile: {
       id: bookOwner.id,
       userName: bookOwner.userName,
     },
