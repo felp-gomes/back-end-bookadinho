@@ -62,8 +62,9 @@ app.post("/create_profile", (req, res) => {
     changeBooks = [],
     latestReadings = [],
     photo = "",
+    password
   } = req.body;
-  if (!name || !userName) {
+  if (!name || !userName || !password) {
     return res.json({
       status: "203",
       message: "Nome e nome de usuário são obrigatórios!",
@@ -86,6 +87,7 @@ app.post("/create_profile", (req, res) => {
     changeBooks,
     latestReadings,
     photo,
+    password
   });
   const perfilCreated = [profiles[indexPerfilCreated - 1]];
   return res.json({ status: "200", result: perfilCreated });
