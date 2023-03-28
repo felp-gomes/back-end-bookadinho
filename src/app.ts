@@ -1,10 +1,9 @@
 import express from 'express';
+import routes from './routers/routes';
 
 const app = express();
 app.use(express.json());
 
-app.get('/', (req: express.Request, res: express.Response) => {
-  res.status(200).send('Hello World Bookadinho');
-});
+routes(app);
 
 export default app;

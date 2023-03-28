@@ -1,12 +1,12 @@
-export interface Book {
-  id: number;
+export default interface Book {
+  id: string;
   name: string;
   author: string;
   description: string;
   photo: string;
   isChange: boolean;
   profile: {
-    id: number;
+    id: string;
     userName: string;
   };
 }
