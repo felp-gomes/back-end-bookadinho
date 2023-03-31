@@ -1,17 +1,16 @@
 export default interface Profile {
-  id: number;
+  id: string;
+  user_name: string;
   name: string;
-  userName: string;
   description: string;
   likes: string[];
-  changeBooks: [
-    {
-      id: number;
-      name: string;
-      photo: string;
-    }
-  ];
-  latestReadings: string[];
+  change_books: {
+    id: string;
+    name: string;
+    photo: string;
+  }[];
+  latest_readings: string[];
   photo: string;
   password: string;
+  authorizations: string[] | [];
 }

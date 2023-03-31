@@ -1,8 +1,10 @@
-const profiles = [
+import profileInterface from '../interfaces/profile'
+
+const profiles: profileInterface[] = [
   {
     id: "0001",
+    user_name: "felipe.ogoms",
     name: "Felipe Gomes",
-    userName: "felipe.ogoms",
     description:
       "The sky over the harbor was the color of television tuned to an offline channel.",
     likes: [
@@ -14,7 +16,7 @@ const profiles = [
       "Tecnologia",
       "Fanfic",
     ],
-    changeBooks: [
+    change_books: [
       {
         id: "0001",
         name: "Neuromancer",
@@ -31,7 +33,7 @@ const profiles = [
         photo: "",
       },
     ],
-    latestReadings: [
+    latest_readings: [
       "Jogador N1",
       "Tartarugas até lá em baixo",
       "Alice no pais das maravilhas",
@@ -40,59 +42,61 @@ const profiles = [
     photo:
       "https://instagram.ffor29-1.fna.fbcdn.net/v/t51.2885-19/151841773_141305464507911_2460237208396643498_n.jpg?stp=dst-jpg_s150x150",
     password: "senha",
+    authorizations: []
   },
   {
     id: "0002",
     name: "Guarany",
-    userName: "guaranolas",
+    user_name: "guaranolas",
     description: "Programador e tranquilo com a vida",
     likes: ["Computador", "Jogos", "Animes", "Séries"],
-    changeBooks: [
+    change_books: [
       {
         id: "0004",
         name: "Clean code",
         photo: "https://miro.medium.com/max/419/1*mSOd9nC_p3fP6cDPUSluAw.jpeg",
       },
     ],
-    latestReadings: ["Clean code", "Algoritmos na prática"],
+    latest_readings: ["Clean code", "Algoritmos na prática"],
     photo: "https://thispersondoesnotexist.com/image",
     password: "1234",
+    authorizations: []
   },
   {
     id: "0003",
     name: "Carlos",
-    userName: "case",
+    user_name: "case",
     description:
       "Apaixonado por livros e arquitetura. 📷 Gosto de tirar fotos em prédios antigos e abandonas. Amo ver a paisagem do urbana do topo de um prédio!",
     likes: ["Fotografia", "Livros", "Urbanismo", "Animes"],
-    changeBooks: [],
-    latestReadings: ["A arte de projetar em arquitetura"],
+    change_books: [],
+    latest_readings: ["A arte de projetar em arquitetura"],
     photo: "",
     password: "password",
+    authorizations: []
   },
   {
     id: "0004",
     name: "Cynthia",
-    userName: "paulacynthia",
+    user_name: "paulacynthia",
     description: "Desenvolvedora front-end e leitora nas horas vagas",
     likes: ["Animes", "Livros", "Música", "Tecnologia"],
-    changeBooks: [
+    change_books: [
       {
         id: "0005",
         name: "As extraordinárias cores do amanhã",
         photo: "https://miro.medium.com/max/419/1*mSOd9nC_p3fP6cDPUSluAw.jpeg",
       },
     ],
-    latestReadings: [
+    latest_readings: [
       "As extraordinárias cores do amanhã",
       "Rainha Vermelha",
       "Até a próxima estrela",
     ],
     photo: "",
-    password: "pequena",
+    password: "pc",
+    authorizations: []
   },
 ];
 
-module.exports = {
-  profiles,
-};
+export default profiles

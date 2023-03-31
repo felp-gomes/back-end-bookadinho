@@ -1,6 +1,6 @@
-import book from '../interfaces/book';
+import bookInterface from '../interfaces/book';
 
-const books: book[] = [
+const books: bookInterface[] = [
   {
     id: '0001',
     name: 'Neuromancer',
