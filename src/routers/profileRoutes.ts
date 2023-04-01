@@ -1,10 +1,10 @@
-import express from 'express'
-import ProfileController from '../controllers/profileController'
+import express from 'express';
+import ProfileController from '../controllers/ProfileController';
 
-const router = express.Router()
+const router = express.Router();
 
 router
   .get('/profiles', ProfileController.listProfiles)
-  .post('/profile/authorization', ProfileController.authenticateProfile)
+  .post('/profile/authorization', ProfileController.authenticateProfile);
 
-export default router
+export default router;
