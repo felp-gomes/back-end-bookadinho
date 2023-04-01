@@ -12,5 +12,5 @@ export default interface Profile {
   latest_readings: string[];
   photo: string;
   password: string;
-  authorizations: string[] | [];
+  authorizations: string[];
 }
