@@ -13,7 +13,7 @@ class WebToken {
 
   static verifyToken(token: string) {
     try {
-      const tokenInformation = jwt.verify(
+      const tokenInformation: unknown = jwt.verify(
         token,
         process.env.SECRET_KEY_JWT as string
       );
