@@ -7,7 +7,7 @@
   },
   "license": "MIT",
   "scripts": {
-    "dev": "nodemon server.ts",
+    "dev": "tsc -w && eslint ./src --ext .ts && nodemon server.ts",
     "compile": "tsc",
     "watch": "tsc -w",
     "lint": "eslint ./src --ext .ts",
