@@ -1,21 +1,12 @@
-import profileInterface from '../interfaces/profile';
+import ProfileInterface from '../interfaces/Profile';
 
-const profiles: profileInterface[] = [
+const profiles: ProfileInterface[] = [
   {
     id: '0001',
     user_name: 'felipe.ogoms',
     name: 'Felipe Gomes',
-    description:
-      'The sky over the harbor was the color of television tuned to an offline channel.',
-    likes: [
-      'LoL',
-      'Ficção',
-      'Romance',
-      'Cyberpunk',
-      'Cyber',
-      'Tecnologia',
-      'Fanfic',
-    ],
+    description: 'The sky over the harbor was the color of television tuned to an offline channel.',
+    likes: ['LoL', 'Ficção', 'Romance', 'Cyberpunk', 'Cyber', 'Tecnologia', 'Fanfic'],
     change_books: [
       {
         id: '0001',
@@ -25,8 +16,7 @@ const profiles: profileInterface[] = [
       {
         id: '0002',
         name: 'Jogador N1',
-        photo:
-          'https://m.media-amazon.com/images/I/91z865cb5-L._AC_SY879_.jpg',
+        photo: 'https://m.media-amazon.com/images/I/91z865cb5-L._AC_SY879_.jpg',
       },
       {
         id: '0003',
@@ -55,8 +45,7 @@ const profiles: profileInterface[] = [
       {
         id: '0004',
         name: 'Clean code',
-        photo:
-          'https://miro.medium.com/max/419/1*mSOd9nC_p3fP6cDPUSluAw.jpeg',
+        photo: 'https://miro.medium.com/max/419/1*mSOd9nC_p3fP6cDPUSluAw.jpeg',
       },
     ],
     latest_readings: ['Clean code', 'Algoritmos na prática'],
@@ -87,15 +76,10 @@ const profiles: profileInterface[] = [
       {
         id: '0005',
         name: 'As extraordinárias cores do amanhã',
-        photo:
-          'https://miro.medium.com/max/419/1*mSOd9nC_p3fP6cDPUSluAw.jpeg',
+        photo: 'https://miro.medium.com/max/419/1*mSOd9nC_p3fP6cDPUSluAw.jpeg',
       },
     ],
-    latest_readings: [
-      'As extraordinárias cores do amanhã',
-      'Rainha Vermelha',
-      'Até a próxima estrela',
-    ],
+    latest_readings: ['As extraordinárias cores do amanhã', 'Rainha Vermelha', 'Até a próxima estrela'],
     photo: '',
     password: 'pc',
     authorizations: [],

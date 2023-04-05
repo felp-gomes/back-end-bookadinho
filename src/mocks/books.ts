@@ -1,12 +1,11 @@
-import bookInterface from '../interfaces/book';
+import BookInterface from '../interfaces/Book';
 
-const books: bookInterface[] = [
+const books: BookInterface[] = [
   {
     id: '0001',
     name: 'Neuromancer',
     author: 'William Gibson',
-    description:
-      'The sky over the harbor was the color of television tuned to an offline channel.',
+    description: 'The sky over the harbor was the color of television tuned to an offline channel.',
     photo: '/assets/neuromancer.png',
     isChange: false,
     profile: {
