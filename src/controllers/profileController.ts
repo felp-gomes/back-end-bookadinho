@@ -7,7 +7,7 @@ export default class ProfileController {
     const { user_name, password }: { user_name: string; password: string } = req.body;
     if (!user_name || !password) {
       return res.status(401).send({
-        status: 400,
+        status: 401,
         body: {
           message: 'User name and password profile id are required!',
         },
