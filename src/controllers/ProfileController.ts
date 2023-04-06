@@ -1,6 +1,6 @@
 import express from 'express';
 import OAuth from '../models/OAuth';
-import ProfileInterface from '../interfaces/Profile';
+import ProfileInterface from '../interfaces/profile';
 import profiles from '../mocks/profiles';
 
 export default class ProfileController {

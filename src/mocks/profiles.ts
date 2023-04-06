@@ -1,4 +1,4 @@
-import ProfileInterface from '../interfaces/Profile';
+import ProfileInterface from '../interfaces/profile';
 
 const profiles: ProfileInterface[] = [
   {
