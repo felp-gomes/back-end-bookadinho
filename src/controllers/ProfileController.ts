@@ -85,21 +85,26 @@ export default class ProfileController {
     const {
       user_name,
       name,
-      description,
-      likes,
-      latest_readings,
-      photo,
+      description = '',
+      likes = [],
+      change_books = [],
+      latest_readings = [],
+      photo = '',
       password,
     }: {
       user_name: string;
       name: string;
       description: string;
       likes: string[];
+      change_books: {
+        id: string;
+        name: string;
+        photo: string;
+      }[];
       latest_readings: string[];
       photo: string;
       password: string;
     } = req.body;
-
     if (!user_name || !name || !password) {
       return res.status(401).send({
         status: 401,
@@ -108,26 +113,60 @@ export default class ProfileController {
         },
       });
     }
-
-    const tokenByProfile: string = OAuth.createToken({
-      id: String(profiles.length + 1),
-      user_name: user_name,
-    });
-
-    const profile: ProfileInterface = {
-      id: String(profiles.length + 1),
-      user_name,
-      name,
-      description,
-      change_books: [],
-      likes: [],
-      latest_readings: [],
-      photo,
-      password,
-      authorizations: [tokenByProfile],
-    };
-
-    profiles.push(profile);
-    return res.status(201).send({ status: 202, body: { message: 'ok', profile: profile } });
+    if(profiles.some((profile) => profile.user_name == user_name)) {
+      return res.status(401).send({
+        status: 401,
+        body: {
+          message: 'Username is already in use!',
+        },
+      });
+    }
+    if(user_name.length > 20) {
+      return res.status(401).send({
+        status: 401,
+        body: {
+          message: 'Username is limited to 20 characters!',
+        },
+      });
+    }
+    if(name.length > 45) {
+      return res.status(401).send({
+        status: 401,
+        body: {
+          message: 'Name is limited to 45 characters!',
+        },
+      });
+    }
+    if(description.length !== 0 && description.length > 250) {
+      return res.status(401).send({
+        status: 401,
+        body: {
+          message: 'Description is limited to 250 characters!',
+        },
+      });
+    }
+    try {
+      const indexProfile: number = profiles.length + 1
+      const tokenByProfile: string = OAuth.createToken({
+        id: String(indexProfile),
+        user_name: user_name,
+      });
+      const profile: ProfileInterface = {
+        id: String(indexProfile),
+        user_name,
+        name,
+        description,
+        likes,
+        change_books,
+        latest_readings,
+        photo,
+        password,
+        authorizations: [tokenByProfile],
+      };
+      profiles.push(profile);
+      return res.status(201).send({ status: 202, body: { message: 'ok', profile: profile } });
+    } catch (error) {
+      return res.status(400).send({ status: 400, message: error });
+    }
   }
 }
