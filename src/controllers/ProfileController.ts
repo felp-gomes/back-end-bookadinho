@@ -1,10 +1,10 @@
-import express from 'express';
+import { Request, Response } from 'express';
 import OAuth from '../models/OAuth';
 import ProfileInterface from '../interfaces/profile';
 import profiles from '../mocks/profiles';
 
 export default class ProfileController {
-  public static authenticateProfile(req: express.Request, res: express.Response) {
+  public static authenticateProfile(req: Request, res: Response) {
     const { user_name, password }: { user_name: string; password: string } = req.body;
     if (!user_name || !password) {
       return res.status(401).send({
@@ -36,10 +36,10 @@ export default class ProfileController {
       return res.status(400).send({ status: 400, message: error });
     }
   }
-  public static listProfiles(req: express.Request, res: express.Response) {
+  public static listProfiles(req: Request, res: Response) {
     return res.status(200).json({ status: 200, body: { message: 'ok', profiles: profiles } });
   }
-  public static createProfile(req: express.Request, res: express.Response) {
+  public static createProfile(req: Request, res: Response) {
     const {
       user_name,
       name,
@@ -72,32 +72,40 @@ export default class ProfileController {
       });
     }
     if (profiles.some((profile) => profile.user_name == user_name)) {
-      return res.status(401).send({
-        status: 401,
+      return res.status(409).send({
+        status: 409,
         body: {
           message: 'Username is already in use!',
         },
       });
     }
-    if (user_name.length > 20) {
-      return res.status(401).send({
-        status: 401,
+    if (user_name.length < 4 || user_name.length > 20) {
+      return res.status(400).send({
+        status: 400,
         body: {
-          message: 'Username is limited to 20 characters!',
+          message: 'Username must be between 4 and 20 characters!',
         },
       });
     }
-    if (name.length > 45) {
-      return res.status(401).send({
-        status: 401,
+    if (name.length < 4 || name.length > 45) {
+      return res.status(400).send({
+        status: 400,
         body: {
-          message: 'Name is limited to 45 characters!',
+          message: 'Name must be between 4 and 45 characters!',
         },
       });
     }
-    if (description.length !== 0 && description.length > 250) {
-      return res.status(401).send({
-        status: 401,
+    if (password.length < 6 || password.length > 45) {
+      return res.status(400).send({
+        status: 400,
+        body: {
+          message: 'Password must be between 6 and 45 characters!',
+        },
+      });
+    }
+    if (description.length > 250) {
+      return res.status(413).send({
+        status: 413,
         body: {
           message: 'Description is limited to 250 characters!',
         },
