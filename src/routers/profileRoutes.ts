@@ -7,6 +7,7 @@ const router = express.Router();
 router
   .get('/profiles', Authenticated.verifyAuthenticated, ProfileController.listProfiles)
   .post('/profile/authorization', ProfileController.authenticateProfile)
-  .post('/profile', ProfileController.createProfile);
+  .post('/profile', ProfileController.createProfile)
+  .put('/profile', Authenticated.verifyAuthenticated, ProfileController.editProfile);
 
 export default router;

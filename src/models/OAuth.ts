@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 class WebToken {
-  public static createToken(user: { id: string; user_name: string }) {
+  public static createToken(user: { id: string }) {
     try {
       const token = jwt.sign(user, 'bola', {
         algorithm: 'HS256',
