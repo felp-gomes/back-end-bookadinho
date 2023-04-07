@@ -37,6 +37,7 @@ export default class Authenticated {
           },
         });
       }
+      req.body.foundProfileByToken = foundProfileByToken;
       next();
     } catch (error) {
       return res.status(400).send({
