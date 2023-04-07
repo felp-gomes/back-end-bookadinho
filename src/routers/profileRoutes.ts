@@ -1,8 +1,8 @@
-import express from 'express';
+import { Router } from 'express';
 import ProfileController from '../controllers/ProfileController';
 import Authenticated from '../middlewares/Authenticated';
 
-const router = express.Router();
+const router = Router();
 
 router
   .get('/profiles', Authenticated.verifyAuthenticated, ProfileController.listProfiles)

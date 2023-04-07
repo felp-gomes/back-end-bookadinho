@@ -1,10 +1,11 @@
-import express from 'express';
+import { Request, Response, NextFunction } from 'express';
 import OAuth from '../models/OAuth';
 import profiles from '../mocks/profiles';
+import ProfileInterface from '../interfaces/profile';
 
 export default class Authenticated {
-  public static verifyAuthenticated(req: express.Request, res: express.Response, next: express.NextFunction) {
-    const authorizationProfile = req.headers.authorization as string | undefined;
+  public static verifyAuthenticated(req: Request, res: Response, next: NextFunction) {
+    const authorizationProfile: string | undefined = req.headers.authorization;
     if (!authorizationProfile) {
       return res.status(401).send({
         status: 401,
@@ -18,7 +19,7 @@ export default class Authenticated {
         id: string;
         user_name: string;
       };
-      const foundProfileByToken = profiles.find(
+      const foundProfileByToken: ProfileInterface | undefined = profiles.find(
         (profile) => profile.id === decryptedToken.id && profile.user_name == decryptedToken.user_name
       );
       if (!foundProfileByToken) {
@@ -37,7 +38,7 @@ export default class Authenticated {
           },
         });
       }
-      req.body.foundProfileByToken = foundProfileByToken;
+      res.locals.foundProfileByToken = foundProfileByToken;
       next();
     } catch (error) {
       return res.status(400).send({

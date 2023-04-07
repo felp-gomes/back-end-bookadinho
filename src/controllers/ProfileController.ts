@@ -48,20 +48,7 @@ export default class ProfileController {
       latest_readings = [],
       photo = '',
       password,
-    }: {
-      user_name: string;
-      name: string;
-      description: string;
-      likes: string[];
-      change_books: {
-        id: string;
-        name: string;
-        photo: string;
-      }[];
-      latest_readings: string[];
-      photo: string;
-      password: string;
-    } = req.body;
+    }: ProfileInterface = req.body;
     if (!user_name || !name || !password) {
       return res.status(401).send({
         status: 401,
@@ -133,34 +120,10 @@ export default class ProfileController {
       return res.status(400).send({ status: 400, message: error });
     }
   }
-
   public static editProfile(req: Request, res: Response) {
-    console.log(req.body);
-    const {
-      foundProfileByToken,
-      user_name,
-      name,
-      description,
-      likes,
-      change_books,
-      latest_readings,
-      photo,
-      password,
-    }: {
-      foundProfileByToken: ProfileInterface;
-      user_name: string;
-      name: string;
-      description: string;
-      likes: string[];
-      change_books: {
-        id: string;
-        name: string;
-        photo: string;
-      }[];
-      latest_readings: string[];
-      photo: string;
-      password: string;
-    } = req.body;
+    const foundProfileByToken: ProfileInterface = res.locals.foundProfileByToken;
+    const { user_name, name, description, likes, change_books, latest_readings, photo, password }: ProfileInterface =
+      req.body;
     if (user_name !== foundProfileByToken.user_name && profiles.some((profile) => profile.user_name == user_name)) {
       return res.status(409).send({
         status: 409,
@@ -201,7 +164,6 @@ export default class ProfileController {
         },
       });
     }
-
     const updatedProfile: ProfileInterface = {
       ...foundProfileByToken,
       user_name: user_name ?? foundProfileByToken.user_name,
@@ -213,12 +175,10 @@ export default class ProfileController {
       photo: photo ?? foundProfileByToken.photo,
       password: password ?? foundProfileByToken.password,
     };
-
     const foundProfileIndex = profiles.findIndex(({ id }) => {
       id === updatedProfile.id;
     });
     profiles[foundProfileIndex] = updatedProfile;
-
     return res.status(202).send({ status: 202, body: { message: 'ok', profile: updatedProfile } });
   }
 }
