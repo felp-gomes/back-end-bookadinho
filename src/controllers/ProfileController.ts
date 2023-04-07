@@ -14,11 +14,9 @@ export default class ProfileController {
         },
       });
     }
-
     const foundProfileIndex = profiles.findIndex(
       (profile) => profile.user_name === user_name && profile.password === password
     );
-
     if (foundProfileIndex === -1) {
       return res.status(401).send({
         status: 401,
@@ -27,13 +25,11 @@ export default class ProfileController {
         },
       });
     }
-
     try {
       const tokenByProfile: string = OAuth.createToken({
         id: profiles[foundProfileIndex].id,
         user_name: profiles[foundProfileIndex].user_name,
       });
-
       profiles[foundProfileIndex].authorizations.push(tokenByProfile);
       return res.status(202).send({ status: 202, body: { message: 'ok', authorization: tokenByProfile } });
     } catch (error) {
@@ -113,7 +109,7 @@ export default class ProfileController {
         },
       });
     }
-    if(profiles.some((profile) => profile.user_name == user_name)) {
+    if (profiles.some((profile) => profile.user_name == user_name)) {
       return res.status(401).send({
         status: 401,
         body: {
@@ -121,7 +117,7 @@ export default class ProfileController {
         },
       });
     }
-    if(user_name.length > 20) {
+    if (user_name.length > 20) {
       return res.status(401).send({
         status: 401,
         body: {
@@ -129,7 +125,7 @@ export default class ProfileController {
         },
       });
     }
-    if(name.length > 45) {
+    if (name.length > 45) {
       return res.status(401).send({
         status: 401,
         body: {
@@ -137,7 +133,7 @@ export default class ProfileController {
         },
       });
     }
-    if(description.length !== 0 && description.length > 250) {
+    if (description.length !== 0 && description.length > 250) {
       return res.status(401).send({
         status: 401,
         body: {
@@ -146,7 +142,7 @@ export default class ProfileController {
       });
     }
     try {
-      const indexProfile: number = profiles.length + 1
+      const indexProfile: number = profiles.length + 1;
       const tokenByProfile: string = OAuth.createToken({
         id: String(indexProfile),
         user_name: user_name,
