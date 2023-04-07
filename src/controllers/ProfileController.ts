@@ -4,7 +4,7 @@ import ProfileInterface from '../interfaces/profile';
 import profiles from '../mocks/profiles';
 
 export default class ProfileController {
-  static authenticateProfile(req: express.Request, res: express.Response) {
+  public static authenticateProfile(req: express.Request, res: express.Response) {
     const { user_name, password }: { user_name: string; password: string } = req.body;
     if (!user_name || !password) {
       return res.status(401).send({
@@ -37,7 +37,7 @@ export default class ProfileController {
     }
   }
 
-  static listProfiles(req: express.Request, res: express.Response) {
+  public static listProfiles(req: express.Request, res: express.Response) {
     const authorizationProfile = req.headers.authorization as string | undefined;
     if (!authorizationProfile) {
       return res.status(400).send({
@@ -77,7 +77,7 @@ export default class ProfileController {
     }
   }
 
-  static createProfile(req: express.Request, res: express.Response) {
+  public static createProfile(req: express.Request, res: express.Response) {
     const {
       user_name,
       name,
