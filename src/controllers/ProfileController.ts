@@ -3,6 +3,8 @@ import OAuth from '../models/OAuth';
 import ProfileInterface from '../interfaces/profile';
 import profiles from '../mocks/profiles';
 
+import { validateProfileEmail } from '../utils/utils';
+
 export default class ProfileController {
   public static authenticateProfile(req: Request, res: Response) {
     const { user_name, password }: { user_name: string; password: string } = req.body;
@@ -48,20 +50,29 @@ export default class ProfileController {
       latest_readings = [],
       photo = '',
       password,
+      email,
     }: ProfileInterface = req.body;
-    if (!user_name || !name || !password) {
+    if (!user_name || !name || !password || !email) {
       return res.status(401).send({
         status: 401,
         body: {
-          message: 'User name, name and password if required!',
+          message: 'User name, name, password and email if required!',
         },
       });
     }
-    if (profiles.some((profile) => profile.user_name == user_name)) {
+    if (profiles.some((profile) => profile.user_name === user_name)) {
       return res.status(409).send({
         status: 409,
         body: {
           message: 'Username is already in use!',
+        },
+      });
+    }
+    if(profiles.some((profile) => profile.email === email)) {
+      return res.status(409).send({
+        status: 409,
+        body: {
+          message: 'Email is already in use!',
         },
       });
     }
@@ -78,6 +89,14 @@ export default class ProfileController {
         status: 400,
         body: {
           message: 'Name must be between 4 and 45 characters!',
+        },
+      });
+    }
+    if(!validateProfileEmail(email)) {
+      return res.status(400).send({
+        status: 400,
+        body: {
+          message: 'Not a valid email!',
         },
       });
     }
@@ -112,6 +131,7 @@ export default class ProfileController {
         latest_readings,
         photo,
         password,
+        email,
         authorizations: [tokenByProfile],
       };
       profiles.push(profile);
@@ -122,7 +142,7 @@ export default class ProfileController {
   }
   public static editProfile(req: Request, res: Response) {
     const foundProfileByToken: ProfileInterface = res.locals.foundProfileByToken;
-    const { user_name, name, description, likes, change_books, latest_readings, photo, password }: ProfileInterface =
+    const { user_name, name, description, likes, change_books, latest_readings, photo, password, email }: ProfileInterface =
       req.body;
     if (user_name !== foundProfileByToken.user_name && profiles.some((profile) => profile.user_name == user_name)) {
       return res.status(409).send({
@@ -145,6 +165,14 @@ export default class ProfileController {
         status: 400,
         body: {
           message: 'Name must be between 4 and 45 characters!',
+        },
+      });
+    }
+    if(email && !validateProfileEmail(email)) {
+      return res.status(400).send({
+        status: 400,
+        body: {
+          message: 'Not a valid email!',
         },
       });
     }
@@ -174,6 +202,7 @@ export default class ProfileController {
       latest_readings: latest_readings ?? foundProfileByToken.latest_readings,
       photo: photo ?? foundProfileByToken.photo,
       password: password ?? foundProfileByToken.password,
+      email: email ?? foundProfileByToken.email,
     };
     const foundProfileIndex = profiles.findIndex(({ id }) => {
       id === updatedProfile.id;

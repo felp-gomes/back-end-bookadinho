@@ -33,6 +33,7 @@ const profiles: ProfileInterface[] = [
     photo:
       'https://instagram.ffor29-1.fna.fbcdn.net/v/t51.2885-19/151841773_141305464507911_2460237208396643498_n.jpg?stp=dst-jpg_s150x150',
     password: 'senha',
+    email: 'felipe@bookadinho.com',
     authorizations: [
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjAwMDEiLCJ1c2VyX25hbWUiOiJmZWxpcGUub2dvbXMiLCJpYXQiOjE2ODA4OTA3ODN9.oVKj9p86GK7OYg4OTCpKeuloa_A4gcIgjtAdRkXn2P4',
     ],
@@ -53,6 +54,7 @@ const profiles: ProfileInterface[] = [
     latest_readings: ['Clean code', 'Algoritmos na prática'],
     photo: 'https://thispersondoesnotexist.com/image',
     password: '1234',
+    email: 'guaranolas@bookadinho.com',
     authorizations: [],
   },
   {
@@ -66,6 +68,7 @@ const profiles: ProfileInterface[] = [
     latest_readings: ['A arte de projetar em arquitetura'],
     photo: '',
     password: 'password',
+    email: 'case@bookadinho.com',
     authorizations: [],
   },
   {
@@ -84,6 +87,7 @@ const profiles: ProfileInterface[] = [
     latest_readings: ['As extraordinárias cores do amanhã', 'Rainha Vermelha', 'Até a próxima estrela'],
     photo: '',
     password: 'pc',
+    email: 'pc@bookadinho.com',
     authorizations: [
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjAwMDQiLCJ1c2VyX25hbWUiOiJwYXVsYWN5bnRoaWEiLCJpYXQiOjE2ODA4OTA4MTh9.51hI5jJj2LOkB4kotF8C5MtLPJpTexVqEJza6OlIvMM',
     ],
