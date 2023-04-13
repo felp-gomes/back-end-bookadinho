@@ -17,10 +17,9 @@ export default class Authenticated {
     try {
       const decryptedToken = OAuth.verifyToken(authorizationProfile) as {
         id: string;
-        user_name: string;
       };
       const foundProfileByToken: ProfileInterface | undefined = profiles.find(
-        (profile) => profile.id === decryptedToken.id && profile.user_name == decryptedToken.user_name
+        (profile) => profile.id === decryptedToken.id
       );
       if (!foundProfileByToken) {
         return res.status(401).send({
