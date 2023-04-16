@@ -1,5 +1,5 @@
 export default interface Profile {
-  id: string;
+  readonly id: string;
   user_name: string;
   name: string;
   description: string;
