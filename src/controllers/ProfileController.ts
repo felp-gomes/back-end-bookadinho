@@ -46,7 +46,6 @@ export default class ProfileController {
       name,
       description = '',
       likes = [],
-      change_books = [],
       latest_readings = [],
       photo = '',
       password,
@@ -127,7 +126,6 @@ export default class ProfileController {
         name: name.trim(),
         description: description.trim(),
         likes: likes.map((like) => like.trim()),
-        change_books,
         latest_readings: latest_readings.map((latestReadings) => latestReadings.trim()),
         photo: photo.trim(),
         password: password.trim(),
@@ -142,17 +140,7 @@ export default class ProfileController {
   }
   public static editProfile(req: Request, res: Response) {
     const foundProfileByToken: ProfileInterface = res.locals.foundProfileByToken;
-    const {
-      user_name,
-      name,
-      description,
-      likes,
-      change_books,
-      latest_readings,
-      photo,
-      password,
-      email,
-    }: ProfileInterface = req.body;
+    const { user_name, name, description, likes, latest_readings, photo, password, email }: ProfileInterface = req.body;
     if (user_name !== foundProfileByToken.user_name && profiles.some((profile) => profile.user_name == user_name)) {
       return res.status(409).send({
         status: 409,
@@ -203,15 +191,15 @@ export default class ProfileController {
     }
     const updatedProfile: ProfileInterface = {
       ...foundProfileByToken,
-      user_name: user_name ?? foundProfileByToken.user_name,
-      name: name ?? foundProfileByToken.name,
-      description: description ?? foundProfileByToken.description,
-      likes: likes ?? foundProfileByToken.likes,
-      change_books: change_books ?? foundProfileByToken.change_books,
-      latest_readings: latest_readings ?? foundProfileByToken.latest_readings,
-      photo: photo ?? foundProfileByToken.photo,
-      password: password ?? foundProfileByToken.password,
-      email: email ?? foundProfileByToken.email,
+      user_name: user_name ?? foundProfileByToken.user_name.trim(),
+      name: name ?? foundProfileByToken.name.trim(),
+      description: description ?? foundProfileByToken.description.trim(),
+      likes: likes ?? foundProfileByToken.likes.map((like) => like.trim()),
+      latest_readings:
+        latest_readings ?? foundProfileByToken.latest_readings.map((latestReadings) => latestReadings.trim()),
+      photo: photo ?? foundProfileByToken.photo.trim(),
+      password: password ?? foundProfileByToken.password.trim(),
+      email: email ?? foundProfileByToken.email.trim(),
     };
     const foundProfileIndex = profiles.findIndex(({ id }) => {
       id === updatedProfile.id;
