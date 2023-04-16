@@ -68,7 +68,7 @@ export default class ProfileController {
         },
       });
     }
-    if(profiles.some((profile) => profile.email === email)) {
+    if (profiles.some((profile) => profile.email === email)) {
       return res.status(409).send({
         status: 409,
         body: {
@@ -92,7 +92,7 @@ export default class ProfileController {
         },
       });
     }
-    if(!validateProfileEmail(email)) {
+    if (!validateProfileEmail(email)) {
       return res.status(400).send({
         status: 400,
         body: {
@@ -123,15 +123,15 @@ export default class ProfileController {
       });
       const profile: ProfileInterface = {
         id: String(indexProfile),
-        user_name,
-        name,
-        description,
-        likes,
+        user_name: user_name.trim(),
+        name: name.trim(),
+        description: description.trim(),
+        likes: likes.map((like) => like.trim()),
         change_books,
-        latest_readings,
-        photo,
-        password,
-        email,
+        latest_readings: latest_readings.map((latestReadings) => latestReadings.trim()),
+        photo: photo.trim(),
+        password: password.trim(),
+        email: email.trim(),
         authorizations: [tokenByProfile],
       };
       profiles.push(profile);
@@ -142,8 +142,17 @@ export default class ProfileController {
   }
   public static editProfile(req: Request, res: Response) {
     const foundProfileByToken: ProfileInterface = res.locals.foundProfileByToken;
-    const { user_name, name, description, likes, change_books, latest_readings, photo, password, email }: ProfileInterface =
-      req.body;
+    const {
+      user_name,
+      name,
+      description,
+      likes,
+      change_books,
+      latest_readings,
+      photo,
+      password,
+      email,
+    }: ProfileInterface = req.body;
     if (user_name !== foundProfileByToken.user_name && profiles.some((profile) => profile.user_name == user_name)) {
       return res.status(409).send({
         status: 409,
@@ -168,7 +177,7 @@ export default class ProfileController {
         },
       });
     }
-    if(email && !validateProfileEmail(email)) {
+    if (email && !validateProfileEmail(email)) {
       return res.status(400).send({
         status: 400,
         body: {

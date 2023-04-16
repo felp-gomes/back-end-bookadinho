@@ -5,6 +5,7 @@ export default interface Book {
   description: string;
   photo: string;
   isChange: boolean;
+  isRead: boolean;
   profile: {
     id: string;
     userName: string;
