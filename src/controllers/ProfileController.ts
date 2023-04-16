@@ -38,7 +38,8 @@ export default class ProfileController {
     }
   }
   public static listProfiles(req: Request, res: Response) {
-    return res.status(200).json({ status: 200, body: { message: 'ok', profiles: profiles } });
+    const profileList = profiles.filter((profile) => profile.isActive);
+    return res.status(200).json({ status: 200, body: { message: 'ok', profiles: profileList } });
   }
   public static createProfile(req: Request, res: Response) {
     const {
@@ -130,6 +131,7 @@ export default class ProfileController {
         photo: photo.trim(),
         password: password.trim(),
         email: email.trim(),
+        isActive: true,
         authorizations: [tokenByProfile],
       };
       profiles.push(profile);
@@ -206,5 +208,22 @@ export default class ProfileController {
     });
     profiles[foundProfileIndex] = updatedProfile;
     return res.status(202).send({ status: 202, body: { message: 'ok', profile: updatedProfile } });
+  }
+  public static deleteProfile(req: Request, res: Response) {
+    const foundProfileByToken: ProfileInterface = res.locals.foundProfileByToken;
+    foundProfileByToken.user_name = 'x@t5^4*$j3c38MP43tJn';
+    foundProfileByToken.name = 'x@t5^4*$j3c38MP43tJn';
+    foundProfileByToken.description = '';
+    foundProfileByToken.photo = '';
+    foundProfileByToken.password = 'Ouaogu@4!3DETf$2d9z2OtrT3ih#oZsU!$^oHhtjkO2fT';
+    foundProfileByToken.email = 'xt5^4*$j3c38MP43tJn@xt5^4*$j3c38MP43tJn.xt5^4*$j3c38MP43tJn';
+    foundProfileByToken.isActive = false;
+    foundProfileByToken.authorizations = [];
+    const foundProfileIndex = profiles.findIndex(({ id }) => {
+      id === foundProfileByToken.id;
+    });
+    profiles[foundProfileIndex] = foundProfileByToken;
+
+    return res.status(202).send({ status: 202, body: { message: 'ok', profiles: profiles } });
   }
 }
