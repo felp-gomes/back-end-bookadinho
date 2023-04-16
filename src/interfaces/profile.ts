@@ -8,5 +8,6 @@ export default interface Profile {
   photo: string;
   password: string;
   email: string;
+  isActive: boolean;
   authorizations: string[];
 }

@@ -17,6 +17,7 @@ const profiles: ProfileInterface[] = [
       'https://instagram.ffor29-1.fna.fbcdn.net/v/t51.2885-19/151841773_141305464507911_2460237208396643498_n.jpg?stp=dst-jpg_s150x150',
     password: 'senha',
     email: 'felipe@bookadinho.com',
+    isActive: true,
     authorizations: [
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjAwMDEiLCJ1c2VyX25hbWUiOiJmZWxpcGUub2dvbXMiLCJpYXQiOjE2ODA4OTA3ODN9.oVKj9p86GK7OYg4OTCpKeuloa_A4gcIgjtAdRkXn2P4',
     ],
@@ -31,6 +32,7 @@ const profiles: ProfileInterface[] = [
     photo: 'https://thispersondoesnotexist.com/image',
     password: '1234',
     email: 'guaranolas@bookadinho.com',
+    isActive: true,
     authorizations: [],
   },
   {
@@ -44,6 +46,7 @@ const profiles: ProfileInterface[] = [
     photo: '',
     password: 'password',
     email: 'case@bookadinho.com',
+    isActive: true,
     authorizations: [],
   },
   {
@@ -56,6 +59,7 @@ const profiles: ProfileInterface[] = [
     photo: '',
     password: 'pc',
     email: 'pc@bookadinho.com',
+    isActive: true,
     authorizations: [
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjAwMDQiLCJ1c2VyX25hbWUiOiJwYXVsYWN5bnRoaWEiLCJpYXQiOjE2ODA4OTA4MTh9.51hI5jJj2LOkB4kotF8C5MtLPJpTexVqEJza6OlIvMM',
     ],
