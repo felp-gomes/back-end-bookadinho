@@ -28,7 +28,7 @@ export default class Authenticated {
         });
       }
       const { authorizations: tokensProfile }: { authorizations: string[] } = foundProfileByToken;
-      const isValidToken = tokensProfile.some((token) => token == authorizationProfile);
+      const isValidToken = tokensProfile.some((token) => token === authorizationProfile);
       if (!isValidToken) {
         return res.status(401).send({
           status: 401,

@@ -8,7 +8,7 @@ export default class BookController {
 
   static listBookById(req: Request, res: Response) {
     const idBook = req.params.id;
-    const bookById = books.find((book) => book.id == idBook);
+    const bookById = books.find((book) => book.id === idBook);
     res.status(200).json(bookById);
   }
 }
