@@ -38,8 +38,8 @@ export default class ProfileController {
     }
   }
   public static listProfiles(req: Request, res: Response) {
-    const profileList = profiles.filter((profile) => profile.isActive);
-    return res.status(200).json({ status: 200, body: { message: 'ok', profiles: profileList } });
+    // const profileList = profiles.filter((profile) => profile.isActive);
+    return res.status(200).json({ status: 200, body: { message: 'ok', profiles: profiles } });
   }
   public static createProfile(req: Request, res: Response) {
     const {
@@ -211,12 +211,12 @@ export default class ProfileController {
   }
   public static deleteProfile(req: Request, res: Response) {
     const foundProfileByToken: ProfileInterface = res.locals.foundProfileByToken;
-    foundProfileByToken.user_name = 'x@t5^4*$j3c38MP43tJn';
-    foundProfileByToken.name = 'x@t5^4*$j3c38MP43tJn';
+    foundProfileByToken.user_name = '';
+    foundProfileByToken.name = '';
     foundProfileByToken.description = '';
     foundProfileByToken.photo = '';
-    foundProfileByToken.password = 'Ouaogu@4!3DETf$2d9z2OtrT3ih#oZsU!$^oHhtjkO2fT';
-    foundProfileByToken.email = 'xt5^4*$j3c38MP43tJn@xt5^4*$j3c38MP43tJn.xt5^4*$j3c38MP43tJn';
+    foundProfileByToken.password = '';
+    foundProfileByToken.email = '';
     foundProfileByToken.isActive = false;
     foundProfileByToken.authorizations = [];
     const foundProfileIndex = profiles.findIndex(({ id }) => {
@@ -224,6 +224,6 @@ export default class ProfileController {
     });
     profiles[foundProfileIndex] = foundProfileByToken;
 
-    return res.status(202).send({ status: 202, body: { message: 'ok', profiles: profiles } });
+    return res.status(200).send({ status: 200, body: { message: 'ok' } });
   }
 }
