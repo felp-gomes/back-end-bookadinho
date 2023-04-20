@@ -9,6 +9,7 @@ router
   .post('/profile/authorization', ProfileController.authenticateProfile)
   .post('/profile', ProfileController.createProfile)
   .put('/profile', Authenticated.verifyAuthenticated, ProfileController.editProfile)
-  .delete('/profile', Authenticated.verifyAuthenticated, ProfileController.deleteProfile);
+  .delete('/profile', Authenticated.verifyAuthenticated, ProfileController.deleteProfile)
+  .put('/profile/password', Authenticated.verifyAuthenticated, ProfileController.resetPassword);
 
 export default router;

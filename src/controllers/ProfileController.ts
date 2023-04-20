@@ -143,7 +143,7 @@ export default class ProfileController {
   public static editProfile(req: Request, res: Response) {
     const foundProfileByToken: ProfileInterface = res.locals.foundProfileByToken;
     const { user_name, name, description, likes, latest_readings, photo, password, email }: ProfileInterface = req.body;
-    if (user_name !== foundProfileByToken.user_name && profiles.some((profile) => profile.user_name == user_name)) {
+    if (user_name !== foundProfileByToken.user_name && profiles.some((profile) => profile.user_name === user_name)) {
       return res.status(409).send({
         status: 409,
         body: {
@@ -201,13 +201,17 @@ export default class ProfileController {
         latest_readings ?? foundProfileByToken.latest_readings.map((latestReadings) => latestReadings.trim()),
       photo: photo ?? foundProfileByToken.photo.trim(),
       password: password ?? foundProfileByToken.password.trim(),
+      authorizations: password ? [] : foundProfileByToken.authorizations,
       email: email ?? foundProfileByToken.email.trim(),
     };
-    const foundProfileIndex = profiles.findIndex(({ id }) => {
-      id === updatedProfile.id;
-    });
+    const foundProfileIndex = profiles.findIndex(({ id }) => id === updatedProfile.id);
     profiles[foundProfileIndex] = updatedProfile;
-    return res.status(202).send({ status: 202, body: { message: 'ok', profile: updatedProfile } });
+    if (password) {
+      return res.status(202).send({ status: 202, body: { message: 'profile changed successfully!' } });
+    }
+    return res
+      .status(202)
+      .send({ status: 202, body: { message: 'profile changed successfully!', profile: updatedProfile } });
   }
   public static deleteProfile(req: Request, res: Response) {
     const foundProfileByToken: ProfileInterface = res.locals.foundProfileByToken;
@@ -223,7 +227,23 @@ export default class ProfileController {
       id === foundProfileByToken.id;
     });
     profiles[foundProfileIndex] = foundProfileByToken;
-
-    return res.status(200).send({ status: 200, body: { message: 'ok' } });
+    return res.status(200).send({ status: 200, body: { message: 'User deleted successfully!' } });
+  }
+  public static resetPassword(req: Request, res: Response) {
+    const foundProfileByToken: ProfileInterface = res.locals.foundProfileByToken;
+    const { password }: ProfileInterface = req.body;
+    if (password.length < 6 || password.length > 45) {
+      return res.status(400).send({
+        status: 400,
+        body: {
+          message: 'Password must be between 6 and 45 characters!',
+        },
+      });
+    }
+    foundProfileByToken.password = password;
+    foundProfileByToken.authorizations = [];
+    const foundProfileIndex = profiles.findIndex(({ id }) => id === foundProfileByToken.id);
+    profiles[foundProfileIndex] = foundProfileByToken;
+    return res.status(202).send({ status: 202, body: { message: 'Change changed successfully!' } });
   }
 }
