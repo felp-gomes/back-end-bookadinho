@@ -38,8 +38,8 @@ export default class ProfileController {
     }
   }
   public static listProfiles(req: Request, res: Response) {
-    // const profileList = profiles.filter((profile) => profile.isActive);
-    return res.status(200).json({ status: 200, body: { message: 'ok', profiles: profiles } });
+    const profileList = profiles.filter((profile) => profile.isActive);
+    return res.status(200).json({ status: 200, body: { message: 'ok', profiles: profileList } });
   }
   public static createProfile(req: Request, res: Response) {
     const {
