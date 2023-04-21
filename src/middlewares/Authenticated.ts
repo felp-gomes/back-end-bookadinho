@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import OAuth from '../models/OAuth';
 import profiles from '../mocks/profiles';
-import ProfileInterface from '../interfaces/profile';
+import { ProfileInterfaceFull } from '../interfaces/profile';
 
 export default class Authenticated {
   public static verifyAuthenticated(req: Request, res: Response, next: NextFunction) {
@@ -18,7 +18,7 @@ export default class Authenticated {
       const decryptedToken = OAuth.verifyToken(authorizationProfile) as {
         id: string;
       };
-      const foundProfileByToken: ProfileInterface | undefined = profiles.find(
+      const foundProfileByToken: ProfileInterfaceFull | undefined = profiles.find(
         (profile) => profile.id === decryptedToken.id
       );
       if (!foundProfileByToken) {

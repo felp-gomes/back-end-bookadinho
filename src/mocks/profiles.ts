@@ -1,6 +1,6 @@
-import ProfileInterface from '../interfaces/profile';
+import { ProfileInterfaceFull } from '../interfaces/profile';
 
-const profiles: ProfileInterface[] = [
+const profiles: ProfileInterfaceFull[] = [
   {
     id: '0001',
     user_name: 'felipe.ogoms',

@@ -1,4 +1,4 @@
-export default interface Profile {
+export interface ProfileInterfaceFull {
   readonly id: string;
   user_name: string;
   name: string;
@@ -10,4 +10,16 @@ export default interface Profile {
   email: string;
   isActive: boolean;
   authorizations: string[];
+}
+
+export interface ProfileInterfacePublic {
+  readonly id: string;
+  user_name: string;
+  name: string;
+  description: string;
+  likes: string[];
+  latest_readings: string[];
+  photo: string;
+  email: string;
+  isActive: boolean;
 }

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import OAuth from '../models/OAuth';
-import ProfileInterface from '../interfaces/profile';
+import { ProfileInterfaceFull } from '../interfaces/profile';
 import profiles from '../mocks/profiles';
 
 import { validateProfileEmail } from '../utils/utils';
@@ -51,7 +51,7 @@ export default class ProfileController {
       photo = '',
       password,
       email,
-    }: ProfileInterface = req.body;
+    }: ProfileInterfaceFull = req.body;
     if (!user_name || !name || !password || !email) {
       return res.status(401).send({
         status: 401,
@@ -121,7 +121,7 @@ export default class ProfileController {
       const tokenByProfile: string = OAuth.createToken({
         id: String(indexProfile),
       });
-      const profile: ProfileInterface = {
+      const profile: ProfileInterfaceFull = {
         id: String(indexProfile),
         user_name: user_name.trim(),
         name: name.trim(),
@@ -141,8 +141,9 @@ export default class ProfileController {
     }
   }
   public static editProfile(req: Request, res: Response) {
-    const foundProfileByToken: ProfileInterface = res.locals.foundProfileByToken;
-    const { user_name, name, description, likes, latest_readings, photo, password, email }: ProfileInterface = req.body;
+    const foundProfileByToken: ProfileInterfaceFull = res.locals.foundProfileByToken;
+    const { user_name, name, description, likes, latest_readings, photo, password, email }: ProfileInterfaceFull =
+      req.body;
     if (user_name !== foundProfileByToken.user_name && profiles.some((profile) => profile.user_name === user_name)) {
       return res.status(409).send({
         status: 409,
@@ -191,7 +192,7 @@ export default class ProfileController {
         },
       });
     }
-    const updatedProfile: ProfileInterface = {
+    const updatedProfile: ProfileInterfaceFull = {
       ...foundProfileByToken,
       user_name: user_name ?? foundProfileByToken.user_name.trim(),
       name: name ?? foundProfileByToken.name.trim(),
@@ -214,7 +215,7 @@ export default class ProfileController {
       .send({ status: 202, body: { message: 'profile changed successfully!', profile: updatedProfile } });
   }
   public static deleteProfile(req: Request, res: Response) {
-    const foundProfileByToken: ProfileInterface = res.locals.foundProfileByToken;
+    const foundProfileByToken: ProfileInterfaceFull = res.locals.foundProfileByToken;
     foundProfileByToken.user_name = '';
     foundProfileByToken.name = '';
     foundProfileByToken.description = '';
@@ -230,8 +231,8 @@ export default class ProfileController {
     return res.status(200).send({ status: 200, body: { message: 'User deleted successfully!' } });
   }
   public static resetPassword(req: Request, res: Response) {
-    const foundProfileByToken: ProfileInterface = res.locals.foundProfileByToken;
-    const { password }: ProfileInterface = req.body;
+    const foundProfileByToken: ProfileInterfaceFull = res.locals.foundProfileByToken;
+    const { password }: ProfileInterfaceFull = req.body;
     if (password.length < 6 || password.length > 45) {
       return res.status(400).send({
         status: 400,
