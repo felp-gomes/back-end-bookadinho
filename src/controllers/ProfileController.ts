@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import OAuth from '../models/OAuth';
-import { ProfileInterfaceFull } from '../interfaces/profile';
+import { ProfileInterfaceFull, ProfileInterfacePublic } from '../interfaces/profile';
 import profiles from '../mocks/profiles';
 
 import { validateProfileEmail } from '../utils/utils';
@@ -38,7 +38,13 @@ export default class ProfileController {
     }
   }
   public static listProfiles(req: Request, res: Response) {
-    const profileList = profiles.filter((profile) => profile.isActive);
+    const profileList: ProfileInterfacePublic[] = profiles.filter(
+      (profile: ProfileInterfacePublic & { authorizations?: string[]; password?: string }) => {
+        delete profile.authorizations;
+        delete profile.password;
+        return profile.isActive;
+      }
+    );
     return res.status(200).json({ status: 200, body: { message: 'ok', profiles: profileList } });
   }
   public static createProfile(req: Request, res: Response) {
