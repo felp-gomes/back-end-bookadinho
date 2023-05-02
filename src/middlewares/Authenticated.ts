@@ -8,9 +8,10 @@ export default class Authenticated {
     const authorizationProfile: string | undefined = req.headers.authorization;
     if (!authorizationProfile) {
       return res.status(401).send({
-        status: 401,
         body: {
-          message: 'authorizationProfile is required!',
+          status_code: 401,
+          status: 'fail',
+          message: 'AuthorizationProfile is required!',
         },
       });
     }
@@ -23,16 +24,16 @@ export default class Authenticated {
       );
       if (!foundProfileByToken) {
         return res.status(401).send({
-          status: 401,
-          body: { message: 'Profile not found!' },
+          body: { status_code: 401, status: 'fail', message: 'Profile not found!' },
         });
       }
       const { authorizations: tokensProfile }: { authorizations: string[] } = foundProfileByToken;
       const isValidToken = tokensProfile.some((token) => token === authorizationProfile);
       if (!isValidToken) {
         return res.status(401).send({
-          status: 401,
           body: {
+            status_code: 401,
+            status: 'fail',
             message: 'The token is not valid to perform operations!',
           },
         });
@@ -41,8 +42,7 @@ export default class Authenticated {
       next();
     } catch (error) {
       return res.status(400).send({
-        status: 400,
-        body: { message: error },
+        body: { status_code: 400, status: 'fail', message: error },
       });
     }
   }
