@@ -1,11 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
 import OAuth from '../models/OAuth';
 import profiles from '../mocks/profiles';
-import { ProfileInterfaceFull } from '../interfaces/profile';
+import authorizations from '../mocks/authorizations';
+import { ProfileInterface } from '../interfaces/profile';
 
 export default class Authenticated {
   public static verifyAuthenticated(req: Request, res: Response, next: NextFunction) {
-    const authorizationProfile: string | undefined = req.headers.authorization;
+    const authorizationProfile = req.headers.authorization;
     if (!authorizationProfile) {
       return res.status(401).send({
         body: {
@@ -19,23 +20,17 @@ export default class Authenticated {
       const decryptedToken = OAuth.verifyToken(authorizationProfile) as {
         id: string;
       };
-      const foundProfileByToken: ProfileInterfaceFull | undefined = profiles.find(
-        (profile) => profile.id === decryptedToken.id
-      );
-      if (!foundProfileByToken) {
+      if(authorizations[authorizationProfile] !== decryptedToken.id) {
         return res.status(401).send({
           body: { status_code: 401, status: 'fail', message: 'Profile not found!' },
         });
       }
-      const { authorizations: tokensProfile }: { authorizations: string[] } = foundProfileByToken;
-      const isValidToken = tokensProfile.some((token) => token === authorizationProfile);
-      if (!isValidToken) {
+      const foundProfileByToken: ProfileInterface | undefined = profiles.find(
+        (profile) => profile.id === decryptedToken.id
+      );
+      if (!foundProfileByToken) {
         return res.status(401).send({
-          body: {
-            status_code: 401,
-            status: 'fail',
-            message: 'The token is not valid to perform operations!',
-          },
+          body: { status_code: 401, status: 'fail', message: 'Profile not found, activate the support!' },
         });
       }
       res.locals.foundProfileByToken = foundProfileByToken;

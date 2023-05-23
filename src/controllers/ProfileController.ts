@@ -1,7 +1,8 @@
 import { Request, Response } from 'express';
 import OAuth from '../models/OAuth';
-import { ProfileInterfaceFull, ProfileInterfacePublic } from '../interfaces/profile';
+import { ProfileInterface } from '../interfaces/profile';
 import profiles from '../mocks/profiles';
+import authorizations from '../mocks/authorizations';
 
 import { validateProfileEmail } from '../utils/utils';
 
@@ -30,23 +31,22 @@ export default class ProfileController {
       });
     }
     try {
-      const tokenByProfile: string = OAuth.createToken({
+      const tokenProfile: string = OAuth.createToken({
         id: profiles[foundProfileIndex].id,
       });
-      profiles[foundProfileIndex].authorizations.push(tokenByProfile);
-      return res.status(200).send({ body: { status_code: 200, status: 'sucess', authorization: tokenByProfile } });
+      authorizations[tokenProfile] = profiles[foundProfileIndex].id
+      return res.status(200).send({ body: { status_code: 200, status: 'sucess', authorization: tokenProfile } });
     } catch (error) {
       return res.status(400).send({ body: { status_code: 400, status: 'fail', message: error } });
     }
   }
   public static listProfiles(req: Request, res: Response) {
-    const profileList: ProfileInterfacePublic[] = profiles.filter(
-      (profile: ProfileInterfacePublic & { authorizations?: string[]; password?: string }) => {
-        delete profile.authorizations;
-        delete profile.password;
-        return profile.isActive;
-      }
-    );
+    let profileList: any = []
+    for(const profile of profiles) {
+      if(!profile.isActive) continue
+      const { password, ...newProfile } = profile
+      profileList.push(newProfile)
+    }
     return res.status(200).json({ body: { status_cide: 200, status: 'sucess', profiles: profileList } });
   }
   public static createProfile(req: Request, res: Response) {
@@ -59,7 +59,7 @@ export default class ProfileController {
       photo = '',
       password,
       email,
-    }: ProfileInterfaceFull = req.body;
+    }: ProfileInterface = req.body;
     if (!user_name || !name || !password || !email) {
       return res.status(403).send({
         body: {
@@ -134,10 +134,10 @@ export default class ProfileController {
     }
     try {
       const indexProfile: number = profiles.length + 1;
-      const tokenByProfile: string = OAuth.createToken({
+      const tokenProfile: string = OAuth.createToken({
         id: String(indexProfile),
       });
-      const profile: ProfileInterfaceFull = {
+      const profile: ProfileInterface = {
         id: String(indexProfile),
         user_name: user_name.trim(),
         name: name.trim(),
@@ -148,17 +148,17 @@ export default class ProfileController {
         password: password.trim(),
         email: email.trim(),
         isActive: true,
-        authorizations: [tokenByProfile],
       };
+      authorizations[tokenProfile] = String(indexProfile)
       profiles.push(profile);
-      return res.status(201).send({ body: { status_code: 201, status: 'sucess', profile: profile } });
+      return res.status(201).send({ body: { status_code: 201, status: 'sucess', profile: profile, token: tokenProfile } });
     } catch (error) {
       return res.status(400).send({ body: { status_code: 400, status: 'fail', message: error } });
     }
   }
   public static editProfile(req: Request, res: Response) {
-    const foundProfileByToken: ProfileInterfaceFull = res.locals.foundProfileByToken;
-    const { user_name, name, description, likes, latest_readings, photo, password, email }: ProfileInterfaceFull =
+    const foundProfileByToken: ProfileInterface = res.locals.foundProfileByToken;
+    const { user_name, name, description, likes, latest_readings, photo, password, email }: ProfileInterface =
       req.body;
     if (user_name !== foundProfileByToken.user_name && profiles.some((profile) => profile.user_name === user_name)) {
       return res.status(409).send({
@@ -214,7 +214,8 @@ export default class ProfileController {
         },
       });
     }
-    const updatedProfile: ProfileInterfaceFull = {
+
+    const updatedProfile: ProfileInterface = {
       ...foundProfileByToken,
       user_name: user_name ?? foundProfileByToken.user_name.trim(),
       name: name ?? foundProfileByToken.name.trim(),
@@ -224,10 +225,14 @@ export default class ProfileController {
         latest_readings ?? foundProfileByToken.latest_readings.map((latestReadings) => latestReadings.trim()),
       photo: photo ?? foundProfileByToken.photo.trim(),
       password: password ?? foundProfileByToken.password.trim(),
-      authorizations: password ? [] : foundProfileByToken.authorizations,
       email: email ?? foundProfileByToken.email.trim(),
     };
     const foundProfileIndex = profiles.findIndex(({ id }) => id === updatedProfile.id);
+    for (const authorization in authorizations) {
+      if (Object.prototype.hasOwnProperty.call(authorizations, authorization) && password && authorizations[authorization] === updatedProfile.id) {
+        delete authorizations[authorization]
+      }
+    }
     profiles[foundProfileIndex] = updatedProfile;
     if (password) {
       return res
@@ -237,7 +242,7 @@ export default class ProfileController {
     return res.status(202).send({ body: { status_code: 202, status: 'sucess', profile: updatedProfile } });
   }
   public static deleteProfile(req: Request, res: Response) {
-    const foundProfileByToken: ProfileInterfaceFull = res.locals.foundProfileByToken;
+    const foundProfileByToken: ProfileInterface = res.locals.foundProfileByToken;
     foundProfileByToken.user_name = '';
     foundProfileByToken.name = '';
     foundProfileByToken.description = '';
@@ -245,18 +250,22 @@ export default class ProfileController {
     foundProfileByToken.password = '';
     foundProfileByToken.email = '';
     foundProfileByToken.isActive = false;
-    foundProfileByToken.authorizations = [];
     const foundProfileIndex = profiles.findIndex(({ id }) => {
       id === foundProfileByToken.id;
     });
+    for (const authorization in authorizations) {
+      if (Object.prototype.hasOwnProperty.call(authorizations, authorization) && authorizations[authorization] === profiles[foundProfileIndex].id) {
+        delete authorizations[authorization]
+      }
+    }
     profiles[foundProfileIndex] = foundProfileByToken;
     return res
       .status(200)
       .send({ body: { status_code: 200, status: 'sucess', message: 'User deleted successfully!' } });
   }
   public static resetPassword(req: Request, res: Response) {
-    const foundProfileByToken: ProfileInterfaceFull = res.locals.foundProfileByToken;
-    const { password }: ProfileInterfaceFull = req.body;
+    const foundProfileByToken: ProfileInterface = res.locals.foundProfileByToken;
+    const { password }: ProfileInterface = req.body;
     if (password.length < 6 || password.length > 45) {
       return res.status(403).send({
         body: {
@@ -267,8 +276,12 @@ export default class ProfileController {
       });
     }
     foundProfileByToken.password = password;
-    foundProfileByToken.authorizations = [];
     const foundProfileIndex = profiles.findIndex(({ id }) => id === foundProfileByToken.id);
+    for (const authorization in authorizations) {
+      if (Object.prototype.hasOwnProperty.call(authorizations, authorization) && password && authorizations[authorization] === profiles[foundProfileIndex].id) {
+        delete authorizations[authorization]
+      }
+    }
     profiles[foundProfileIndex] = foundProfileByToken;
     return res
       .status(202)

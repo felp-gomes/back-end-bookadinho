@@ -1,6 +1,6 @@
-import { ProfileInterfaceFull } from '../interfaces/profile';
+import { ProfileInterface } from '../interfaces/profile';
 
-const profiles: ProfileInterfaceFull[] = [
+const profiles: ProfileInterface[] = [
   {
     id: '0001',
     user_name: 'felipe.ogoms',
@@ -18,9 +18,6 @@ const profiles: ProfileInterfaceFull[] = [
     password: 'senha',
     email: 'felipe@bookadinho.com',
     isActive: true,
-    authorizations: [
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjAwMDEiLCJ1c2VyX25hbWUiOiJmZWxpcGUub2dvbXMiLCJpYXQiOjE2ODA4OTA3ODN9.oVKj9p86GK7OYg4OTCpKeuloa_A4gcIgjtAdRkXn2P4',
-    ],
   },
   {
     id: '0002',
@@ -33,7 +30,6 @@ const profiles: ProfileInterfaceFull[] = [
     password: '1234',
     email: 'guaranolas@bookadinho.com',
     isActive: true,
-    authorizations: [],
   },
   {
     id: '0003',
@@ -47,7 +43,6 @@ const profiles: ProfileInterfaceFull[] = [
     password: 'password',
     email: 'case@bookadinho.com',
     isActive: true,
-    authorizations: [],
   },
   {
     id: '0004',
@@ -60,9 +55,6 @@ const profiles: ProfileInterfaceFull[] = [
     password: 'pc',
     email: 'pc@bookadinho.com',
     isActive: true,
-    authorizations: [
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjAwMDQiLCJ1c2VyX25hbWUiOiJwYXVsYWN5bnRoaWEiLCJpYXQiOjE2ODA4OTA4MTh9.51hI5jJj2LOkB4kotF8C5MtLPJpTexVqEJza6OlIvMM',
-    ],
   },
 ];
 
