@@ -1,3 +1,3 @@
-type Authorization = { [key: string]: string } 
+type Authorization = { [key: string]: string };
 
-export default Authorization
+export default Authorization;

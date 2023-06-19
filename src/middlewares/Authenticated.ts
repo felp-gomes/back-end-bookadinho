@@ -20,7 +20,7 @@ export default class Authenticated {
       const decryptedToken = OAuth.verifyToken(authorizationProfile) as {
         id: string;
       };
-      if(authorizations[authorizationProfile] !== decryptedToken.id) {
+      if (authorizations[authorizationProfile] !== decryptedToken.id) {
         return res.status(401).send({
           body: { status_code: 401, status: 'fail', message: 'Profile not found!' },
         });

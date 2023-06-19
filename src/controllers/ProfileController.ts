@@ -34,18 +34,18 @@ export default class ProfileController {
       const tokenProfile: string = OAuth.createToken({
         id: profiles[foundProfileIndex].id,
       });
-      authorizations[tokenProfile] = profiles[foundProfileIndex].id
+      authorizations[tokenProfile] = profiles[foundProfileIndex].id;
       return res.status(200).send({ body: { status_code: 200, status: 'sucess', authorization: tokenProfile } });
     } catch (error) {
       return res.status(400).send({ body: { status_code: 400, status: 'fail', message: error } });
     }
   }
   public static listProfiles(req: Request, res: Response) {
-    let profileList: any = []
-    for(const profile of profiles) {
-      if(!profile.isActive) continue
-      const { password, ...newProfile } = profile
-      profileList.push(newProfile)
+    const profileList: any = [];
+    for (const profile of profiles) {
+      if (!profile.isActive) continue;
+      const { password, ...newProfile } = profile;
+      profileList.push(newProfile);
     }
     return res.status(200).json({ body: { status_cide: 200, status: 'sucess', profiles: profileList } });
   }
@@ -149,17 +149,18 @@ export default class ProfileController {
         email: email.trim(),
         isActive: true,
       };
-      authorizations[tokenProfile] = String(indexProfile)
+      authorizations[tokenProfile] = String(indexProfile);
       profiles.push(profile);
-      return res.status(201).send({ body: { status_code: 201, status: 'sucess', profile: profile, token: tokenProfile } });
+      return res
+        .status(201)
+        .send({ body: { status_code: 201, status: 'sucess', profile: profile, token: tokenProfile } });
     } catch (error) {
       return res.status(400).send({ body: { status_code: 400, status: 'fail', message: error } });
     }
   }
   public static editProfile(req: Request, res: Response) {
     const foundProfileByToken: ProfileInterface = res.locals.foundProfileByToken;
-    const { user_name, name, description, likes, latest_readings, photo, password, email }: ProfileInterface =
-      req.body;
+    const { user_name, name, description, likes, latest_readings, photo, password, email }: ProfileInterface = req.body;
     if (user_name !== foundProfileByToken.user_name && profiles.some((profile) => profile.user_name === user_name)) {
       return res.status(409).send({
         body: {
@@ -229,8 +230,8 @@ export default class ProfileController {
     };
     const foundProfileIndex = profiles.findIndex(({ id }) => id === updatedProfile.id);
     for (const authorization in authorizations) {
-      if (Object.prototype.hasOwnProperty.call(authorizations, authorization) && password && authorizations[authorization] === updatedProfile.id) {
-        delete authorizations[authorization]
+      if (password && authorizations[authorization] === updatedProfile.id) {
+        delete authorizations[authorization];
       }
     }
     profiles[foundProfileIndex] = updatedProfile;
@@ -250,12 +251,10 @@ export default class ProfileController {
     foundProfileByToken.password = '';
     foundProfileByToken.email = '';
     foundProfileByToken.isActive = false;
-    const foundProfileIndex = profiles.findIndex(({ id }) => {
-      id === foundProfileByToken.id;
-    });
+    const foundProfileIndex = profiles.findIndex(({ id }) => id === foundProfileByToken.id);
     for (const authorization in authorizations) {
-      if (Object.prototype.hasOwnProperty.call(authorizations, authorization) && authorizations[authorization] === profiles[foundProfileIndex].id) {
-        delete authorizations[authorization]
+      if (authorizations[authorization] === profiles[foundProfileIndex].id) {
+        delete authorizations[authorization];
       }
     }
     profiles[foundProfileIndex] = foundProfileByToken;
@@ -278,8 +277,8 @@ export default class ProfileController {
     foundProfileByToken.password = password;
     const foundProfileIndex = profiles.findIndex(({ id }) => id === foundProfileByToken.id);
     for (const authorization in authorizations) {
-      if (Object.prototype.hasOwnProperty.call(authorizations, authorization) && password && authorizations[authorization] === profiles[foundProfileIndex].id) {
-        delete authorizations[authorization]
+      if (password && authorizations[authorization] === profiles[foundProfileIndex].id) {
+        delete authorizations[authorization];
       }
     }
     profiles[foundProfileIndex] = foundProfileByToken;
