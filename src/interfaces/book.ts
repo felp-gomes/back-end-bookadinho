@@ -4,10 +4,10 @@ export default interface Book {
   author: string;
   description: string;
   photo: string;
-  isChange: boolean;
-  isRead: boolean;
+  is_change: boolean;
+  is_read: boolean;
   profile: {
     id: string;
-    userName: string;
+    user_name: string;
   };
 }

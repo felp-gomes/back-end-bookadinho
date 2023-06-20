@@ -7,11 +7,11 @@ const books: BookInterface[] = [
     author: 'William Gibson',
     description: 'The sky over the harbor was the color of television tuned to an offline channel.',
     photo: '/assets/neuromancer.png',
-    isChange: false,
-    isRead: false,
+    is_change: false,
+    is_read: false,
     profile: {
       id: '0001',
-      userName: 'felipe.ogoms',
+      user_name: 'felipe.ogoms',
     },
   },
   {
@@ -21,11 +21,11 @@ const books: BookInterface[] = [
     description:
       'Eu tinha visto primeiro o filme e tinha gostado bastante. Não sabia que existia o livro, mas quando eu li. Me apaixonei na mesma hora, foi incrível. É como se eu estivesse sentindo as mesmas emoções do personagem. Nunca fiquei tão animado para ler um livro.',
     photo: '/assets/jogadorN1.jpg',
-    isChange: false,
-    isRead: false,
+    is_change: false,
+    is_read: false,
     profile: {
       id: '0001',
-      userName: 'felipe.ogoms',
+      user_name: 'felipe.ogoms',
     },
   },
   {
@@ -35,11 +35,11 @@ const books: BookInterface[] = [
     description:
       'Um livro excelente para entender as nossas mentes e ações. E ter mais empatia sobre o que se pode passar na cabeça do coleguinha :)',
     photo: '/assets/turtles.jpg',
-    isChange: true,
-    isRead: false,
+    is_change: true,
+    is_read: false,
     profile: {
       id: '0001',
-      userName: 'felipe.ogoms',
+      user_name: 'felipe.ogoms',
     },
   },
   {
@@ -49,11 +49,11 @@ const books: BookInterface[] = [
     description:
       'O livro que me fez me sobre sair no estágio que trabalhei, era o único que tinha conhecimento sobre o clean code e padrões de projeto. Gostaria que outra pessoa também tivesse essa experiência.',
     photo: '/assets/cleancode.jpg',
-    isChange: false,
-    isRead: false,
+    is_change: false,
+    is_read: false,
     profile: {
       id: '0002',
-      userName: 'guaranolas',
+      user_name: 'guaranolas',
     },
   },
   {
@@ -63,11 +63,11 @@ const books: BookInterface[] = [
     description:
       'Extremamente intrigante do começo ao fim. Com uma construção de personagem esplêndida, você fica frisado e quer terminar o mais breve possível. Sem dúvidas uma das melhores leituras de 2022.',
     photo: '/assets/asExtraodinariasCoresDoAmanha.png',
-    isChange: false,
-    isRead: false,
+    is_change: false,
+    is_read: false,
     profile: {
       id: '0004',
-      userName: 'paulacynthia',
+      user_name: 'paulacynthia',
     },
   },
   {
@@ -77,11 +77,11 @@ const books: BookInterface[] = [
     description:
       'No início eu estava esperando um roteiro óbvio, mas depois que li o livro inteiro, me apaixonei! A história é muito boa, a escrita é melhor ainda, recomendo muito!!',
     photo: '/assets/rainhaVermelha.jpg',
-    isChange: false,
-    isRead: false,
+    is_change: false,
+    is_read: false,
     profile: {
       id: '0004',
-      userName: 'paulacynthia',
+      user_name: 'paulacynthia',
     },
   },
   {
@@ -91,11 +91,11 @@ const books: BookInterface[] = [
     description:
       'Harry Potter e a Pedra Filosofal foi um livro que me tirou da monotonia e me levou para um mundo esplêndido. Hoje, com cerca de 3 leituras acredito que ele mereça encontrar um novo potterhead!',
     photo: '/assets/harryPotter.png',
-    isChange: false,
-    isRead: false,
+    is_change: false,
+    is_read: false,
     profile: {
       id: '0004',
-      userName: 'paulacynthia',
+      user_name: 'paulacynthia',
     },
   },
 ];
