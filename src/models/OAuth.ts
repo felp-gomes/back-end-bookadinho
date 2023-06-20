@@ -1,8 +1,8 @@
-import jwt from 'jsonwebtoken';
+import { sign, verify } from 'jsonwebtoken';
 class WebToken {
   public static createToken(user: { id: string }) {
     try {
-      const token = jwt.sign(user, 'bola', {
+      const token = sign(user, 'bola', {
         algorithm: 'HS256',
       });
       return token;
@@ -13,7 +13,7 @@ class WebToken {
 
   public static verifyToken(token: string) {
     try {
-      const tokenInformation: unknown = jwt.verify(token, 'bola');
+      const tokenInformation: unknown = verify(token, 'bola');
       return tokenInformation;
     } catch (error) {
       throw `${error}`;
