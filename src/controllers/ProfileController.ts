@@ -41,7 +41,7 @@ export default class ProfileController {
     }
   }
   public static listProfiles(req: Request, res: Response) {
-    const profileList: any = [];
+    const profileList: unknown[] = [];
     for (const profile of profiles) {
       if (!profile.isActive) continue;
       const { password, ...newProfile } = profile;

@@ -1,13 +1,13 @@
-export default interface Book {
-  id: string;
+export interface BookInterface {
+  readonly id: string;
   name: string;
   author: string;
   description: string;
   photo: string;
-  isChange: boolean;
-  isRead: boolean;
-  profile: {
+  is_change: boolean;
+  is_read: boolean;
+  readonly profile: {
     id: string;
-    userName: string;
+    user_name: string;
   };
 }
