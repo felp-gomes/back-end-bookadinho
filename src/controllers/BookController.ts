@@ -129,10 +129,10 @@ export default class BookController {
     }
     const updatedBook: BookInterface = {
       ...books[foundBookIndex],
-      name: name ? name.trim() : books[foundBookIndex].name.trim(),
-      author: author ? author.trim() : books[foundBookIndex].author.trim(),
-      description: description ? description.trim() : books[foundBookIndex].description.trim(),
-      photo: photo ? photo.trim() : books[foundBookIndex].photo.trim(),
+      name: name ? name.trim() : books[foundBookIndex].name,
+      author: author ? author.trim() : books[foundBookIndex].author,
+      description: description ? description.trim() : books[foundBookIndex].description,
+      photo: photo ? photo.trim() : books[foundBookIndex].photo,
     };
     books[foundBookIndex] = updatedBook;
     return res.status(201).send({ body: { status_code: 201, status: 'sucess', book: updatedBook } });

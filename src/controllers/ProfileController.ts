@@ -206,7 +206,7 @@ export default class ProfileController {
         },
       });
     }
-    if (description && description.length > 250) {
+    if (description && (description.length < 1 || description.length > 250)) {
       return res.status(413).send({
         body: {
           status_code: 413,
@@ -218,15 +218,16 @@ export default class ProfileController {
 
     const updatedProfile: ProfileInterface = {
       ...foundProfileByToken,
-      user_name: user_name ?? foundProfileByToken.user_name.trim(),
-      name: name ?? foundProfileByToken.name.trim(),
-      description: description ?? foundProfileByToken.description.trim(),
-      likes: likes ?? foundProfileByToken.likes.map((like) => like.trim()),
-      latest_readings:
-        latest_readings ?? foundProfileByToken.latest_readings.map((latestReadings) => latestReadings.trim()),
-      photo: photo ?? foundProfileByToken.photo.trim(),
-      password: password ?? foundProfileByToken.password.trim(),
-      email: email ?? foundProfileByToken.email.trim(),
+      user_name: user_name ? user_name.trim() : foundProfileByToken.user_name,
+      name: name ? name.trim() : foundProfileByToken.name,
+      description: description ? description.trim() : foundProfileByToken.description,
+      likes: likes ? likes.map((like) => like) : foundProfileByToken.likes,
+      latest_readings: latest_readings
+        ? latest_readings.map((latestReadings) => latestReadings)
+        : foundProfileByToken.latest_readings,
+      photo: photo ? photo.trim() : foundProfileByToken.photo,
+      password: password ? password.trim() : foundProfileByToken.password,
+      email: email ? email.trim() : foundProfileByToken.email,
     };
     const foundProfileIndex = profiles.findIndex(({ id }) => id === updatedProfile.id);
     for (const authorization in authorizations) {
