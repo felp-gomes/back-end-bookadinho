@@ -69,4 +69,72 @@ export default class BookController {
     books.push(newBook);
     return res.status(201).send({ body: { status_code: 201, status: 'sucess', book: newBook } });
   }
+  static editBook(req: Request, res: Response) {
+    const bookEditId: string = req.params.id;
+    const { name, author, description, photo } = req.body;
+    if (name && (name.length < 1 || name.length > 256)) {
+      return res.status(403).send({
+        body: {
+          status_code: 403,
+          status: 'fail',
+          message: 'Name must be less than 256 characters!',
+        },
+      });
+    }
+    if (author && (author.length < 1 || author.length > 256)) {
+      return res.status(403).send({
+        body: {
+          status_code: 403,
+          status: 'fail',
+          message: 'Author must be less than 256 characters!',
+        },
+      });
+    }
+    if (description && (description.length < 1 || description.length > 256)) {
+      return res.status(403).send({
+        body: {
+          status_code: 403,
+          status: 'fail',
+          message: 'Description must be less than 256 characters!',
+        },
+      });
+    }
+    if (photo && photo.length < 1) {
+      return res.status(403).send({
+        body: {
+          status_code: 403,
+          status: 'fail',
+          message: 'Description must be down than 0 characters!',
+        },
+      });
+    }
+    if (!name && !author && !description && !photo) {
+      return res.status(403).send({
+        body: {
+          status_code: 403,
+          status: 'fail',
+          message: 'Someone name, author, description, photo and read if required!',
+        },
+      });
+    }
+    const foundBookIndex = books.findIndex(({ id }) => id === bookEditId);
+    if (foundBookIndex === -1) {
+      return res.status(403).send({
+        body: {
+          status_code: 404,
+          status: 'fail',
+          message: 'Book id not found!',
+        },
+      });
+    }
+    const updatedBook: BookInterface = {
+      ...books[foundBookIndex],
+      name: name ? name.trim() : books[foundBookIndex].name.trim(),
+      author: author ? author.trim() : books[foundBookIndex].author.trim(),
+      description: description ? description.trim() : books[foundBookIndex].description.trim(),
+      photo: photo ? photo.trim() : books[foundBookIndex].photo.trim(),
+    };
+    books[foundBookIndex] = updatedBook;
+    return res.status(201).send({ body: { status_code: 201, status: 'sucess', book: updatedBook } });
+  }
 }
