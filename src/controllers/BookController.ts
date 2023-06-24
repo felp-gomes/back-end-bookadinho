@@ -55,10 +55,10 @@ export default class BookController {
     }
     const newBook: BookInterface = {
       id: `${books.length + 1}`,
-      name,
-      author,
-      description,
-      photo,
+      name: name.trim(),
+      author: author.trim(),
+      description: description.trim(),
+      photo: photo.trim(),
       is_read,
       is_change: false,
       profile: {
