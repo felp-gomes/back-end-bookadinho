@@ -8,6 +8,7 @@ router
   .get('/books', BookController.listBooks)
   .get('/book/:id', BookController.listBookById)
   .post('/book', Authenticated.verifyAuthenticated, BookController.createBook)
-  .put('/book/:id', Authenticated.verifyAuthenticated, BookController.editBook);
+  .put('/book/:id', Authenticated.verifyAuthenticated, BookController.editBook)
+  .patch('/book/:id', Authenticated.verifyAuthenticated, BookController.readBook);
 
 export default router;

@@ -119,7 +119,7 @@ export default class BookController {
     }
     const foundBookIndex = books.findIndex(({ id }) => id === bookEditId);
     if (foundBookIndex === -1) {
-      return res.status(403).send({
+      return res.status(404).send({
         body: {
           status_code: 404,
           status: 'fail',
@@ -136,5 +136,20 @@ export default class BookController {
     };
     books[foundBookIndex] = updatedBook;
     return res.status(201).send({ body: { status_code: 201, status: 'sucess', book: updatedBook } });
+  }
+  static readBook(req: Request, res: Response) {
+    const bookEditId: string = req.params.id;
+    const foundBookIndex = books.findIndex(({ id }) => id === bookEditId);
+    if (foundBookIndex === -1) {
+      return res.status(404).send({
+        body: {
+          status_code: 404,
+          status: 'fail',
+          message: 'Book id not found!',
+        },
+      });
+    }
+    books[foundBookIndex].is_read = true;
+    return res.status(201).send({ body: { status_code: 201, status: 'sucess', book: books[foundBookIndex] } });
   }
 }
