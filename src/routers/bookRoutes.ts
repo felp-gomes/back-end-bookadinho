@@ -9,6 +9,7 @@ router
   .get('/book/:id', BookController.listBookById)
   .post('/book', Authenticated.verifyAuthenticated, BookController.createBook)
   .put('/book/:id', Authenticated.verifyAuthenticated, BookController.editBook)
-  .patch('/book/:id', Authenticated.verifyAuthenticated, BookController.readBook);
+  .patch('/book/read/:id', Authenticated.verifyAuthenticated, BookController.readBook)
+  .patch('/book/change/:id', Authenticated.verifyAuthenticated, BookController.changeBook);
 
 export default router;

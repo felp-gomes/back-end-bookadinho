@@ -5,7 +5,8 @@ import { BookInterface } from '../interfaces/book';
 
 export default class BookController {
   static listBooks(req: Request, res: Response) {
-    return res.status(202).send({ body: { status_code: 202, status: 'sucess', books } });
+    const booksNoChange = books.filter(({ is_change }) => is_change === false);
+    return res.status(202).send({ body: { status_code: 202, status: 'sucess', books: booksNoChange } });
   }
   static listBookById(req: Request, res: Response) {
     const idBook = req.params.id;
@@ -149,6 +150,15 @@ export default class BookController {
         },
       });
     }
+    if (books[foundBookIndex].is_read) {
+      return res.status(403).send({
+        body: {
+          status_code: 403,
+          status: 'fail',
+          message: 'Book is read!',
+        },
+      });
+    }
     books[foundBookIndex].is_read = true;
     return res.status(201).send({ body: { status_code: 201, status: 'sucess', book: books[foundBookIndex] } });
   }
@@ -161,6 +171,15 @@ export default class BookController {
           status_code: 404,
           status: 'fail',
           message: 'Book id not found!',
+        },
+      });
+    }
+    if (books[foundBookIndex].is_change) {
+      return res.status(403).send({
+        body: {
+          status_code: 403,
+          status: 'fail',
+          message: 'Book is change!',
         },
       });
     }
