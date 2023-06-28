@@ -10,6 +10,7 @@ router
   .post('/book', Authenticated.verifyAuthenticated, BookController.createBook)
   .put('/book/:id', Authenticated.verifyAuthenticated, BookController.editBook)
   .patch('/book/read/:id', Authenticated.verifyAuthenticated, BookController.readBook)
-  .patch('/book/change/:id', Authenticated.verifyAuthenticated, BookController.changeBook);
+  .patch('/book/change/:id', Authenticated.verifyAuthenticated, BookController.changeBook)
+  .delete('/book/:id', Authenticated.verifyAuthenticated, BookController.deleteBook);
 
 export default router;
