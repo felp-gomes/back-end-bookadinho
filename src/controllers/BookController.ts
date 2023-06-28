@@ -151,11 +151,11 @@ export default class BookController {
       });
     }
     if (books[foundBookIndex].is_read) {
-      return res.status(403).send({
+      return res.status(304).send({
         body: {
-          status_code: 403,
+          status_code: 304,
           status: 'fail',
-          message: 'Book is read!',
+          message: 'Book is already marked as read!',
         },
       });
     }
@@ -175,11 +175,11 @@ export default class BookController {
       });
     }
     if (books[foundBookIndex].is_change) {
-      return res.status(403).send({
+      return res.status(304).send({
         body: {
-          status_code: 403,
+          status_code: 304,
           status: 'fail',
-          message: 'Book is change!',
+          message: 'Book has already been changed!',
         },
       });
     }
