@@ -136,7 +136,7 @@ export default class BookController {
       photo: photo ? photo.trim() : books[foundBookIndex].photo,
     };
     books[foundBookIndex] = updatedBook;
-    return res.status(201).send({ body: { status_code: 201, status: 'sucess', book: updatedBook } });
+    return res.status(202).send({ body: { status_code: 202, status: 'sucess', book: updatedBook } });
   }
   static readBook(req: Request, res: Response) {
     const bookEditId: string = req.params.id;
@@ -160,7 +160,7 @@ export default class BookController {
       });
     }
     books[foundBookIndex].is_read = true;
-    return res.status(201).send({ body: { status_code: 201, status: 'sucess', book: books[foundBookIndex] } });
+    return res.status(202).send({ body: { status_code: 202, status: 'sucess', book: books[foundBookIndex] } });
   }
   static changeBook(req: Request, res: Response) {
     const bookEditId: string = req.params.id;
@@ -184,6 +184,6 @@ export default class BookController {
       });
     }
     books[foundBookIndex].is_change = true;
-    return res.status(201).send({ body: { status_code: 201, status: 'sucess', book: books[foundBookIndex] } });
+    return res.status(202).send({ body: { status_code: 202, status: 'sucess', book: books[foundBookIndex] } });
   }
 }
