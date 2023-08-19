@@ -11,6 +11,6 @@
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true
-  }
-  // "include": ["app/src/**/*"]
+  },
+  "include": ["src/**/*"]
 }
