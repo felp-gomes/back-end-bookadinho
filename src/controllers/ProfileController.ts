@@ -49,6 +49,14 @@ export default class ProfileController {
     }
     return res.status(200).json({ body: { status_cide: 200, status: 'sucess', profiles: profileList } });
   }
+  public static listProfilebyId(req: Request, res: Response) {
+    const idProfile = req.params.id;
+    const profileById = profiles.find((profile) => profile.id === idProfile);
+    if (!profileById)
+      return res.status(404).send({ body: { status_code: 404, status: 'fail', message: 'Not found profile by id!' } });
+    const { password, ...profile } = profileById;
+    return res.status(202).send({ body: { status_code: 202, status: 'sucess', book: profile } });
+  }
   public static createProfile(req: Request, res: Response) {
     const {
       user_name,
