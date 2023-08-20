@@ -4,7 +4,7 @@ A website aimed at sharing books and democratizing reading.
 
 ## Summary
 
-1. <a href="aboutproject">About project</a>
+1. <a href="#aboutproject">About project</a>
 2. <a href="#maintechnologies">Main technologies used in the project</a>
 3. <a href="#endpoints">Endpoints</a>
    1. <a href="#Route/profiles">Route /profiles</a>
