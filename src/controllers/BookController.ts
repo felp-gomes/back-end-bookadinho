@@ -13,7 +13,7 @@ export default class BookController {
     const bookById = books.find((book) => book.id === idBook);
     return bookById
       ? res.status(202).send({ body: { status_code: 202, status: 'sucess', book: bookById } })
-      : res.status(404).send({ body: { status_code: 404, status: 'sucess', message: 'Not found book by id!' } });
+      : res.status(404).send({ body: { status_code: 404, status: 'fail', message: 'Not found book by id!' } });
   }
   static createBook(req: Request, res: Response) {
     const foundProfileByToken: ProfileInterface = res.locals.foundProfileByToken;

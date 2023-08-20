@@ -6,6 +6,7 @@ const router = Router();
 
 router
   .get('/profiles', Authenticated.verifyAuthenticated, ProfileController.listProfiles)
+  .get('/profile/:id', Authenticated.verifyAuthenticated, ProfileController.listProfilesbyId)
   .post('/profile/authorization', ProfileController.authenticateProfile)
   .post('/profile', ProfileController.createProfile)
   .put('/profile', Authenticated.verifyAuthenticated, ProfileController.editProfile)
