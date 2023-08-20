@@ -1,8 +1,8 @@
-import { sign, verify } from 'jsonwebtoken';
+import Webtoken from 'jsonwebtoken';
 class WebToken {
   public static createToken(user: { id: string }) {
     try {
-      const token = sign(user, 'bola', {
+      const token = Webtoken.sign(user, 'bola', {
         algorithm: 'HS256',
       });
       return token;
@@ -13,7 +13,7 @@ class WebToken {
 
   public static verifyToken(token: string) {
     try {
-      const tokenInformation: unknown = verify(token, 'bola');
+      const tokenInformation: unknown = Webtoken.verify(token, 'bola');
       return tokenInformation;
     } catch (error) {
       throw `${error}`;

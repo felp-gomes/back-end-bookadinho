@@ -1,6 +1,6 @@
 import { json, Express, Request, Response } from 'express';
-import bookRoutes from './bookRoutes';
-import profileRoutes from './profileRoutes';
+import bookRoutes from './bookRoutes.js';
+import profileRoutes from './profileRoutes.js';
 
 const routes = (app: Express) => {
   app.route('/').get((req: Request, res: Response) => {

@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
-import OAuth from '../models/OAuth';
-import { ProfileInterface } from '../interfaces/profile';
-import profiles from '../mocks/profiles';
-import authorizations from '../mocks/authorizations';
+import OAuth from '../models/OAuth.js';
+import { ProfileInterface } from '../interfaces/profile.js';
+import profiles from '../mocks/profiles.js';
+import authorizations from '../mocks/authorizations.js';
 
-import { validateProfileEmail } from '../utils/utils';
+import { validateProfileEmail } from '../utils/utils.js';
 
 export default class ProfileController {
   public static authenticateProfile(req: Request, res: Response) {

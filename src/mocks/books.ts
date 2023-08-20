@@ -1,4 +1,4 @@
-import { BookInterface } from '../interfaces/book';
+import { BookInterface } from '../interfaces/book.js';
 
 const books: BookInterface[] = [
   {

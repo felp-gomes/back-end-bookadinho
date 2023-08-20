@@ -1,4 +1,4 @@
-import AuthorizationInterface from '../interfaces/authorization';
+import AuthorizationInterface from '../interfaces/authorization.js';
 
 const authorizations: AuthorizationInterface = {
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjAwMDEiLCJ1c2VyX25hbWUiOiJmZWxpcGUub2dvbXMiLCJpYXQiOjE2ODA4OTA3ODN9.oVKj9p86GK7OYg4OTCpKeuloa_A4gcIgjtAdRkXn2P4':

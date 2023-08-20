@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
-import OAuth from '../models/OAuth';
-import profiles from '../mocks/profiles';
-import authorizations from '../mocks/authorizations';
-import { ProfileInterface } from '../interfaces/profile';
+import OAuth from '../models/OAuth.js';
+import profiles from '../mocks/profiles.js';
+import authorizations from '../mocks/authorizations.js';
+import { ProfileInterface } from '../interfaces/profile.js';
 
 export default class Authenticated {
   public static verifyAuthenticated(req: Request, res: Response, next: NextFunction) {

@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import books from '../mocks/books';
-import { ProfileInterface } from '../interfaces/profile';
-import { BookInterface } from '../interfaces/book';
+import books from '../mocks/books.js';
+import { ProfileInterface } from '../interfaces/profile.js';
+import { BookInterface } from '../interfaces/book.js';
 
 export default class BookController {
   static listBooks(req: Request, res: Response) {
