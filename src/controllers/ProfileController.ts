@@ -49,7 +49,7 @@ export default class ProfileController {
     }
     return res.status(200).json({ body: { status_cide: 200, status: 'sucess', profiles: profileList } });
   }
-  public static listProfilesbyId(req: Request, res: Response) {
+  public static listProfilebyId(req: Request, res: Response) {
     const idProfile = req.params.id;
     const profileById = profiles.find((profile) => profile.id === idProfile);
     if (!profileById)
