@@ -2,11 +2,23 @@ import { Request, Response } from 'express';
 import books from '../mocks/books.js';
 import { ProfileInterface } from '../interfaces/profile.js';
 import { BookInterface } from '../interfaces/book.js';
+import { PrismaClient } from '@prisma/client';
 
 export default class BookController {
-  static listBooks(req: Request, res: Response) {
-    const booksNoChange = books.filter(({ is_change }) => is_change === false);
-    return res.status(202).send({ body: { status_code: 202, status: 'sucess', books: booksNoChange } });
+  static async listBooks(req: Request, res: Response) {
+    const prisma = new PrismaClient();
+    try {
+      const books = await prisma.books.findMany({
+        where: {
+          is_deleted: false,
+          is_changed: false,
+        },
+      });
+      return res.status(202).send({ body: { status_code: 202, status: 'sucess', books: books } });
+    } catch (error) {
+      console.debug(error);
+      return res.status(500).send({ body: { status_code: 500, status: 'fail', message: 'Internal server error!' } });
+    }
   }
   static listBookById(req: Request, res: Response) {
     const idBook = req.params.id;
