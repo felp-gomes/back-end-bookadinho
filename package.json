@@ -10,7 +10,7 @@
   "scripts": {
     "dev": "tsx watch ./src/bin/www/server.ts",
     "compile": "tsc",
-    "build": "node ./dist/src/bin/www/server.js",
+    "build": "node ./dist/bin/www/server.js",
     "watch": "tsc -w",
     "lint": "eslint ./src --ext .ts",
     "lint:fix": "eslint ./src --ext .ts --fix"
