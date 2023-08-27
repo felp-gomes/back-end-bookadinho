@@ -8,19 +8,20 @@ datasource db {
 }
 
 model Users {
-  id              String   @id @default(uuid())
-  user_name       String   @unique @db.VarChar(25)
-  name            String   @db.VarChar(45)
-  email           String   @unique
-  password        String   @db.VarChar(45)
-  description     String?  @db.VarChar(255)
-  likes           String[] @db.VarChar(125)
-  latest_readings String[] @db.VarChar(125)
+  id              String           @id @default(uuid())
+  user_name       String           @unique @db.VarChar(25)
+  name            String           @db.VarChar(45)
+  email           String           @unique
+  password        String           @db.VarChar(45)
+  description     String?          @db.VarChar(255)
+  likes           String[]         @db.VarChar(125)
+  latest_readings String[]         @db.VarChar(125)
   photo           String?
-  is_activated    Boolean  @default(true)
+  is_activated    Boolean          @default(true)
   Book            Books[]
-  created_at      DateTime @default(now())
-  updated_at      DateTime @updatedAt
+  authorizations  authorizations[]
+  created_at      DateTime         @default(now())
+  updated_at      DateTime         @updatedAt
 }
 
 model Books {
@@ -36,4 +37,12 @@ model Books {
   user        Users    @relation(fields: [user_id], references: [id])
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
+}
+
+model authorizations {
+  id         String   @id @unique
+  user_id    String
+  user       Users    @relation(fields: [user_id], references: [id])
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }
