@@ -4,12 +4,12 @@ import { ProfileInterface } from '../interfaces/profile.js';
 import { BookInterface } from '../interfaces/book.js';
 import { PrismaClient } from '@prisma/client';
 import { debugLogError } from '../utils/utils.js';
+const prismaBooks = new PrismaClient().books;
 
 export default class BookController {
   static async listBooks(req: Request, res: Response) {
-    const prisma = new PrismaClient();
     try {
-      const books = await prisma.books.findMany({
+      const books = await prismaBooks.findMany({
         where: {
           is_deleted: false,
           is_changed: false,
@@ -21,12 +21,22 @@ export default class BookController {
       return res.status(500).send({ body: { status_code: 500, status: 'fail', message: 'Internal server error!' } });
     }
   }
-  static listBookById(req: Request, res: Response) {
-    const idBook = req.params.id;
-    const bookById = books.find((book) => book.id === idBook);
-    return bookById
-      ? res.status(202).send({ body: { status_code: 202, status: 'sucess', book: bookById } })
-      : res.status(404).send({ body: { status_code: 404, status: 'fail', message: 'Not found book by id!' } });
+  static async listBookById(req: Request, res: Response) {
+    const { id: idBook } = req.params;
+    try {
+      const bookById = await prismaBooks.findUnique({
+        where: {
+          id: idBook,
+          is_deleted: false,
+        },
+      });
+      return bookById
+        ? res.status(202).send({ body: { status_code: 202, status: 'sucess', book: [bookById] } })
+        : res.status(404).send({ body: { status_code: 404, status: 'fail', message: 'Not found book by id!' } });
+    } catch (error) {
+      debugLogError('ERROR LISTBOOKBYID', error);
+      return res.status(500).send({ body: { status_code: 500, status: 'fail', message: 'Internal server error!' } });
+    }
   }
   static createBook(req: Request, res: Response) {
     const foundProfileByToken: ProfileInterface = res.locals.foundProfileByToken;
