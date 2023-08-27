@@ -3,6 +3,7 @@ import books from '../mocks/books.js';
 import { ProfileInterface } from '../interfaces/profile.js';
 import { BookInterface } from '../interfaces/book.js';
 import { PrismaClient } from '@prisma/client';
+import { debugLogError } from '../utils/utils.js';
 
 export default class BookController {
   static async listBooks(req: Request, res: Response) {
@@ -16,7 +17,7 @@ export default class BookController {
       });
       return res.status(202).send({ body: { status_code: 202, status: 'sucess', books: books } });
     } catch (error) {
-      console.debug(error);
+      debugLogError('ERROR LISTBOOKS', error);
       return res.status(500).send({ body: { status_code: 500, status: 'fail', message: 'Internal server error!' } });
     }
   }

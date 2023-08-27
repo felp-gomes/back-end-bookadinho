@@ -17,3 +17,9 @@ export function validateProfileEmail(email: string): boolean {
 
   return true;
 }
+
+export function debugLogError(message: string, information: Error) {
+  console.debug(`\x1b[34m[${message}]\x1b[0m`);
+  console.debug(information);
+  console.debug(`\x1b[34m[END INFORMATION]\x1b[0m`);
+}
