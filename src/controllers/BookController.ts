@@ -1,9 +1,11 @@
 import { Request, Response } from 'express';
+import { PrismaClient } from '@prisma/client';
+import { randomUUID } from 'node:crypto';
 import books from '../mocks/books.js';
 import { ProfileInterface } from '../interfaces/profile.js';
-import { BookInterface } from '../interfaces/book.js';
-import { PrismaClient } from '@prisma/client';
+import { BookValidation, BookInterface } from '../interfaces/book.js';
 import { debugLogError } from '../utils/utils.js';
+
 const prismaBooks = new PrismaClient().books;
 
 export default class BookController {
@@ -38,7 +40,7 @@ export default class BookController {
       return res.status(500).send({ body: { status_code: 500, status: 'fail', message: 'Internal server error!' } });
     }
   }
-  static createBook(req: Request, res: Response) {
+  static async createBook(req: Request, res: Response) {
     const foundProfileByToken: ProfileInterface = res.locals.foundProfileByToken;
     const { name, author, description, photo, is_read } = req.body;
     if (!name || !author || !description || typeof is_read !== 'boolean') {
@@ -50,48 +52,54 @@ export default class BookController {
         },
       });
     }
-    if (name.length > 256) {
-      return res.status(403).send({
-        body: {
-          status_code: 403,
-          status: 'fail',
-          message: 'Name must be less than 256 characters!',
+    try {
+      const validateDataBook = BookValidation.safeParse({
+        id: randomUUID(),
+        name: name,
+        author: author,
+        description: description,
+        photo: photo,
+        is_changed: false,
+        is_read: is_read,
+        is_deleted: false,
+        user_id: foundProfileByToken.id,
+      });
+      if (!validateDataBook?.success) {
+        throw validateDataBook.error;
+      }
+      const book: BookInterface = await prismaBooks.create({
+        data: {
+          ...validateDataBook.data,
         },
       });
+      return res.status(201).send({ body: { status_code: 201, status: 'sucess', book: book } });
+    } catch (error) {
+      debugLogError('ERROR CREATEBOOK', error);
+      if (error.name === 'PrismaClientValidationError') {
+        return res.status(400).send({
+          body: {
+            status_code: 400,
+            status: 'fail',
+            message: 'It was not possible to save to the database, check that you are passing all the data correctly!',
+          },
+        });
+      }
+      if (error.name === 'ZodError') {
+        const { errors } = error;
+        let messageError = '';
+        errors.forEach(
+          (error: { path: Array<1>; message: string }) =>
+            (messageError += `The parameter \\${error.path[0]}\\ ${error.message};\n`)
+        );
+        return res.status(400).send({
+          body: {
+            status_code: 400,
+            status: 'fail',
+            message: messageError,
+          },
+        });
+      }
     }
-    if (author.length > 256) {
-      return res.status(403).send({
-        body: {
-          status_code: 403,
-          status: 'fail',
-          message: 'Author must be less than 256 characters!',
-        },
-      });
-    }
-    if (description.length > 256) {
-      return res.status(403).send({
-        body: {
-          status_code: 403,
-          status: 'fail',
-          message: 'Description must be less than 256 characters!',
-        },
-      });
-    }
-    const newBook: BookInterface = {
-      id: `${books.length + 1}`,
-      name: name.trim(),
-      author: author.trim(),
-      description: description.trim(),
-      photo: photo.trim(),
-      is_read,
-      is_change: false,
-      profile: {
-        id: foundProfileByToken.id,
-        user_name: foundProfileByToken.user_name,
-      },
-    };
-    books.push(newBook);
-    return res.status(201).send({ body: { status_code: 201, status: 'sucess', book: newBook } });
   }
   static editBook(req: Request, res: Response) {
     const bookEditId: string = req.params.id;
@@ -197,7 +205,7 @@ export default class BookController {
         },
       });
     }
-    if (books[foundBookIndex].is_change) {
+    if (books[foundBookIndex].is_changed) {
       return res.status(304).send({
         body: {
           status_code: 304,
@@ -206,7 +214,7 @@ export default class BookController {
         },
       });
     }
-    books[foundBookIndex].is_change = true;
+    books[foundBookIndex].is_changed = true;
     return res.status(202).send({ body: { status_code: 202, status: 'sucess', book: books[foundBookIndex] } });
   }
   static deleteBook(req: Request, res: Response) {
