@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client';
 import { randomUUID } from 'node:crypto';
 import books from '../mocks/books.js';
 import { ProfileInterface } from '../interfaces/profile.js';
-import { BookValidation, BookInterface } from '../interfaces/book.js';
+import { BookValidation, BookType } from '../interfaces/book.js';
 import { debugLogError } from '../utils/utils.js';
 
 const prismaBooks = new PrismaClient().books;
@@ -67,7 +67,7 @@ export default class BookController {
       if (!validateDataBook?.success) {
         throw validateDataBook.error;
       }
-      const book: BookInterface = await prismaBooks.create({
+      const book: BookType = await prismaBooks.create({
         data: {
           ...validateDataBook.data,
         },
@@ -159,7 +159,7 @@ export default class BookController {
         },
       });
     }
-    const updatedBook: BookInterface = {
+    const updatedBook: BookType = {
       ...books[foundBookIndex],
       name: name ? name.trim() : books[foundBookIndex].name,
       author: author ? author.trim() : books[foundBookIndex].author,
