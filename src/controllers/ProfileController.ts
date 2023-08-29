@@ -35,7 +35,7 @@ export default class ProfileController {
         id: profiles[foundProfileIndex].id,
       });
       authorizations[tokenProfile] = profiles[foundProfileIndex].id;
-      return res.status(200).send({ body: { status_code: 200, status: 'sucess', authorization: tokenProfile } });
+      return res.status(200).send({ body: { status_code: 200, status: 'success', authorization: tokenProfile } });
     } catch (error) {
       return res.status(400).send({ body: { status_code: 400, status: 'fail', message: error } });
     }
@@ -47,7 +47,7 @@ export default class ProfileController {
       const { password, ...newProfile } = profile;
       profileList.push(newProfile);
     }
-    return res.status(200).json({ body: { status_cide: 200, status: 'sucess', profiles: profileList } });
+    return res.status(200).json({ body: { status_cide: 200, status: 'success', profiles: profileList } });
   }
   public static listProfilebyId(req: Request, res: Response) {
     const idProfile = req.params.id;
@@ -55,7 +55,7 @@ export default class ProfileController {
     if (!profileById)
       return res.status(404).send({ body: { status_code: 404, status: 'fail', message: 'Not found profile by id!' } });
     const { password, ...profile } = profileById;
-    return res.status(202).send({ body: { status_code: 202, status: 'sucess', book: profile } });
+    return res.status(202).send({ body: { status_code: 202, status: 'success', book: profile } });
   }
   public static createProfile(req: Request, res: Response) {
     const {
@@ -161,7 +161,7 @@ export default class ProfileController {
       profiles.push(profile);
       return res
         .status(201)
-        .send({ body: { status_code: 201, status: 'sucess', profile: profile, token: tokenProfile } });
+        .send({ body: { status_code: 201, status: 'success', profile: profile, token: tokenProfile } });
     } catch (error) {
       return res.status(400).send({ body: { status_code: 400, status: 'fail', message: error } });
     }
@@ -247,9 +247,9 @@ export default class ProfileController {
     if (password) {
       return res
         .status(202)
-        .send({ body: { status_code: 202, status: 'sucess', message: 'Profile changed successfully!' } });
+        .send({ body: { status_code: 202, status: 'success', message: 'Profile changed successfully!' } });
     }
-    return res.status(202).send({ body: { status_code: 202, status: 'sucess', profile: updatedProfile } });
+    return res.status(202).send({ body: { status_code: 202, status: 'success', profile: updatedProfile } });
   }
   public static deleteProfile(req: Request, res: Response) {
     const foundProfileByToken: ProfileInterface = res.locals.foundProfileByToken;
@@ -269,7 +269,7 @@ export default class ProfileController {
     profiles[foundProfileIndex] = foundProfileByToken;
     return res
       .status(200)
-      .send({ body: { status_code: 200, status: 'sucess', message: 'User deleted successfully!' } });
+      .send({ body: { status_code: 200, status: 'success', message: 'User deleted successfully!' } });
   }
   public static resetPassword(req: Request, res: Response) {
     const foundProfileByToken: ProfileInterface = res.locals.foundProfileByToken;
@@ -293,6 +293,6 @@ export default class ProfileController {
     profiles[foundProfileIndex] = foundProfileByToken;
     return res
       .status(202)
-      .send({ body: { status_code: 202, status: 'sucess', message: 'Change changed successfully!' } });
+      .send({ body: { status_code: 202, status: 'success', message: 'Change changed successfully!' } });
   }
 }

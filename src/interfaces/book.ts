@@ -16,7 +16,7 @@ export const BookValidation = z.object({
     .string()
     .trim()
     .min(4, { message: 'must be at least 4 characters long' })
-    .max(45, { message: 'Must be a maximum of 45 characters' }),
+    .max(255, { message: 'Must be a maximum of 45 characters' }),
   photo: z.string().trim().url().nullable(),
   is_changed: z.boolean(),
   is_read: z.boolean(),
