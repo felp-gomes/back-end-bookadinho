@@ -182,29 +182,41 @@ export default class BookController {
       });
     }
   }
-  static readBook(req: Request, res: Response) {
-    const bookEditId: string = req.params.id;
-    const foundBookIndex = books.findIndex(({ id }) => id === bookEditId);
-    if (foundBookIndex === -1) {
-      return res.status(404).send({
+  static async readBook(req: Request, res: Response) {
+    const { id: bookEditId } = req.params;
+    try {
+      const foundBookById = await prismaBooks.findUnique({
+        where: {
+          id: bookEditId,
+        },
+      });
+      if (!foundBookById) {
+        return res.status(404).send({
+          body: {
+            status_code: 404,
+            status: 'fail',
+            message: 'Book id not found!',
+          },
+        });
+      }
+      const updatedBookById = await prismaBooks.update({
+        where: {
+          id: bookEditId,
+        },
+        data: {
+          is_read: !foundBookById.is_read,
+        },
+      });
+      return res.status(202).send({ body: { status_code: 202, status: 'success', book: updatedBookById } });
+    } catch (error) {
+      return res.status(500).send({
         body: {
-          status_code: 404,
+          status_code: 500,
           status: 'fail',
-          message: 'Book id not found!',
+          message: 'The request could not be completed!',
         },
       });
     }
-    if (books[foundBookIndex].is_read) {
-      return res.status(304).send({
-        body: {
-          status_code: 304,
-          status: 'fail',
-          message: 'Book is already marked as read!',
-        },
-      });
-    }
-    books[foundBookIndex].is_read = true;
-    return res.status(202).send({ body: { status_code: 202, status: 'success', book: books[foundBookIndex] } });
   }
   static changeBook(req: Request, res: Response) {
     const bookEditId: string = req.params.id;
