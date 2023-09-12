@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { randomUUID } from 'node:crypto';
-import books from '../mocks/books.js';
 import { ProfileInterface } from '../interfaces/profile.js';
 import { BookValidation, BookType } from '../interfaces/book.js';
 import { debugLogError } from '../utils/utils.js';
@@ -254,19 +253,33 @@ export default class BookController {
       });
     }
   }
-  static deleteBook(req: Request, res: Response) {
-    const bookEditId: string = req.params.id;
-    const foundBookIndex = books.findIndex(({ id }) => id === bookEditId);
-    if (foundBookIndex === -1) {
-      return res.status(404).send({
+  static async deleteBook(req: Request, res: Response) {
+    const { id: bookEditId } = req.params;
+
+    try {
+      await prismaBooks.delete({
+        where: {
+          id: bookEditId,
+        },
+      });
+      return res.status(202).send({ body: { status_code: 202, status: 'success', message: 'Book deleted!' } });
+    } catch (error) {
+      if (error.code === 'P2025') {
+        return res.status(404).send({
+          body: {
+            status_code: 404,
+            status: 'fail',
+            message: 'Book id not found!',
+          },
+        });
+      }
+      return res.status(500).send({
         body: {
-          status_code: 404,
+          status_code: 500,
           status: 'fail',
-          message: 'Book id not found!',
+          message: 'The request could not be completed!',
         },
       });
     }
-    books.splice(foundBookIndex, 1);
-    return res.status(202).send({ body: { status_code: 202, status: 'success', message: 'Book deleted!' } });
   }
 }
