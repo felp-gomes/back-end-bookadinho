@@ -8,11 +8,11 @@ datasource db {
 }
 
 model Users {
-  id              String           @id @default(uuid())
+  id              String           @id @unique @default(uuid())
   user_name       String           @unique @db.VarChar(25)
   name            String           @db.VarChar(45)
   email           String           @unique
-  password        String           @db.VarChar(45)
+  password        String           @db.VarChar(64)
   description     String?          @db.VarChar(255)
   likes           String[]         @db.VarChar(125)
   latest_readings String[]         @db.VarChar(125)
