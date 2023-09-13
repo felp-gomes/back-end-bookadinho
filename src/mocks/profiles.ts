@@ -2,7 +2,7 @@ import { ProfileInterface } from '../interfaces/profile.js';
 
 const profiles: ProfileInterface[] = [
   {
-    id: '0001',
+    id: 'ba7943b6-c15f-43c6-b4fa-9600fbc50e40',
     user_name: 'felipe.ogoms',
     name: 'Felipe Gomes',
     description: 'The sky over the harbor was the color of television tuned to an offline channel.',
