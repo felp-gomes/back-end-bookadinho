@@ -54,7 +54,7 @@ export default class ProfileController {
       return res.status(500).send({ body: { status_code: 500, status: 'fail', message: 'Internal error!' } });
     }
   }
-  public static listProfiles(req: Request, res: Response) {
+  public static async listProfiles(req: Request, res: Response) {
     const profileList: unknown[] = [];
     for (const profile of profiles) {
       if (!profile.isActive) continue;

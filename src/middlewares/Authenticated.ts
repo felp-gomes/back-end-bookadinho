@@ -1,11 +1,14 @@
 import { Request, Response, NextFunction } from 'express';
+import { PrismaClient } from '@prisma/client';
+import moment from 'moment';
+
 import OAuth from '../models/OAuth.js';
-import profiles from '../mocks/profiles.js';
-import authorizations from '../mocks/authorizations.js';
-import { UserType } from '../interfaces/user.js';
+
+const prismaUsers = new PrismaClient().users;
+const prismaAuthorizations = new PrismaClient().authorizations;
 
 export default class Authenticated {
-  public static verifyAuthenticated(req: Request, res: Response, next: NextFunction) {
+  public static async verifyAuthenticated(req: Request, res: Response, next: NextFunction) {
     const authorizationProfile = req.headers.authorization;
     if (!authorizationProfile) {
       return res.status(401).send({
@@ -17,21 +20,27 @@ export default class Authenticated {
       });
     }
     try {
-      const decryptedToken = OAuth.verifyToken(authorizationProfile) as {
-        id: string;
-      };
-      if (authorizations[authorizationProfile] !== decryptedToken.id) {
+      const { id = '', iat } = OAuth.verifyToken(authorizationProfile) as { id: string; iat: number };
+      const dateUnixtime = moment(iat, 'X').format();
+      const dateTowDaysLater = moment().add(2, 'day').format();
+      const isValidateTimeToken = moment(dateUnixtime).isBefore(dateTowDaysLater);
+      if (!isValidateTimeToken) {
         return res.status(401).send({
-          body: { status_code: 401, status: 'fail', message: 'Profile not found!' },
+          body: { status_code: 401, status: 'fail', message: 'Token expired, please log in again!' },
         });
       }
-      const foundProfileByToken: UserType | undefined = profiles.find((profile) => profile.id === decryptedToken.id);
-      if (!foundProfileByToken) {
-        return res.status(401).send({
-          body: { status_code: 401, status: 'fail', message: 'Profile not found, activate the support!' },
+      const foundToken = await prismaAuthorizations.findUnique({ where: { id: authorizationProfile } });
+      if (!foundToken) {
+        return res.status(404).send({
+          body: { status_code: 404, status: 'fail', message: 'Token not found!' },
         });
       }
-      res.locals.foundProfileByToken = foundProfileByToken;
+      const foundUserbyId = await prismaUsers.findUnique({
+        where: {
+          id,
+        },
+      });
+      res.locals.foundProfileByToken = foundUserbyId;
       next();
     } catch (error) {
       return res.status(400).send({
