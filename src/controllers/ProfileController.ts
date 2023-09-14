@@ -1,13 +1,17 @@
 import { Request, Response } from 'express';
-import OAuth from '../models/OAuth.js';
-import { ProfileInterface } from '../interfaces/profile.js';
+import { PrismaClient } from '@prisma/client';
+import { UserType } from '../interfaces/user.js';
 import profiles from '../mocks/profiles.js';
 import authorizations from '../mocks/authorizations.js';
-
+import OAuth from '../models/OAuth.js';
 import { validateProfileEmail } from '../utils/utils.js';
+import moment from 'moment';
+
+const prismaUsers = new PrismaClient().users;
+const prismaAuthorizations = new PrismaClient().authorizations;
 
 export default class ProfileController {
-  public static authenticateProfile(req: Request, res: Response) {
+  public static async authenticateProfile(req: Request, res: Response) {
     const { user_name, password }: { user_name: string; password: string } = req.body;
     if (!user_name || !password) {
       return res.status(403).send({
@@ -18,10 +22,13 @@ export default class ProfileController {
         },
       });
     }
-    const foundProfileIndex = profiles.findIndex(
-      (profile) => profile.user_name === user_name && profile.password === password
-    );
-    if (foundProfileIndex === -1) {
+    const findUser = await prismaUsers.findUnique({
+      where: {
+        user_name,
+        password,
+      },
+    });
+    if (!findUser) {
       return res.status(401).send({
         body: {
           status_code: 401,
@@ -31,13 +38,20 @@ export default class ProfileController {
       });
     }
     try {
-      const tokenProfile: string = OAuth.createToken({
-        id: profiles[foundProfileIndex].id,
+      const timeUnix = moment().unix();
+      const tokenUser: string = OAuth.createToken({
+        id: findUser.id,
+        timesTamp: timeUnix,
       });
-      authorizations[tokenProfile] = profiles[foundProfileIndex].id;
-      return res.status(200).send({ body: { status_code: 200, status: 'success', authorization: tokenProfile } });
+      await prismaAuthorizations.create({
+        data: {
+          id: tokenUser,
+          user_id: findUser.id,
+        },
+      });
+      return res.status(200).send({ body: { status_code: 200, status: 'success', authorization: tokenUser } });
     } catch (error) {
-      return res.status(400).send({ body: { status_code: 400, status: 'fail', message: error } });
+      return res.status(500).send({ body: { status_code: 500, status: 'fail', message: 'Internal error!' } });
     }
   }
   public static listProfiles(req: Request, res: Response) {
@@ -67,7 +81,7 @@ export default class ProfileController {
       photo = '',
       password,
       email,
-    }: ProfileInterface = req.body;
+    }: UserType = req.body;
     if (!user_name || !name || !password || !email) {
       return res.status(403).send({
         body: {
@@ -145,17 +159,17 @@ export default class ProfileController {
       const tokenProfile: string = OAuth.createToken({
         id: String(indexProfile),
       });
-      const profile: ProfileInterface = {
+      const profile: UserType = {
         id: String(indexProfile),
         user_name: user_name.trim(),
         name: name.trim(),
-        description: description.trim(),
+        description: description ? description.trim() : null,
         likes: likes.map((like) => like.trim()),
         latest_readings: latest_readings.map((latestReadings) => latestReadings.trim()),
-        photo: photo.trim(),
+        photo: photo ? photo.trim() : null,
         password: password.trim(),
         email: email.trim(),
-        isActive: true,
+        is_activated: true,
       };
       authorizations[tokenProfile] = String(indexProfile);
       profiles.push(profile);
@@ -167,8 +181,8 @@ export default class ProfileController {
     }
   }
   public static editProfile(req: Request, res: Response) {
-    const foundProfileByToken: ProfileInterface = res.locals.foundProfileByToken;
-    const { user_name, name, description, likes, latest_readings, photo, password, email }: ProfileInterface = req.body;
+    const foundProfileByToken: UserType = res.locals.foundProfileByToken;
+    const { user_name, name, description, likes, latest_readings, photo, password, email }: UserType = req.body;
     if (user_name !== foundProfileByToken.user_name && profiles.some((profile) => profile.user_name === user_name)) {
       return res.status(409).send({
         body: {
@@ -224,7 +238,7 @@ export default class ProfileController {
       });
     }
 
-    const updatedProfile: ProfileInterface = {
+    const updatedProfile: UserType = {
       ...foundProfileByToken,
       user_name: user_name ? user_name.trim() : foundProfileByToken.user_name,
       name: name ? name.trim() : foundProfileByToken.name,
@@ -252,7 +266,7 @@ export default class ProfileController {
     return res.status(202).send({ body: { status_code: 202, status: 'success', profile: updatedProfile } });
   }
   public static deleteProfile(req: Request, res: Response) {
-    const foundProfileByToken: ProfileInterface = res.locals.foundProfileByToken;
+    const foundProfileByToken: UserType = res.locals.foundProfileByToken;
     foundProfileByToken.user_name = '';
     foundProfileByToken.name = '';
     foundProfileByToken.description = '';
@@ -272,8 +286,8 @@ export default class ProfileController {
       .send({ body: { status_code: 200, status: 'success', message: 'User deleted successfully!' } });
   }
   public static resetPassword(req: Request, res: Response) {
-    const foundProfileByToken: ProfileInterface = res.locals.foundProfileByToken;
-    const { password }: ProfileInterface = req.body;
+    const foundProfileByToken: UserType = res.locals.foundProfileByToken;
+    const { password }: UserType = req.body;
     if (password.length < 6 || password.length > 45) {
       return res.status(403).send({
         body: {

@@ -1,6 +1,6 @@
-import { ProfileInterface } from '../interfaces/profile.js';
+import { UserType } from '../interfaces/user.js';
 
-const profiles: ProfileInterface[] = [
+const profiles: UserType[] = [
   {
     id: 'ba7943b6-c15f-43c6-b4fa-9600fbc50e40',
     user_name: 'felipe.ogoms',
@@ -17,44 +17,19 @@ const profiles: ProfileInterface[] = [
       'https://instagram.ffor29-1.fna.fbcdn.net/v/t51.2885-19/151841773_141305464507911_2460237208396643498_n.jpg?stp=dst-jpg_s150x150',
     password: 'senha',
     email: 'felipe@bookadinho.com',
-    isActive: true,
+    is_activated: true,
   },
   {
-    id: '0002',
-    name: 'Guarany',
-    user_name: 'guaranolas',
-    description: 'Programador e tranquilo com a vida',
-    likes: ['Computador', 'Jogos', 'Animes', 'Séries'],
-    latest_readings: ['Clean code', 'Algoritmos na prática'],
-    photo: 'https://thispersondoesnotexist.com/image',
-    password: '1234',
-    email: 'guaranolas@bookadinho.com',
-    isActive: true,
-  },
-  {
-    id: '0003',
-    name: 'Carlos',
-    user_name: 'case',
-    description:
-      'Apaixonado por livros e arquitetura. 📷 Gosto de tirar fotos em prédios antigos e abandonas. Amo ver a paisagem do urbana do topo de um prédio!',
-    likes: ['Fotografia', 'Livros', 'Urbanismo', 'Animes'],
-    latest_readings: ['A arte de projetar em arquitetura'],
-    photo: '',
-    password: 'password',
-    email: 'case@bookadinho.com',
-    isActive: true,
-  },
-  {
-    id: '0004',
+    id: 'ff8977a1-990f-49de-88cf-f7f6953ff262',
     name: 'Cynthia',
     user_name: 'paulacynthia',
     description: 'Desenvolvedora front-end e leitora nas horas vagas',
     likes: ['Animes', 'Livros', 'Música', 'Tecnologia'],
     latest_readings: ['As extraordinárias cores do amanhã', 'Rainha Vermelha', 'Até a próxima estrela'],
-    photo: '',
+    photo: null,
     password: 'pc',
     email: 'pc@bookadinho.com',
-    isActive: true,
+    is_activated: true,
   },
 ];
 

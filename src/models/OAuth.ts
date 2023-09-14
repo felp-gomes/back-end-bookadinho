@@ -1,6 +1,6 @@
 import Webtoken from 'jsonwebtoken';
 class WebToken {
-  public static createToken(user: { id: string }) {
+  public static createToken(user: { id: string; timesTamp: number }) {
     try {
       const token = Webtoken.sign(user, 'bola', {
         algorithm: 'HS256',

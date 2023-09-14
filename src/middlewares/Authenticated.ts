@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import OAuth from '../models/OAuth.js';
 import profiles from '../mocks/profiles.js';
 import authorizations from '../mocks/authorizations.js';
-import { ProfileInterface } from '../interfaces/profile.js';
+import { UserType } from '../interfaces/user.js';
 
 export default class Authenticated {
   public static verifyAuthenticated(req: Request, res: Response, next: NextFunction) {
@@ -25,9 +25,7 @@ export default class Authenticated {
           body: { status_code: 401, status: 'fail', message: 'Profile not found!' },
         });
       }
-      const foundProfileByToken: ProfileInterface | undefined = profiles.find(
-        (profile) => profile.id === decryptedToken.id
-      );
+      const foundProfileByToken: UserType | undefined = profiles.find((profile) => profile.id === decryptedToken.id);
       if (!foundProfileByToken) {
         return res.status(401).send({
           body: { status_code: 401, status: 'fail', message: 'Profile not found, activate the support!' },
