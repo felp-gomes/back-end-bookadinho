@@ -1,11 +1,12 @@
 import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
-import { UserType } from '../interfaces/user.js';
+import { UserType, UserValidation } from '../interfaces/user.js';
 import profiles from '../mocks/profiles.js';
 import authorizations from '../mocks/authorizations.js';
 import OAuth from '../models/OAuth.js';
 import { validateProfileEmail } from '../utils/utils.js';
 import moment from 'moment';
+import { randomUUID } from 'node:crypto';
 
 const prismaUsers = new PrismaClient().users;
 const prismaAuthorizations = new PrismaClient().authorizations;
@@ -82,136 +83,138 @@ export default class ProfileController {
   }
   public static async listProfilebyId(req: Request, res: Response) {
     const { id: userId } = req.params;
-    const userById = await prismaUsers.findUnique({
-      where: {
-        id: userId,
-      },
-      select: {
-        id: true,
-        user_name: true,
-        name: true,
-        email: true,
-        password: false,
-        description: true,
-        likes: true,
-        latest_readings: true,
-        photo: true,
-        is_activated: true,
-        created_at: true,
-        updated_at: true,
-      },
-    });
-    if (!userById)
-      return res.status(404).send({ body: { status_code: 404, status: 'fail', message: 'Not found user by id!' } });
-    return res.status(202).send({ body: { status_code: 202, status: 'success', profile: userById } });
+    try {
+      const userById = await prismaUsers.findUnique({
+        where: {
+          id: userId,
+        },
+        select: {
+          id: true,
+          user_name: true,
+          name: true,
+          email: true,
+          password: false,
+          description: true,
+          likes: true,
+          latest_readings: true,
+          photo: true,
+          is_activated: true,
+          created_at: true,
+          updated_at: true,
+        },
+      });
+      if (!userById)
+        return res.status(404).send({ body: { status_code: 404, status: 'fail', message: 'Not found user by id!' } });
+      return res.status(202).send({ body: { status_code: 202, status: 'success', profile: userById } });
+    } catch (error) {
+      return res.status(500).send({ body: { status_code: 500, status: 'fail', message: 'Internal error!' } });
+    }
   }
-  public static createProfile(req: Request, res: Response) {
+  public static async createProfile(req: Request, res: Response) {
     const {
       user_name,
       name,
-      description = '',
+      description = null,
       likes = [],
       latest_readings = [],
-      photo = '',
+      photo = null,
       password,
       email,
     }: UserType = req.body;
-    if (!user_name || !name || !password || !email) {
-      return res.status(403).send({
-        body: {
-          status_code: 401,
-          status: 'fail',
-          message: 'User name, name, password and email if required!',
+    try {
+      const isUserAlready = await prismaUsers.findMany({
+        where: {
+          OR: [
+            {
+              user_name: {
+                contains: user_name,
+              },
+            },
+            {
+              email: {
+                contains: email,
+              },
+            },
+          ],
         },
       });
-    }
-    if (profiles.some((profile) => profile.user_name === user_name)) {
-      return res.status(409).send({
-        body: {
-          status_code: 409,
-          status: 'fail',
-          message: 'Username is already in use!',
-        },
-      });
-    }
-    if (profiles.some((profile) => profile.email === email)) {
-      return res.status(409).send({
-        body: {
-          status_code: 409,
-          status: 'fail',
-          message: 'Email is already in use!',
-        },
-      });
-    }
-    if (user_name.length < 4 || user_name.length > 20) {
-      return res.status(403).send({
-        body: {
-          status_code: 403,
-          status: 'fail',
-          message: 'Username must be between 4 and 20 characters!',
-        },
-      });
-    }
-    if (name.length < 4 || name.length > 45) {
-      return res.status(403).send({
-        body: {
-          status_coded: 403,
-          status: 'fail',
-          message: 'Name must be between 4 and 45 characters!',
-        },
-      });
-    }
-    if (!validateProfileEmail(email)) {
-      return res.status(400).send({
-        body: {
-          status_code: 403,
-          status: 'fail',
-          message: 'Not a valid email!',
-        },
-      });
-    }
-    if (password.length < 6 || password.length > 45) {
-      return res.status(403).send({
-        body: {
-          status_code: 403,
-          status: 'fail',
-          message: 'Password must be between 6 and 45 characters!',
-        },
-      });
-    }
-    if (description.length > 250) {
-      return res.status(413).send({
-        body: {
-          status_code: 413,
-          status: 'fail',
-          message: 'Description is limited to 250 characters!',
-        },
-      });
+      if (isUserAlready.length > 0)
+        return res.status(409).send({
+          body: {
+            status_code: 409,
+            status: 'fail',
+            message: 'Username or email is already in use!',
+          },
+        });
+    } catch (error) {
+      return res.status(500).send({ body: { status_code: 500, status: 'fail', message: 'Internal error!' } });
     }
     try {
-      const indexProfile: number = profiles.length + 1;
-      const tokenProfile: string = OAuth.createToken({
-        id: String(indexProfile),
-      });
-      const profile: UserType = {
-        id: String(indexProfile),
-        user_name: user_name.trim(),
-        name: name.trim(),
-        description: description ? description.trim() : null,
-        likes: likes.map((like) => like.trim()),
-        latest_readings: latest_readings.map((latestReadings) => latestReadings.trim()),
-        photo: photo ? photo.trim() : null,
-        password: password.trim(),
-        email: email.trim(),
+      const validateDataUser = UserValidation.safeParse({
+        id: randomUUID(),
+        user_name,
+        name,
+        description,
+        likes,
+        latest_readings,
+        photo,
+        password,
+        email,
         is_activated: true,
-      };
-      authorizations[tokenProfile] = String(indexProfile);
-      profiles.push(profile);
+      });
+      if (!validateDataUser?.success) {
+        throw validateDataUser.error;
+      }
+      const createdUser: UserType = await prismaUsers.create({
+        data: {
+          ...validateDataUser.data,
+        },
+      });
+      const timeUnix = moment().unix();
+      const tokenUser = OAuth.createToken({
+        id: createdUser.id,
+        timesTamp: timeUnix,
+      });
+      await prismaAuthorizations.create({
+        data: {
+          id: tokenUser,
+          user_id: createdUser.id,
+        },
+      });
       return res
         .status(201)
-        .send({ body: { status_code: 201, status: 'success', profile: profile, token: tokenProfile } });
+        .send({ body: { status_code: 201, status: 'success', profile: createdUser, token: tokenUser } });
     } catch (error) {
-      return res.status(400).send({ body: { status_code: 400, status: 'fail', message: error } });
+      if (error.name === 'PrismaClientValidationError') {
+        return res.status(400).send({
+          body: {
+            status_code: 400,
+            status: 'fail',
+            message: 'It was not possible to save to the database, check that you are passing all the data correctly!',
+          },
+        });
+      } else if (error.name === 'ZodError') {
+        const { errors } = error;
+        let messageError = '';
+        errors.forEach(
+          (error: { path: Array<1>; message: string }) =>
+            (messageError += `The parameter /${error.path[0]}/ ${error.message}; `)
+        );
+        return res.status(400).send({
+          body: {
+            status_code: 400,
+            status: 'fail',
+            message: messageError,
+          },
+        });
+      }
+      return res.status(500).send({
+        body: {
+          status_code: 500,
+          status: 'fail',
+          message: 'The request could not be completed!',
+        },
+      });
     }
   }
   public static editProfile(req: Request, res: Response) {
