@@ -80,13 +80,30 @@ export default class ProfileController {
       return res.status(500).send({ body: { status_code: 500, status: 'fail', message: 'Internal error!' } });
     }
   }
-  public static listProfilebyId(req: Request, res: Response) {
-    const idProfile = req.params.id;
-    const profileById = profiles.find((profile) => profile.id === idProfile);
-    if (!profileById)
-      return res.status(404).send({ body: { status_code: 404, status: 'fail', message: 'Not found profile by id!' } });
-    const { password, ...profile } = profileById;
-    return res.status(202).send({ body: { status_code: 202, status: 'success', book: profile } });
+  public static async listProfilebyId(req: Request, res: Response) {
+    const { id: userId } = req.params;
+    const userById = await prismaUsers.findUnique({
+      where: {
+        id: userId,
+      },
+      select: {
+        id: true,
+        user_name: true,
+        name: true,
+        email: true,
+        password: false,
+        description: true,
+        likes: true,
+        latest_readings: true,
+        photo: true,
+        is_activated: true,
+        created_at: true,
+        updated_at: true,
+      },
+    });
+    if (!userById)
+      return res.status(404).send({ body: { status_code: 404, status: 'fail', message: 'Not found user by id!' } });
+    return res.status(202).send({ body: { status_code: 202, status: 'success', profile: userById } });
   }
   public static createProfile(req: Request, res: Response) {
     const {
