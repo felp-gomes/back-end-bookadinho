@@ -55,13 +55,30 @@ export default class ProfileController {
     }
   }
   public static async listProfiles(req: Request, res: Response) {
-    const profileList: unknown[] = [];
-    for (const profile of profiles) {
-      if (!profile.isActive) continue;
-      const { password, ...newProfile } = profile;
-      profileList.push(newProfile);
+    try {
+      const users = await prismaUsers.findMany({
+        where: {
+          is_activated: true,
+        },
+        select: {
+          id: true,
+          user_name: true,
+          name: true,
+          email: true,
+          password: false,
+          description: true,
+          likes: true,
+          latest_readings: true,
+          photo: true,
+          is_activated: true,
+          created_at: true,
+          updated_at: true,
+        },
+      });
+      return res.status(200).json({ body: { status_cide: 200, status: 'success', profiles: users } });
+    } catch (error) {
+      return res.status(500).send({ body: { status_code: 500, status: 'fail', message: 'Internal error!' } });
     }
-    return res.status(200).json({ body: { status_cide: 200, status: 'success', profiles: profileList } });
   }
   public static listProfilebyId(req: Request, res: Response) {
     const idProfile = req.params.id;
