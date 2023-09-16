@@ -4,7 +4,6 @@ import { UserType, UserValidation } from '../interfaces/user.js';
 import profiles from '../mocks/profiles.js';
 import authorizations from '../mocks/authorizations.js';
 import OAuth from '../models/OAuth.js';
-import { validateProfileEmail } from '../utils/utils.js';
 import moment from 'moment';
 import { randomUUID } from 'node:crypto';
 
