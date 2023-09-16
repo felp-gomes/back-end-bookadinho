@@ -298,22 +298,25 @@ export default class ProfileController {
       console.debug('error', JSON.stringify(error, null, 2));
     }
   }
-  public static deleteProfile(req: Request, res: Response) {
-    const foundProfileByToken: UserType = res.locals.foundProfileByToken;
-    foundProfileByToken.user_name = '';
-    foundProfileByToken.name = '';
-    foundProfileByToken.description = '';
-    foundProfileByToken.photo = '';
-    foundProfileByToken.password = '';
-    foundProfileByToken.email = '';
-    foundProfileByToken.isActive = false;
-    const foundProfileIndex = profiles.findIndex(({ id }) => id === foundProfileByToken.id);
-    for (const authorization in authorizations) {
-      if (authorizations[authorization] === profiles[foundProfileIndex].id) {
-        delete authorizations[authorization];
-      }
-    }
-    profiles[foundProfileIndex] = foundProfileByToken;
+  public static async deleteProfile(req: Request, res: Response) {
+    const authenticatedUser: UserType = res.locals.foundProfileByToken;
+    const timeUnix = moment().unix();
+
+    await prismaUsers.update({
+      where: {
+        id: authenticatedUser.id,
+      },
+      data: {
+        user_name: `user_deleted@${timeUnix}`,
+        email: `${timeUnix}@bookadinho.com`,
+        password: `${timeUnix}`,
+      },
+    });
+    await prismaAuthorizations.deleteMany({
+      where: {
+        user_id: authenticatedUser.id,
+      },
+    });
     return res
       .status(200)
       .send({ body: { status_code: 200, status: 'success', message: 'User deleted successfully!' } });
