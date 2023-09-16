@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { randomUUID } from 'node:crypto';
-import { ProfileInterface } from '../interfaces/profile.js';
+import { UserType } from '../interfaces/user.js';
 import { BookValidation, BookType } from '../interfaces/book.js';
 import { debugLogError } from '../utils/utils.js';
 
@@ -40,7 +40,7 @@ export default class BookController {
     }
   }
   static async createBook(req: Request, res: Response) {
-    const foundProfileByToken: ProfileInterface = res.locals.foundProfileByToken;
+    const foundProfileByToken: UserType = res.locals.foundProfileByToken;
     const {
       name,
       author,
