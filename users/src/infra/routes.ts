@@ -1,9 +1,10 @@
-import { Router, Request, Response } from 'express';
+import { Router } from 'express';
+import { UserController } from './modules/users/user.controller.js';
 
 const routes = Router();
 
-routes.get('/users', (req: Request, res: Response) => {
-  return res.send('Hello World USERS');
-});
+const userController = new UserController();
+
+routes.get('/users', userController.getAllUsers);
 
 export default routes;
