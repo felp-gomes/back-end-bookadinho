@@ -5,6 +5,6 @@ const routes = Router();
 
 const userController = new UserController();
 
-routes.get('/users', userController.getAllUsers);
+routes.get('/users', userController.getAllUsers.bind(userController));
 
 export default routes;
