@@ -10,9 +10,22 @@ export class UserController {
     const { allusers: allUsers = true } = request.query;
     try {
       const usersConsulted = await this.userUsecase.getAllUsers(!!allUsers);
-      console.log('dentro do try da controller');
-      console.log(usersConsulted);
       return response.status(200).send({ body: { status_code: 200, status: 'success', users: usersConsulted } });
+    } catch (error) {
+      return response
+        .status(500)
+        .send({ body: { status_code: 500, status: 'fail', message: 'Internal Server Error!' } });
+    }
+  }
+  public async getUserById(request: Request, response: Response) {
+    const { id: userId } = request.params;
+    try {
+      const userConsultedById = await this.userUsecase.getUserById(userId);
+      return userConsultedById
+        ? response.status(200).send({ body: { status_code: 200, status: 'success', users: userConsultedById } })
+        : response
+            .status(404)
+            .send({ body: { status_code: 404, status: 'fail', message: 'User not found by the id provided!' } });
     } catch (error) {
       return response
         .status(500)
