@@ -7,6 +7,7 @@ const userController = new UserController();
 
 routes
   .get('/users', userController.getAllUsers.bind(userController))
-  .get('/users/:id', userController.getUserById.bind(userController));
+  .get('/users/:id', userController.getUserById.bind(userController))
+  .post('/users', userController.createUser.bind(userController));
 
 export default routes;
