@@ -1,14 +1,17 @@
 import jwt from 'jsonwebtoken';
+import { prismaClient } from '../../database/prismaUsers';
 
 export class TokenUserCase {
   private key = process.env.JWT_KEY || 'bola';
   constructor() {}
 
-  public createToken(user: { id: string; timesTamp: number }) {
+  public createToken(userId: string) {
     try {
-      return jwt.sign(user, this.key, {
+      const token = jwt.sign({ userId }, this.key, {
+        expiresIn: '2 days',
         algorithm: 'HS256',
       });
+      return this.insertToken(token, userId);
     } catch (error: unknown) {
       this.handleError(error);
       throw error;
@@ -19,6 +22,20 @@ export class TokenUserCase {
     try {
       return jwt.verify(token, this.key);
     } catch (error: unknown) {
+      this.handleError(error);
+      throw error;
+    }
+  }
+
+  private async insertToken(id: string, userId: string) {
+    try {
+      return await prismaClient.tokens.create({
+        data: {
+          id,
+          user_id: userId,
+        },
+      });
+    } catch (error) {
       this.handleError(error);
       throw error;
     }

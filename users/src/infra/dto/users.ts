@@ -13,7 +13,11 @@ export const UserValidation = z.object({
     .min(4, { message: 'Must be at least 4 characters long' })
     .max(45, { message: 'Must be a maximum of 45 characters' }),
   email: z.string().trim().email().min(4, { message: 'Must be at least 4 characters long' }),
-  password: z.string().trim().max(256, { message: 'It must be a maximum of 64 characters because it is a password' }),
+  password: z
+    .string()
+    .trim()
+    .min(4, { message: 'Must be at least 4 characters long' })
+    .max(256, { message: 'Must be a maximum of 256 characters' }),
   description: z.string().trim().max(256, { message: 'Must be a maximum of 255 characters' }).nullable(),
   likes: z.string().array().max(125, { message: 'Must be a maximum of 255 characters' }),
   latest_readings: z.string().array().max(125, { message: 'Must be a maximum of 255 characters' }),

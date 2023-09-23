@@ -1,9 +1,11 @@
 import { Request, Response } from 'express';
-import { UserUsecase } from './user.usecase.js';
 import { ZodError } from 'zod';
+import { UserUsecase } from './user.usecase.js';
+import { TokenUserCase } from '../tokens/token.usercase.js';
 
 export class UserController {
   private userUsecase = new UserUsecase();
+  private tokenUserCase = new TokenUserCase();
 
   constructor() {}
 
@@ -89,6 +91,35 @@ export class UserController {
       return response
         .status(500)
         .send({ body: { status_code: 500, status: 'fail', message: 'Internal Server Error!' } });
+    }
+  }
+  public async loginUser(request: Request, response: Response) {
+    const { user_name, password }: { user_name: string; password: string } = request.body;
+    if (!user_name || !password) {
+      return response.status(403).send({
+        body: {
+          status_code: 401,
+          status: 'fail',
+          message: '/username/ and /password/ profile id are required!',
+        },
+      });
+    }
+    try {
+      const user = await this.userUsecase.getDBUser({ user_name }, { id: true, password: true });
+      const validatedPassword = await this.userUsecase.checkPassword(password, user?.password || '');
+      if (!user || !validatedPassword) {
+        return response.status(401).send({
+          body: {
+            status_code: 403,
+            status: 'fail',
+            message: 'Incorrect /username/ or /password/!',
+          },
+        });
+      }
+      const tokenByUser = await this.tokenUserCase.createToken(user.id);
+      return response.status(200).send({ body: { status_code: 200, status: 'success', token: tokenByUser.id } });
+    } catch (error) {
+      return response.status(500).send({ body: { status_code: 500, status: 'fail', message: 'Internal error!' } });
     }
   }
 }
