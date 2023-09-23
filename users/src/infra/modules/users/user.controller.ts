@@ -33,7 +33,6 @@ export class UserController {
         .send({ body: { status_code: 500, status: 'fail', message: 'Internal Server Error!' } });
     }
   }
-
   public async createUser(request: Request, response: Response) {
     const {
       user_name,
@@ -82,12 +81,10 @@ export class UserController {
           },
         });
       }
-      if (error instanceof Error) {
-        if (error.message === 'database-0001') {
-          return response.status(409).send({
-            body: { status_code: 409, status: 'fail', message: error.cause },
-          });
-        }
+      if (error instanceof Error && error.message === 'database-0001') {
+        return response.status(409).send({
+          body: { status_code: 409, status: 'fail', message: error.cause },
+        });
       }
       return response
         .status(500)

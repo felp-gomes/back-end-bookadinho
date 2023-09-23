@@ -1,5 +1,6 @@
 import { prismaClient } from '../../database/prismaUsers.js';
 import { randomUUID } from 'node:crypto';
+import bcrypt from 'bcrypt';
 import { UserValidation } from '../../dto/users.js';
 
 export class UserUsecase {
@@ -106,34 +107,50 @@ export class UserUsecase {
       this.handleError(error);
       throw error;
     }
-
     try {
+      const encryptPassword = await this.encryptPassword(password);
       const userValidation = UserValidation.safeParse({
         id: randomUUID(),
         user_name,
         name,
         email,
-        password,
+        password: encryptPassword,
         description,
         likes,
         latest_readings,
         photo,
         is_activated: true,
       });
-
-      if (!userValidation.success) {
-        throw userValidation.error;
-      }
-
+      if (!userValidation.success) throw userValidation.error;
       return await prismaClient.users.create({
         data: {
           ...userValidation.data,
+        },
+        select: {
+          id: true,
+          user_name: true,
+          name: true,
+          email: true,
+          password: false,
+          description: true,
+          likes: true,
+          latest_readings: true,
+          photo: true,
+          is_activated: true,
+          created_at: true,
+          updated_at: true,
         },
       });
     } catch (error) {
       this.handleError(error);
       throw error;
     }
+  }
+  private async encryptPassword(password: string) {
+    return await bcrypt.hash(password, 10);
+  }
+  public async checkPassword(password: string, hash: string) {
+    return bcrypt.compareSync(password, hash);
   }
 
   private handleError(error: unknown) {
