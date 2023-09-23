@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 
-export class tokenUserCase {
+export class TokenUserCase {
   private key = process.env.JWT_KEY || 'bola';
   constructor() {}
 
