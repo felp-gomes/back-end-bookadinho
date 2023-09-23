@@ -6,12 +6,13 @@ import { UserValidation } from '../../dto/users.js';
 export class UserUsecase {
   constructor() {}
 
-  public async getAllUsers(allUsers = true) {
+  public async getAllUsers(allUsers = false) {
+    const getUsersByOnlyActive = {
+      is_activated: true,
+    };
     try {
-      const getUsers = await prismaClient.users.findMany({
-        where: {
-          is_activated: allUsers,
-        },
+      return await prismaClient.users.findMany({
+        where: allUsers ? undefined : getUsersByOnlyActive,
         select: {
           id: true,
           user_name: true,
@@ -27,16 +28,14 @@ export class UserUsecase {
           updated_at: true,
         },
       });
-      return getUsers;
     } catch (error: unknown) {
       this.handleError(error);
       throw error;
     }
   }
-
   public async getUserById(id: string) {
     try {
-      const getUserById = await prismaClient.users.findUnique({
+      return await prismaClient.users.findUnique({
         where: {
           id: id,
         },
@@ -55,13 +54,11 @@ export class UserUsecase {
           updated_at: true,
         },
       });
-      return getUserById;
     } catch (error: unknown) {
       this.handleError(error);
       throw error;
     }
   }
-
   public async createUser({
     user_name,
     name,

@@ -8,7 +8,7 @@ export class UserController {
   constructor() {}
 
   public async getAllUsers(request: Request, response: Response) {
-    const { allusers: allUsers = true } = request.query;
+    const { allusers: allUsers = false } = request.query;
     try {
       const usersConsulted = await this.userUsecase.getAllUsers(!!allUsers);
       return response.status(200).send({ body: { status_code: 200, status: 'success', users: usersConsulted } });
