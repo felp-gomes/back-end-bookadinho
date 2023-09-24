@@ -17,7 +17,6 @@ export class TokenUserCase {
       throw error;
     }
   }
-
   public verifyToken(token: string) {
     try {
       return jwt.verify(token, this.key);
@@ -26,7 +25,18 @@ export class TokenUserCase {
       throw error;
     }
   }
-
+  public async deleteToken(useId: string) {
+    try {
+      return await prismaClient.tokens.deleteMany({
+        where: {
+          user_id: useId,
+        },
+      });
+    } catch (error) {
+      this.handleError(error);
+      throw error;
+    }
+  }
   private async insertToken(id: string, userId: string) {
     try {
       return await prismaClient.tokens.create({
