@@ -2,6 +2,7 @@ import { prismaClient } from '../../database/prismaUsers.js';
 import { randomUUID } from 'node:crypto';
 import bcrypt from 'bcrypt';
 import { UserValidation } from '../../dto/users.js';
+import z from 'zod';
 
 export class UserUsecase {
   constructor() {}
@@ -111,7 +112,7 @@ export class UserUsecase {
         user_name,
         name,
         email,
-        password: encryptPassword,
+        password,
         description,
         likes,
         latest_readings,
@@ -122,6 +123,7 @@ export class UserUsecase {
       return await prismaClient.users.create({
         data: {
           ...userValidation.data,
+          password: encryptPassword,
         },
         select: {
           id: true,
@@ -143,11 +145,71 @@ export class UserUsecase {
       throw error;
     }
   }
-  private async encryptPassword(password: string) {
-    return await bcrypt.hash(password, 10);
+  public async updateUse(
+    userId: string,
+    data: {
+      id: string;
+      user_name?: string;
+      name?: string;
+      email?: string;
+      password: string;
+      description?: string | null;
+      likes?: string[];
+      latest_readings?: string[];
+      photo?: string | null;
+      is_activated: true;
+    }
+  ) {
+    const userValidation = UserValidation.safeParse(data);
+    if (!userValidation.success) throw userValidation.error;
+    try {
+      return await prismaClient.users.update({
+        where: {
+          id: userId,
+        },
+        data,
+        select: {
+          id: true,
+          user_name: true,
+          name: true,
+          email: true,
+          password: false,
+          description: true,
+          likes: true,
+          latest_readings: true,
+          photo: true,
+          is_activated: true,
+        },
+      });
+    } catch (error) {
+      this.handleError(error);
+      throw error;
+    }
   }
-  public async checkPassword(password: string, hash: string) {
-    return bcrypt.compareSync(password, hash);
+  public async updatedPassword(useId: string, password: string) {
+    try {
+      const schemaValidatedPassword = z.object({
+        password: z
+          .string()
+          .trim()
+          .min(4, { message: 'Must be at least 4 characters long' })
+          .max(256, { message: 'Must be a maximum of 256 characters' }),
+      });
+      const validatedPassword = schemaValidatedPassword.safeParse({ password });
+      if (!validatedPassword.success) throw validatedPassword.error;
+      const encryptPassword = await this.encryptPassword(password);
+      return await prismaClient.users.update({
+        where: {
+          id: useId,
+        },
+        data: {
+          password: encryptPassword,
+        },
+      });
+    } catch (error) {
+      this.handleError(error);
+      throw error;
+    }
   }
   public async getDBUser(
     where: {
@@ -191,6 +253,12 @@ export class UserUsecase {
       this.handleError(error);
       throw error;
     }
+  }
+  private async encryptPassword(password: string) {
+    return await bcrypt.hash(password, 10);
+  }
+  public async checkPassword(password: string, hash: string) {
+    return bcrypt.compareSync(password, hash);
   }
 
   private handleError(error: unknown) {
