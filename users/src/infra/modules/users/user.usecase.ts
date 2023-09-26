@@ -3,6 +3,7 @@ import { randomUUID } from 'node:crypto';
 import bcrypt from 'bcrypt';
 import { UserValidation } from '../../dto/users.js';
 import z from 'zod';
+import moment from 'moment';
 
 export class UserUsecase {
   constructor() {}
@@ -34,11 +35,11 @@ export class UserUsecase {
       throw error;
     }
   }
-  public async getUserById(id: string) {
+  public async getUserById(userId: string) {
     try {
       return await prismaClient.users.findUnique({
         where: {
-          id: id,
+          id: userId,
         },
         select: {
           id: true,
@@ -186,7 +187,7 @@ export class UserUsecase {
       throw error;
     }
   }
-  public async updatedPassword(useId: string, password: string) {
+  public async updatedPassword(userId: string, password: string) {
     try {
       const schemaValidatedPassword = z.object({
         password: z
@@ -200,10 +201,43 @@ export class UserUsecase {
       const encryptPassword = await this.encryptPassword(password);
       return await prismaClient.users.update({
         where: {
-          id: useId,
+          id: userId,
         },
         data: {
           password: encryptPassword,
+        },
+      });
+    } catch (error) {
+      this.handleError(error);
+      throw error;
+    }
+  }
+  public async deleteUser(userId: string) {
+    try {
+      await prismaClient.tokens.deleteMany({
+        where: {
+          user_id: userId,
+        },
+      });
+    } catch (error) {
+      this.handleError(error);
+      throw error;
+    }
+    try {
+      const timeStamp = moment().unix();
+      await prismaClient.users.update({
+        where: {
+          id: userId,
+        },
+        data: {
+          user_name: `deleteduser@${timeStamp}`,
+          email: `${randomUUID()}@bookadinho.com`,
+          password: randomUUID(),
+          description: null,
+          likes: [],
+          latest_readings: [],
+          photo: null,
+          is_activated: false,
         },
       });
     } catch (error) {

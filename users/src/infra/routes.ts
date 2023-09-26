@@ -10,6 +10,7 @@ routes
   .get('/users/:id', userController.getUserById.bind(userController))
   .post('/users', userController.createUser.bind(userController))
   .post('/users/auth', userController.loginUser.bind(userController))
-  .put('/users/:id', userController.updateUse.bind(userController));
+  .put('/users/:id', userController.updateUser.bind(userController))
+  .delete('/users/:id', userController.deleteUser.bind(userController));
 
 export default routes;

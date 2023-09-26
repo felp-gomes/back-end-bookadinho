@@ -122,7 +122,7 @@ export class UserController {
       return response.status(500).send({ body: { status_code: 500, status: 'fail', message: 'Internal error!' } });
     }
   }
-  public async updateUse(request: Request, response: Response) {
+  public async updateUser(request: Request, response: Response) {
     const { id: userId } = request.params;
     const {
       user_name,
@@ -216,6 +216,45 @@ export class UserController {
           },
         });
       }
+      if (error instanceof PrismaClientKnownRequestError) {
+        if (error.code === 'P2002') {
+          return response
+            .status(409)
+            .send({ body: { status_code: 409, status: 'fail', message: 'Username or email is already in use!' } });
+        }
+      }
+      return response
+        .status(500)
+        .send({ body: { status_code: 500, status: 'fail', message: 'Internal Server Error!' } });
+    }
+  }
+  public async deleteUser(request: Request, response: Response) {
+    const { id: userId } = request.params;
+    if (!userId) {
+      return response.status(400).send({
+        body: {
+          status_code: 400,
+          status: 'fail',
+          message: '/id/ profile id are required!',
+        },
+      });
+    }
+    try {
+      const checkUser = await this.userUsecase.getDBUser({ id: userId }, { id: true });
+      if (!checkUser) {
+        return response.status(404).send({
+          body: {
+            status_code: 404,
+            status: 'fail',
+            message: 'User /id/ not found!',
+          },
+        });
+      }
+      await this.userUsecase.deleteUser(userId);
+      return response
+        .status(200)
+        .json({ body: { status_code: 200, status: 'succes', message: 'User successfully deleted!' } });
+    } catch (error: unknown) {
       if (error instanceof PrismaClientKnownRequestError) {
         if (error.code === 'P2002') {
           return response
