@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { prismaClient } from '../../database/prismaUsers';
+import { prismaClient } from '../../database/prismaUsers.js';
 
 export class TokenUserCase {
   private key = process.env.JWT_KEY || 'bola';
@@ -24,6 +24,13 @@ export class TokenUserCase {
       this.handleError(error);
       throw error;
     }
+  }
+  public async getToken(token: string) {
+    return await prismaClient.tokens.findUnique({
+      where: {
+        id: token,
+      },
+    });
   }
   public async deleteToken(useId: string) {
     try {
@@ -50,7 +57,16 @@ export class TokenUserCase {
       throw error;
     }
   }
-
+  private async updatedToken(token: string, newToken: string) {
+    await prismaClient.tokens.update({
+      where: {
+        id: token,
+      },
+      data: {
+        id: newToken,
+      },
+    });
+  }
   private handleError(error: unknown) {
     console.debug('\x1b[31m[<<<---START ERROR--->>>]\x1b[0m');
     console.error(error);

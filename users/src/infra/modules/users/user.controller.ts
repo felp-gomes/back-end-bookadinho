@@ -123,7 +123,17 @@ export class UserController {
     }
   }
   public async updateUser(request: Request, response: Response) {
+    const { user_id: userIdByAuthorization } = response.locals;
     const { id: userId } = request.params;
+    if (userId !== userIdByAuthorization) {
+      return response.status(403).json({
+        body: {
+          status_code: 403,
+          status: 'fail',
+          message: 'The user has no authorization for the action!',
+        },
+      });
+    }
     const {
       user_name,
       name,
@@ -229,7 +239,17 @@ export class UserController {
     }
   }
   public async deleteUser(request: Request, response: Response) {
+    const { user_id: userIdByAuthorization } = response.locals;
     const { id: userId } = request.params;
+    if (userId !== userIdByAuthorization) {
+      return response.status(403).json({
+        body: {
+          status_code: 403,
+          status: 'fail',
+          message: 'The user has no authorization for the action!',
+        },
+      });
+    }
     if (!userId) {
       return response.status(400).send({
         body: {
