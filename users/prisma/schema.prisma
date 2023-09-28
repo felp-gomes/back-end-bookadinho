@@ -19,22 +19,10 @@ model Users {
   photo           String?
   is_activated    Boolean  @default(true)
   Tokens          Tokens[]
-  Book            Books[]
   created_at      DateTime @default(now())
   updated_at      DateTime @updatedAt
 
   @@map("users")
-}
-
-model Books {
-  id               String   @id @unique @default(uuid())
-  external_id_book String   @unique
-  user_id          String
-  user             Users    @relation(fields: [user_id], references: [id])
-  created_at       DateTime @default(now())
-  updated_at       DateTime @updatedAt
-
-  @@map("books")
 }
 
 model Tokens {
