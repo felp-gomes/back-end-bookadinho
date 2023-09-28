@@ -1,11 +1,13 @@
-import { prismaClient } from '../../database/prismaUsers.js';
 import { randomUUID } from 'node:crypto';
 import bcrypt from 'bcrypt';
-import { UserValidation } from '../../dto/users.js';
-import z from 'zod';
 import moment from 'moment';
+import z from 'zod';
+import { prismaClient } from '../../database/prismaUsers.js';
+import { UserValidation } from '../../dto/users.js';
+import { KafkaSendMessage } from '../../provider/kafka/producer.js';
 
 export class UserUsecase {
+  private kafkaMessage = new KafkaSendMessage();
   constructor() {}
 
   public async getAllUsers(allUsers = false) {
@@ -121,7 +123,7 @@ export class UserUsecase {
         is_activated: true,
       });
       if (!userValidation.success) throw userValidation.error;
-      return await prismaClient.users.create({
+      const userCreated = await prismaClient.users.create({
         data: {
           ...userValidation.data,
           password: encryptPassword,
@@ -141,6 +143,10 @@ export class UserUsecase {
           updated_at: true,
         },
       });
+      await this.kafkaMessage.execute('users', {
+        id: userCreated.id,
+      });
+      return userCreated;
     } catch (error) {
       this.handleError(error);
       throw error;
