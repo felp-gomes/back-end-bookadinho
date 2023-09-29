@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 import { ZodError } from 'zod';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library.js';
 import { UserUsecase } from './user.usecase.js';
 import { TokenUserCase } from '../tokens/token.usercase.js';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library.js';
 
 export class UserController {
   private userUsecase = new UserUsecase();
@@ -162,7 +162,6 @@ export class UserController {
         },
       });
     }
-
     try {
       const checkUser = await this.userUsecase.getDBUser(
         { id: userId },
@@ -190,18 +189,18 @@ export class UserController {
       }
       const updateUse = await this.userUsecase.updateUse(userId, {
         id: userId,
-        user_name: user_name ?? checkUser.user_name,
-        name: name ?? checkUser.name,
-        email: email ?? checkUser.email,
-        password: checkUser.password,
-        description: description ?? checkUser.description,
-        likes: likes ?? checkUser.likes,
-        latest_readings: latest_readings ?? checkUser.latest_readings,
-        photo: photo ?? checkUser.photo,
+        user_name: user_name,
+        name: name,
+        email: email,
+        description: description,
+        likes: likes,
+        latest_readings: latest_readings,
+        photo: photo,
         is_activated: true,
       });
       if (password) {
         await this.userUsecase.updatedPassword(userId, password);
+        await this.tokenUserCase.deleteToken(userId);
         return response
           .status(200)
           .send({ body: { status_code: 200, status: 'success', message: 'User changed successfully!' } });

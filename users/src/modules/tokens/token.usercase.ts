@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { prismaClient } from '../../database/prismaUsers.js';
+import { prismaClient } from '../../infra/database/prismaUsers.js';
 
 export class TokenUserCase {
   private key = process.env.JWT_KEY || 'bola';

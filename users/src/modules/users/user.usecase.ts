@@ -1,10 +1,9 @@
 import { randomUUID } from 'node:crypto';
 import bcrypt from 'bcrypt';
 import moment from 'moment';
-import z from 'zod';
-import { prismaClient } from '../../database/prismaUsers.js';
-import { UserValidation } from '../../dto/users.js';
-import { KafkaSendMessage } from '../../provider/kafka/producer.js';
+import { prismaClient } from '../../infra/database/prismaUsers.js';
+import { UserValidation, UserValidationUpdated, UserValidationPassword } from './dtos/users.dto.js';
+import { KafkaSendMessage } from '../../infra/provider/kafka/producer.js';
 
 export class UserUsecase {
   private kafkaMessage = new KafkaSendMessage();
@@ -159,7 +158,6 @@ export class UserUsecase {
       user_name?: string;
       name?: string;
       email?: string;
-      password: string;
       description?: string | null;
       likes?: string[];
       latest_readings?: string[];
@@ -167,7 +165,7 @@ export class UserUsecase {
       is_activated: true;
     }
   ) {
-    const userValidation = UserValidation.safeParse(data);
+    const userValidation = UserValidationUpdated.safeParse(data);
     if (!userValidation.success) throw userValidation.error;
     try {
       return await prismaClient.users.update({
@@ -195,14 +193,7 @@ export class UserUsecase {
   }
   public async updatedPassword(userId: string, password: string) {
     try {
-      const schemaValidatedPassword = z.object({
-        password: z
-          .string()
-          .trim()
-          .min(4, { message: 'Must be at least 4 characters long' })
-          .max(256, { message: 'Must be a maximum of 256 characters' }),
-      });
-      const validatedPassword = schemaValidatedPassword.safeParse({ password });
+      const validatedPassword = UserValidationPassword.safeParse({ password });
       if (!validatedPassword.success) throw validatedPassword.error;
       const encryptPassword = await this.encryptPassword(password);
       return await prismaClient.users.update({
