@@ -4,9 +4,11 @@ import moment from 'moment';
 import { prismaClient } from '../../infra/database/prismaUsers.js';
 import { UserValidation, UserValidationUpdated, UserValidationPassword } from './dtos/users.dto.js';
 import { KafkaSendMessage } from '../../infra/provider/kafka/producer.js';
+import { TokenUserCase } from '../tokens/token.usercase.js';
 
 export class UserUsecase {
   private kafkaMessage = new KafkaSendMessage();
+  private tokenUserCase = new TokenUserCase();
   constructor() {}
 
   public async getAllUsers(allUsers = false) {
@@ -143,7 +145,11 @@ export class UserUsecase {
         },
       });
       await this.kafkaMessage.execute('users', {
-        id: userCreated.id,
+        action: 'create',
+        body: {
+          id: userCreated.id,
+          user_name: userCreated.user_name,
+        },
       });
       return userCreated;
     } catch (error) {
@@ -211,11 +217,7 @@ export class UserUsecase {
   }
   public async deleteUser(userId: string) {
     try {
-      await prismaClient.tokens.deleteMany({
-        where: {
-          user_id: userId,
-        },
-      });
+      await this.tokenUserCase.deleteTokens(userId);
     } catch (error) {
       this.handleError(error);
       throw error;
@@ -235,6 +237,12 @@ export class UserUsecase {
           latest_readings: [],
           photo: null,
           is_activated: false,
+        },
+      });
+      await this.kafkaMessage.execute('users', {
+        action: 'delete',
+        body: {
+          id: userId,
         },
       });
     } catch (error) {

@@ -200,7 +200,7 @@ export class UserController {
       });
       if (password) {
         await this.userUsecase.updatedPassword(userId, password);
-        await this.tokenUserCase.deleteToken(userId);
+        await this.tokenUserCase.deleteTokens(userId);
         return response
           .status(200)
           .send({ body: { status_code: 200, status: 'success', message: 'User changed successfully!' } });

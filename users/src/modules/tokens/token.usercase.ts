@@ -1,17 +1,27 @@
 import jwt from 'jsonwebtoken';
 import { prismaClient } from '../../infra/database/prismaUsers.js';
+import { KafkaSendMessage } from '../../infra/provider/kafka/producer.js';
 
 export class TokenUserCase {
   private key = process.env.JWT_KEY || 'bola';
+  private kafkaMessage = new KafkaSendMessage();
   constructor() {}
 
-  public createToken(userId: string) {
+  public async createToken(userId: string) {
     try {
       const token = jwt.sign({ userId }, this.key, {
         expiresIn: '2 days',
         algorithm: 'HS256',
       });
-      return this.insertToken(token, userId);
+      const tokenCreated = await this.insertToken(token, userId);
+      await this.kafkaMessage.execute('tokens', {
+        action: 'create',
+        body: {
+          id: tokenCreated.id,
+          user_name: tokenCreated.user_id,
+        },
+      });
+      return tokenCreated;
     } catch (error: unknown) {
       this.handleError(error);
       throw error;
@@ -32,11 +42,17 @@ export class TokenUserCase {
       },
     });
   }
-  public async deleteToken(useId: string) {
+  public async deleteTokens(useId: string) {
     try {
-      return await prismaClient.tokens.deleteMany({
+      await prismaClient.tokens.deleteMany({
         where: {
           user_id: useId,
+        },
+      });
+      await this.kafkaMessage.execute('tokens', {
+        action: 'delete',
+        body: {
+          id: useId,
         },
       });
     } catch (error) {
