@@ -1,9 +1,15 @@
-import { Router, Request, Response } from 'express';
+import { Router } from 'express';
+import { BookController } from '../modules/books/book.usecontroller.js';
+import { Auth } from '../middleware/auth.provider.js';
 
 const routes = Router();
 
-routes.get('/books', (req: Request, res: Response) => {
-  return res.send('Hello World BOOKS');
-});
+const bookController = new BookController();
+const auth = new Auth();
+
+routes
+  .get('/books', bookController.getAllBooks.bind(bookController))
+  .get('/books/:id', bookController.getBoosById.bind(bookController))
+  .post('/books', bookController.createBook.bind(bookController));
 
 export default routes;
