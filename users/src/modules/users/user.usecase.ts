@@ -197,7 +197,7 @@ export class UserUsecase {
           action: 'update',
           body: {
             id: userUpdated.id,
-            user_name: userUpdated.name,
+            user_name: userUpdated.user_name,
           },
         });
       }
