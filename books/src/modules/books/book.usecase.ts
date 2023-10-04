@@ -74,6 +74,18 @@ export class BookUsecase {
       throw error;
     }
   }
+  public async deleteBook(bookId: string) {
+    try {
+      return await prismaClient.books.delete({
+        where: {
+          id: bookId,
+        },
+      });
+    } catch (error: unknown) {
+      this.handleError(error);
+      throw error;
+    }
+  }
   public async getDBBook(
     where: {
       id?: string;

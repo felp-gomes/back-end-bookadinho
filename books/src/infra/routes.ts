@@ -11,6 +11,7 @@ routes
   .get('/books', bookController.getAllBooks.bind(bookController))
   .get('/books/:id', bookController.getBoosById.bind(bookController))
   .post('/books', bookController.createBook.bind(bookController))
-  .put('/books/:id', bookController.updateBook.bind(bookController));
+  .put('/books/:id', bookController.updateBook.bind(bookController))
+  .delete('/books/:id', bookController.deleteBook.bind(bookController));
 
 export default routes;

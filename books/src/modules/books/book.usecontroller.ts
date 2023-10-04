@@ -129,4 +129,44 @@ export class BookController {
         .send({ body: { status_code: 500, status: 'fail', message: 'Internal Server Error!' } });
     }
   }
+  public async deleteBook(request: Request, response: Response) {
+    const { owner_id = 'd6787723-01a1-466c-9fce-ea903fcbe8b2' } = response.locals;
+    const { id: bookId } = request.params;
+    if (!bookId) {
+      return response.status(400).json({
+        body: {
+          status_code: 400,
+          status: 'fail',
+          message: '/bookid/ is required!',
+        },
+      });
+    }
+    try {
+      const bookConsultedById = await this.bookUseCase.getBookById(bookId);
+      if (!bookConsultedById || bookConsultedById.owner_id !== owner_id) {
+        return response.status(403).json({
+          body: {
+            status_code: 403,
+            status: 'fail',
+            message: 'The user does not own the book!',
+          },
+        });
+      }
+    } catch (error) {
+      return response
+        .status(500)
+        .send({ body: { status_code: 500, status: 'fail', message: 'Internal Server Error!' } });
+    }
+
+    try {
+      await this.bookUseCase.deleteBook(bookId);
+      return response
+        .status(200)
+        .json({ body: { status_code: 200, status: 'succes', message: 'Book successfully deleted!' } });
+    } catch (error) {
+      return response
+        .status(500)
+        .send({ body: { status_code: 500, status: 'fail', message: 'Internal Server Error!' } });
+    }
+  }
 }
