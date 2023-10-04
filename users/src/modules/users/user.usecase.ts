@@ -196,6 +196,7 @@ export class UserUsecase {
         await this.kafkaMessage.execute('users', {
           action: 'update',
           body: {
+            id: userUpdated.id,
             user_name: userUpdated.name,
           },
         });
