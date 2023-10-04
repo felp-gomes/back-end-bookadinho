@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { prismaClient } from '../../infra/database/prismaUsers.js';
-import { KafkaSendMessage } from '../../infra/provider/kafka/producer.js';
+import { KafkaSendMessage } from '../../infra/kafka/producer/users/user.producer.js';
 
 export class TokenUserCase {
   private key = process.env.JWT_KEY || 'bola';

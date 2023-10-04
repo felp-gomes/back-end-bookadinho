@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import moment from 'moment';
 import { prismaClient } from '../../infra/database/prismaUsers.js';
 import { UserValidation, UserValidationUpdated, UserValidationPassword } from './dtos/users.dto.js';
-import { KafkaSendMessage } from '../../infra/provider/kafka/producer.js';
+import { KafkaSendMessage } from '../../infra/kafka/producer/users/user.producer.js';
 import { TokenUserCase } from '../tokens/token.usercase.js';
 
 export class UserUsecase {
@@ -174,7 +174,7 @@ export class UserUsecase {
     const userValidation = UserValidationUpdated.safeParse(data);
     if (!userValidation.success) throw userValidation.error;
     try {
-      return await prismaClient.users.update({
+      const userUpdated = await prismaClient.users.update({
         where: {
           id: userId,
         },
@@ -192,6 +192,15 @@ export class UserUsecase {
           is_activated: true,
         },
       });
+      if (data.user_name) {
+        await this.kafkaMessage.execute('users', {
+          action: 'update',
+          body: {
+            user_name: userUpdated.name,
+          },
+        });
+      }
+      return userUpdated;
     } catch (error) {
       this.handleError(error);
       throw error;

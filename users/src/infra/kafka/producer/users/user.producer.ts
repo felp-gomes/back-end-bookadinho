@@ -1,4 +1,4 @@
-import { kafka } from './kafka.js';
+import { kafka } from '../../kafka.js';
 
 export class KafkaSendMessage {
   public async execute(topic: string, payload: unknown): Promise<void> {
