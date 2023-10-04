@@ -1,11 +1,11 @@
 import { Router } from 'express';
 import { BookController } from '../modules/books/book.usecontroller.js';
-import { Auth } from '../middleware/auth.provider.js';
+// import { Auth } from '../middleware/auth.provider.js';
 
 const routes = Router();
 
 const bookController = new BookController();
-const auth = new Auth();
+// const auth = new Auth();
 
 routes
   .get('/books', bookController.getAllBooks.bind(bookController))
