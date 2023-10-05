@@ -1,9 +1,12 @@
+import moment from 'moment';
+import { TokenUsercase } from '../tokens/token.usercase.js';
 import { prismaClient } from '../../infra/database/prisma.js';
 
 export class UserUsecase {
+  private tokenUsercase = new TokenUsercase();
   constructor() {}
 
-  public async createUser({ externalId, user_name }: { externalId: string; user_name: string }) {
+  public async createOwner({ externalId, user_name }: { externalId: string; user_name: string }) {
     try {
       const isUserAlready = await prismaClient.owners.findFirst({
         where: {
@@ -42,17 +45,15 @@ export class UserUsecase {
       throw error;
     }
   }
-  public async updateUse(
-    userId: string,
+  public async updateOwner(
+    extarnalId: string,
     data: {
       user_name: string;
     }
   ) {
     try {
       const isUserNameAlready = await prismaClient.owners.findUnique({
-        where: {
-          ...data,
-        },
+        where: data,
       });
       if (isUserNameAlready) {
         throw new Error('database-0001', {
@@ -66,9 +67,59 @@ export class UserUsecase {
     try {
       await prismaClient.owners.update({
         where: {
-          external_id: userId,
+          external_id: extarnalId,
         },
         data,
+      });
+    } catch (error) {
+      this.handleError(error);
+      throw error;
+    }
+  }
+  public async deleteOwner(externalId: string) {
+    try {
+      const userConsulted = await this.getDBOwner({ external_id: externalId }, { id: true });
+      if (!userConsulted) throw Error('database-404', { cause: 'Not found user by /external_id/!' });
+      await this.tokenUsercase.deleteTokens(userConsulted.id);
+    } catch (error) {
+      this.handleError(error);
+      throw error;
+    }
+    try {
+      const timeStamp = moment().unix();
+      await prismaClient.owners.update({
+        where: {
+          external_id: externalId,
+        },
+        data: {
+          user_name: `deleteduser@${timeStamp}`,
+        },
+      });
+    } catch (error) {
+      this.handleError(error);
+      throw error;
+    }
+  }
+  public async getDBOwner(
+    where: {
+      id?: string;
+      user_name?: string;
+      external_id?: string;
+    },
+    select: {
+      id?: boolean;
+      user_name?: boolean;
+      external_id?: boolean;
+    }
+  ) {
+    try {
+      return await prismaClient.owners.findUnique({
+        where: {
+          id: where.id,
+          user_name: where.user_name,
+          external_id: where.external_id,
+        },
+        select,
       });
     } catch (error) {
       this.handleError(error);

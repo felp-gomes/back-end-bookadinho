@@ -18,16 +18,16 @@ export async function userKafkaConsumer() {
       const userConsumer: UserConsumer = JSON.parse(messageToString);
       switch (userConsumer.action) {
         case 'create':
-          await userUsecase.createUser({ externalId: userConsumer.body.id, user_name: userConsumer.body.user_name });
+          await userUsecase.createOwner({ externalId: userConsumer.body.id, user_name: userConsumer.body.user_name });
           break;
         case 'update':
-          await userUsecase.updateUse(userConsumer.body.id, { user_name: userConsumer.body.user_name });
+          await userUsecase.updateOwner(userConsumer.body.id, { user_name: userConsumer.body.user_name });
           break;
-
-        // INSERT MORE ACTION (DELETE)
+        case 'delete':
+          await userUsecase.deleteOwner(userConsumer.body.id);
+          break;
         default:
-          // EXCEPTION
-          break;
+          console.debug('\x1b[31m[RECEIVED MESSAGE AND NOT FOUND ACTION]\x1b[0m');
       }
     },
   });

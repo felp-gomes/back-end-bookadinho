@@ -1,22 +1,10 @@
 import jwt from 'jsonwebtoken';
 import { prismaClient } from '../../infra/database/prisma.js';
 
-export class TokenUserCase {
+export class TokenUsercase {
   private key = process.env.JWT_KEY || 'bola';
   constructor() {}
 
-  public async createToken(userId: string) {
-    try {
-      const token = jwt.sign({ userId }, this.key, {
-        expiresIn: '2 days',
-        algorithm: 'HS256',
-      });
-      return await this.insertToken(token, userId);
-    } catch (error: unknown) {
-      this.handleError(error);
-      throw error;
-    }
-  }
   public verifyToken(token: string) {
     try {
       return jwt.verify(token, this.key);
@@ -32,11 +20,24 @@ export class TokenUserCase {
       },
     });
   }
-  public async deleteTokens(useId: string) {
+  public async insertToken(id: string, ownerId: string) {
+    try {
+      await prismaClient.tokens.create({
+        data: {
+          id,
+          owner_id: ownerId,
+        },
+      });
+    } catch (error) {
+      this.handleError(error);
+      throw error;
+    }
+  }
+  public async deleteTokens(ownerId: string) {
     try {
       await prismaClient.tokens.deleteMany({
         where: {
-          user_id: useId,
+          owner_id: ownerId,
         },
       });
     } catch (error) {
@@ -44,19 +45,7 @@ export class TokenUserCase {
       throw error;
     }
   }
-  private async insertToken(id: string, userId: string) {
-    try {
-      return await prismaClient.tokens.create({
-        data: {
-          id,
-          user_id: userId,
-        },
-      });
-    } catch (error) {
-      this.handleError(error);
-      throw error;
-    }
-  }
+
   private async updatedToken(token: string, newToken: string) {
     await prismaClient.tokens.update({
       where: {
