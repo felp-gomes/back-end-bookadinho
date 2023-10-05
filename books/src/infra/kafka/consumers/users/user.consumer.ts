@@ -1,4 +1,4 @@
-import { kafkaConsumer } from '../kafka.consumer.js';
+import { kafkaConsumer } from './kafka.consumer.js';
 import { UserUsecase } from '../../../../modules/users/user.usecase.js';
 
 type UserConsumer = {
@@ -18,13 +18,25 @@ export async function userKafkaConsumer() {
       const userConsumer: UserConsumer = JSON.parse(messageToString);
       switch (userConsumer.action) {
         case 'create':
-          await userUsecase.createOwner({ externalId: userConsumer.body.id, user_name: userConsumer.body.user_name });
+          try {
+            await userUsecase.createOwner({ externalId: userConsumer.body.id, user_name: userConsumer.body.user_name });
+          } catch (error) {
+            console.debug('\x1b[31m[ERROR CREATEOWNER]\x1b[31m');
+          }
           break;
         case 'update':
-          await userUsecase.updateOwner(userConsumer.body.id, { user_name: userConsumer.body.user_name });
+          try {
+            await userUsecase.updateOwner(userConsumer.body.id, { user_name: userConsumer.body.user_name });
+          } catch (error) {
+            console.debug('\x1b[31m[ERROR UPDATEOWNER]\x1b[31m', error);
+          }
           break;
         case 'delete':
-          await userUsecase.deleteOwner(userConsumer.body.id);
+          try {
+            await userUsecase.deleteOwner(userConsumer.body.id);
+          } catch (error) {
+            console.debug('\x1b[31m[ERROR DELETEOWNER]\x1b[31m', error);
+          }
           break;
         default:
           console.debug('\x1b[31m[RECEIVED MESSAGE AND NOT FOUND ACTION]\x1b[0m');

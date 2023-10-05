@@ -20,11 +20,11 @@ export class TokenUsercase {
       },
     });
   }
-  public async insertToken(id: string, ownerId: string) {
+  public async insertToken(token: string, ownerId: string) {
     try {
       await prismaClient.tokens.create({
         data: {
-          id,
+          id: token,
           owner_id: ownerId,
         },
       });

@@ -17,8 +17,8 @@ export class TokenUserCase {
       await this.kafkaMessage.execute('tokens', {
         action: 'create',
         body: {
-          id: tokenCreated.id,
-          user_name: tokenCreated.user_id,
+          id: tokenCreated.user_id,
+          token: tokenCreated.id,
         },
       });
       return tokenCreated;

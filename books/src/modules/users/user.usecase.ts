@@ -52,9 +52,7 @@ export class UserUsecase {
     }
   ) {
     try {
-      const isUserNameAlready = await prismaClient.owners.findUnique({
-        where: data,
-      });
+      const isUserNameAlready = await this.getDBOwner({ user_name: data.user_name }, { id: true });
       if (isUserNameAlready) {
         throw new Error('database-0001', {
           cause: '/user_name/ is already in use!',

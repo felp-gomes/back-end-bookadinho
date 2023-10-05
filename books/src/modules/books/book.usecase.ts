@@ -38,7 +38,6 @@ export class BookUsecase {
   }) {
     try {
       const bookValidation = BookValidation.safeParse({ id: randomUUID(), ...data });
-      console.log('bookValidation', bookValidation);
       if (!bookValidation.success) throw bookValidation.error;
       return await prismaClient.books.create({
         data,
