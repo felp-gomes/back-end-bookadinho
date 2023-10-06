@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
-import { TokenUserCase } from '../modules/tokens/token.usercase.js';
+import { TokenUsercase } from '../modules/tokens/token.usercase.js';
 import jwt from 'jsonwebtoken';
 
 export class Auth {
-  private tokenUserCase = new TokenUserCase();
+  private tokenUserCase = new TokenUsercase();
   constructor() {}
 
   public async verifyAuthentication(request: Request, response: Response, next: NextFunction) {

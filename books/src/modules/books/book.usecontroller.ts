@@ -80,7 +80,7 @@ export class BookController {
     }
     try {
       const bookConsultedById = await this.bookUseCase.getBookById(bookId);
-      if (!bookConsultedById || bookConsultedById.owner_id !== owner_id) {
+      if (bookConsultedById?.owner_id !== owner_id) {
         return response.status(403).json({
           body: {
             status_code: 403,
@@ -143,7 +143,7 @@ export class BookController {
     }
     try {
       const bookConsultedById = await this.bookUseCase.getBookById(bookId);
-      if (!bookConsultedById || bookConsultedById.owner_id !== owner_id) {
+      if (bookConsultedById?.owner_id !== owner_id) {
         return response.status(403).json({
           body: {
             status_code: 403,
