@@ -45,6 +45,14 @@ export class TokenUsercase {
       throw error;
     }
   }
+  public async deleteToken(token: string) {
+    try {
+      await prismaClient.tokens.delete({ where: { id: token } });
+    } catch (error) {
+      this.handleError(error);
+      throw error;
+    }
+  }
 
   private async updatedToken(token: string, newToken: string) {
     await prismaClient.tokens.update({

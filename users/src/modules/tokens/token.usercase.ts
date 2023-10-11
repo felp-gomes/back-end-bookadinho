@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import { prismaClient } from '../../infra/database/prismaUsers.js';
 import { KafkaSendMessage } from '../../infra/kafka/producer/users/user.producer.js';
 
-export class TokenUserCase {
+export class TokenUsercase {
   private key = process.env.JWT_KEY || 'bola';
   private kafkaMessage = new KafkaSendMessage();
   constructor() {}
@@ -15,7 +15,7 @@ export class TokenUserCase {
       });
       const tokenCreated = await this.insertToken(token, userId);
       await this.kafkaMessage.execute('tokens', {
-        action: 'create',
+        action: 'create_token',
         body: {
           id: tokenCreated.user_id,
           token: tokenCreated.id,
@@ -50,9 +50,23 @@ export class TokenUserCase {
         },
       });
       await this.kafkaMessage.execute('tokens', {
-        action: 'delete',
+        action: 'delete_many_tokens',
         body: {
           id: useId,
+        },
+      });
+    } catch (error) {
+      this.handleError(error);
+      throw error;
+    }
+  }
+  public async deleteToken(token: string) {
+    try {
+      await prismaClient.tokens.delete({ where: { id: token } });
+      await this.kafkaMessage.execute('tokens', {
+        action: 'delete_unique_token',
+        body: {
+          token: token,
         },
       });
     } catch (error) {

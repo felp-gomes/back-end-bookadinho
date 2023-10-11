@@ -4,11 +4,11 @@ import moment from 'moment';
 import { prismaClient } from '../../infra/database/prismaUsers.js';
 import { UserValidation, UserValidationUpdated, UserValidationPassword } from './dtos/users.dto.js';
 import { KafkaSendMessage } from '../../infra/kafka/producer/users/user.producer.js';
-import { TokenUserCase } from '../tokens/token.usercase.js';
+import { TokenUsercase } from '../tokens/token.usercase.js';
 
 export class UserUsecase {
   private kafkaMessage = new KafkaSendMessage();
-  private tokenUserCase = new TokenUserCase();
+  private tokenUserCase = new TokenUsercase();
   constructor() {}
 
   public async getAllUsers(allUsers = false) {

@@ -2,11 +2,11 @@ import { Request, Response } from 'express';
 import { ZodError } from 'zod';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library.js';
 import { UserUsecase } from './user.usecase.js';
-import { TokenUserCase } from '../tokens/token.usercase.js';
+import { TokenUsercase } from '../tokens/token.usercase.js';
 
 export class UserController {
   private userUsecase = new UserUsecase();
-  private tokenUserCase = new TokenUserCase();
+  private tokenUsercase = new TokenUsercase();
 
   constructor() {}
 
@@ -100,7 +100,7 @@ export class UserController {
         body: {
           status_code: 401,
           status: 'fail',
-          message: '/username/ and /password/ profile id are required!',
+          message: '/username/ and /password/ are required!',
         },
       });
     }
@@ -116,7 +116,7 @@ export class UserController {
           },
         });
       }
-      const tokenByUser = await this.tokenUserCase.createToken(user.id);
+      const tokenByUser = await this.tokenUsercase.createToken(user.id);
       return response.status(200).send({ body: { status_code: 200, status: 'success', token: tokenByUser.id } });
     } catch (error) {
       return response.status(500).send({ body: { status_code: 500, status: 'fail', message: 'Internal error!' } });
@@ -158,7 +158,7 @@ export class UserController {
         body: {
           status_code: 400,
           status: 'fail',
-          message: '/id/ profile id are required!',
+          message: '/id/ profile id is required!',
         },
       });
     }
@@ -200,7 +200,7 @@ export class UserController {
       });
       if (password) {
         await this.userUsecase.updatedPassword(userId, password);
-        await this.tokenUserCase.deleteTokens(userId);
+        await this.tokenUsercase.deleteTokens(userId);
         return response
           .status(200)
           .send({ body: { status_code: 200, status: 'success', message: 'User changed successfully!' } });
@@ -254,7 +254,7 @@ export class UserController {
         body: {
           status_code: 400,
           status: 'fail',
-          message: '/id/ profile id are required!',
+          message: '/id/ is required!',
         },
       });
     }
@@ -281,6 +281,43 @@ export class UserController {
             .send({ body: { status_code: 409, status: 'fail', message: 'Username or email is already in use!' } });
         }
       }
+      return response
+        .status(500)
+        .send({ body: { status_code: 500, status: 'fail', message: 'Internal Server Error!' } });
+    }
+  }
+  public async logoutUser(request: Request, response: Response) {
+    const { user_id: userIdByAuthorization } = response.locals;
+    const { authorization: token } = request.headers;
+    const { id: userId } = request.params;
+    if (!token) {
+      return response.status(400).send({
+        body: {
+          status_code: 400,
+          status: 'fail',
+          message: '/token/ is required!',
+        },
+      });
+    }
+    if (userId !== userIdByAuthorization) {
+      return response.status(403).json({
+        body: {
+          status_code: 403,
+          status: 'fail',
+          message: 'The user has no authorization for the action!',
+        },
+      });
+    }
+    try {
+      await this.tokenUsercase.deleteToken(token);
+      return response.status(200).json({
+        body: {
+          status_code: 200,
+          status: 'succes',
+          message: 'The user logout succes!',
+        },
+      });
+    } catch (error) {
       return response
         .status(500)
         .send({ body: { status_code: 500, status: 'fail', message: 'Internal Server Error!' } });
