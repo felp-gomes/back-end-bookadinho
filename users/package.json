@@ -4,6 +4,9 @@
   "main": "index.js",
   "license": "MIT",
   "type": "module",
+  "engines": {
+    "node": ">=18.12.1 <19.0.0"
+  },
   "scripts": {
     "dev": "tsx watch ./src/bin/www/server.ts",
     "compile": "tsc",
