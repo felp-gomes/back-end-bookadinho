@@ -46,7 +46,7 @@ export class BookController {
         is_deleted: false,
         owner_id,
       });
-      return response.status(202).json({ body: { status_code: 202, status: 'succes', books: bookCreated } });
+      return response.status(201).json({ body: { status_code: 201, status: 'succes', books: bookCreated } });
     } catch (error: unknown) {
       if (error instanceof ZodError) {
         const { errors } = error;
