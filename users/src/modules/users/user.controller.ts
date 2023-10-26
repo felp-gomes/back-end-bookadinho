@@ -22,9 +22,9 @@ export class UserController {
     }
   }
   public async getUserById(request: Request, response: Response) {
-    const { id: userId } = request.params;
+    const { user_name: userName } = request.params;
     try {
-      const userConsultedById = await this.userUsecase.getUserById(userId);
+      const userConsultedById = await this.userUsecase.getUserByUsername(userName);
       return userConsultedById
         ? response.status(200).send({ body: { status_code: 200, status: 'success', users: userConsultedById } })
         : response
@@ -67,8 +67,8 @@ export class UserController {
         latest_readings,
         photo,
       });
-      return response.status(202).send({
-        body: { status_code: 202, status: 'succes', users: userCreated },
+      return response.status(201).send({
+        body: { status_code: 201, status: 'succes', users: userCreated },
       });
     } catch (error: unknown) {
       if (error instanceof ZodError) {

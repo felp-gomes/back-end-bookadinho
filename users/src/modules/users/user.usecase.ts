@@ -38,11 +38,11 @@ export class UserUsecase {
       throw error;
     }
   }
-  public async getUserById(userId: string) {
+  public async getUserByUsername(user_name: string) {
     try {
-      return await prismaClient.users.findUnique({
+      return await prismaClient.users.findFirst({
         where: {
-          id: userId,
+          user_name,
         },
         select: {
           id: true,
