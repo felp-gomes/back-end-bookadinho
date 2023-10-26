@@ -22,7 +22,7 @@ export class UserController {
     }
   }
   public async getUserById(request: Request, response: Response) {
-    const { user_name: userName } = request.params;
+    const { username: userName } = request.params;
     try {
       const userConsultedById = await this.userUsecase.getUserByUsername(userName);
       return userConsultedById
