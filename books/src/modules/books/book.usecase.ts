@@ -31,6 +31,7 @@ export class BookUsecase {
     author: string;
     description: string;
     photo: string;
+    rate: number;
     is_changed: boolean;
     is_read: boolean;
     is_deleted: boolean;
@@ -54,6 +55,7 @@ export class BookUsecase {
       author?: string;
       description?: string;
       photo?: string;
+      rate?: number;
       is_changed?: boolean;
       is_read?: boolean;
       is_deleted?: boolean;

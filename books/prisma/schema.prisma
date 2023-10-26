@@ -28,6 +28,7 @@ model Books {
   author      String   @db.VarChar(45)
   description String   @db.VarChar(255)
   photo       String?  @db.VarChar(255)
+  rate        Int
   is_changed  Boolean  @default(false)
   is_read     Boolean  @default(false)
   is_deleted  Boolean  @default(false)

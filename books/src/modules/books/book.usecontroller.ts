@@ -33,14 +33,15 @@ export class BookController {
     }
   }
   public async createBook(request: Request, response: Response) {
-    const { owner_id = 'd6787723-01a1-466c-9fce-ea903fcbe8b2' } = response.locals;
-    const { name, author, description, photo, is_read = false } = request.body;
+    const { owner_id } = response.locals;
+    const { name, author, description, photo, rate, is_read = false } = request.body;
     try {
       const bookCreated = await this.bookUseCase.createBook({
         name,
         author,
         description,
         photo,
+        rate,
         is_changed: false,
         is_read,
         is_deleted: false,
@@ -66,9 +67,9 @@ export class BookController {
     }
   }
   public async updateBook(request: Request, response: Response) {
-    const { owner_id = 'd6787723-01a1-466c-9fce-ea903fcbe8b2' } = response.locals;
+    const { owner_id } = response.locals;
     const { id: bookId } = request.params;
-    const { name, author, description, photo, is_changed, is_read, is_deleted } = request.body;
+    const { name, author, description, photo, rate, is_changed, is_read, is_deleted } = request.body;
     if (!bookId) {
       return response.status(400).json({
         body: {
@@ -100,6 +101,7 @@ export class BookController {
         author,
         description,
         photo,
+        rate,
         is_changed,
         is_read,
         is_deleted,
