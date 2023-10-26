@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { BookController } from '../modules/books/book.usecontroller.js';
 import { Auth } from '../middleware/auth.provider.js';
+import { ExceptionRoutesController } from '../modules/errors/exceptionRoutes.controller.js';
 
 const routes = Router();
 
@@ -12,6 +13,7 @@ routes
   .get('/books/:id', bookController.getBoosById.bind(bookController))
   .post('/books', auth.verifyAuthentication.bind(auth), bookController.createBook.bind(bookController))
   .put('/books/:id', auth.verifyAuthentication.bind(auth), bookController.updateBook.bind(bookController))
-  .delete('/books/:id', auth.verifyAuthentication.bind(auth), bookController.deleteBook.bind(bookController));
+  .delete('/books/:id', auth.verifyAuthentication.bind(auth), bookController.deleteBook.bind(bookController))
+  .get('/', new ExceptionRoutesController().routeRoot);
 
 export default routes;
