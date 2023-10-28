@@ -34,8 +34,10 @@ export class BookUsecase {
     is_changed: boolean;
     is_read: boolean;
     is_deleted: boolean;
+    rate: string;
     owner_id: string;
   }) {
+    console.log(data);
     try {
       const bookValidation = BookValidation.safeParse({ id: randomUUID(), ...data });
       if (!bookValidation.success) throw bookValidation.error;
@@ -57,6 +59,7 @@ export class BookUsecase {
       is_changed?: boolean;
       is_read?: boolean;
       is_deleted?: boolean;
+      rate?: string;
     }
   ) {
     try {
