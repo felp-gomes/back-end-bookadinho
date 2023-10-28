@@ -10,9 +10,6 @@ export async function tokenKafkaConsumer() {
     eachMessage: async ({ message }) => {
       const messageToString = message.value!.toString();
       const tokenConsumer = JSON.parse(messageToString);
-      console.log('\x1b[tokenConsumer]\x1b[0m');
-      console.log(tokenConsumer);
-      console.log('\x1b[tokenConsumer]\x1b[0m');
       switch (tokenConsumer.action) {
         case 'create_token': {
           try {
