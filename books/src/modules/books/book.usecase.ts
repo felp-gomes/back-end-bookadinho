@@ -4,10 +4,21 @@ import { BookValidation, BookValidationUpdated } from './dtos/books.dto.js';
 
 export class BookUsecase {
   constructor() {}
-  public async getAllBooks(allBooks = false) {
+  public async getAllBooks(allBooks = false, quantityBooks = 10, page = 0) {
     try {
       return await prismaClient.books.findMany({
-        where: allBooks ? undefined : { is_deleted: false },
+        where: allBooks
+          ? {
+              is_deleted: true,
+            }
+          : {
+              is_deleted: false,
+            },
+        orderBy: {
+          created_at: 'desc',
+        },
+        skip: quantityBooks * page,
+        take: quantityBooks,
       });
     } catch (error: unknown) {
       this.handleError(error);
@@ -26,6 +37,28 @@ export class BookUsecase {
       throw error;
     }
   }
+  public async getBooksByUserId(allBooks: boolean, userId: string, quantityBooks = 10, page = 0) {
+    const user = await prismaClient.owners.findFirst({
+      where: {
+        external_id: userId,
+      },
+    });
+    if (!user) {
+      return null;
+    }
+    console.log(user);
+    return await prismaClient.books.findMany({
+      where: {
+        owner_id: user.id,
+        is_deleted: allBooks ? true : false,
+      },
+      orderBy: {
+        created_at: 'desc',
+      },
+      skip: quantityBooks * page,
+      take: quantityBooks,
+    });
+  }
   public async createBook(data: {
     name: string;
     author: string;
@@ -34,6 +67,7 @@ export class BookUsecase {
     is_changed: boolean;
     is_read: boolean;
     is_deleted: boolean;
+    rate: string;
     owner_id: string;
   }) {
     try {
@@ -57,6 +91,7 @@ export class BookUsecase {
       is_changed?: boolean;
       is_read?: boolean;
       is_deleted?: boolean;
+      rate?: string;
     }
   ) {
     try {

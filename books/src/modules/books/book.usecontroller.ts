@@ -7,9 +7,18 @@ export class BookController {
   constructor() {}
 
   public async getAllBooks(request: Request, response: Response) {
-    const { allbooks: allBooks = false } = request.query;
+    const { allbooks: allBooks = false, quantity: quantityBooks = 10, page = 0 } = request.query;
+    if ((quantityBooks !== null && Number(quantityBooks) < 1) || (page !== null && Number(page) < 0)) {
+      return response.status(400).json({
+        body: {
+          status_code: 400,
+          status: 'fail',
+          message: '/quantity/ and /page/ must be positive numbers!',
+        },
+      });
+    }
     try {
-      const booksConsulted = await this.bookUseCase.getAllBooks(!!allBooks);
+      const booksConsulted = await this.bookUseCase.getAllBooks(!!allBooks, Number(quantityBooks), Number(page));
       return response.status(200).send({ body: { status_code: 200, status: 'success', books: booksConsulted } });
     } catch (error) {
       return response
@@ -17,7 +26,7 @@ export class BookController {
         .send({ body: { status_code: 500, status: 'fail', message: 'Internal Server Error!' } });
     }
   }
-  public async getBoosById(request: Request, response: Response) {
+  public async getBookById(request: Request, response: Response) {
     const { id: bookId } = request.params;
     try {
       const booksConsultedById = await this.bookUseCase.getBookById(bookId);
@@ -32,9 +41,48 @@ export class BookController {
         .send({ body: { status_code: 500, status: 'fail', message: 'Internal Server Error!' } });
     }
   }
+  public async getBooksByUserId(request: Request, response: Response) {
+    const { allbooks: allBooks = false, quantity: quantityBooks = 10, page = 0 } = request.query;
+    const { id: userId } = request.params;
+    if ((quantityBooks !== null && Number(quantityBooks) < 1) || (page !== null && Number(page) < 0)) {
+      return response.status(400).json({
+        body: {
+          status_code: 400,
+          status: 'fail',
+          message: '/quantity/ and /page/ must be positive numbers!',
+        },
+      });
+    }
+    try {
+      const booksConsultedById = await this.bookUseCase.getBooksByUserId(
+        !!allBooks,
+        userId,
+        Number(quantityBooks),
+        Number(page)
+      );
+      return booksConsultedById
+        ? response.status(200).send({ body: { status_code: 200, status: 'success', books: booksConsultedById } })
+        : response
+            .status(404)
+            .send({ body: { status_code: 404, status: 'fail', message: 'User not found by the id provided!' } });
+    } catch (error) {
+      return response
+        .status(500)
+        .send({ body: { status_code: 500, status: 'fail', message: 'Internal Server Error!' } });
+    }
+  }
   public async createBook(request: Request, response: Response) {
-    const { owner_id = 'd6787723-01a1-466c-9fce-ea903fcbe8b2' } = response.locals;
-    const { name, author, description, photo, is_read = false } = request.body;
+    const { owner_id } = response.locals;
+    const { name, author, description, photo, is_read = false, rate = null } = request.body;
+    if (rate !== null && (Number(rate) < 1 || Number(rate) > 5)) {
+      return response.status(400).json({
+        body: {
+          status_code: 400,
+          status: 'fail',
+          message: 'The /rate/ must be between 1 and 5!',
+        },
+      });
+    }
     try {
       const bookCreated = await this.bookUseCase.createBook({
         name,
@@ -44,6 +92,7 @@ export class BookController {
         is_changed: false,
         is_read,
         is_deleted: false,
+        rate,
         owner_id,
       });
       return response.status(201).json({ body: { status_code: 201, status: 'succes', books: bookCreated } });
@@ -66,15 +115,24 @@ export class BookController {
     }
   }
   public async updateBook(request: Request, response: Response) {
-    const { owner_id = 'd6787723-01a1-466c-9fce-ea903fcbe8b2' } = response.locals;
+    const { owner_id } = response.locals;
     const { id: bookId } = request.params;
-    const { name, author, description, photo, is_changed, is_read, is_deleted } = request.body;
+    const { name, author, description, photo, is_changed, is_read, is_deleted, rate } = request.body;
     if (!bookId) {
       return response.status(400).json({
         body: {
           status_code: 400,
           status: 'fail',
           message: '/bookid/ is required!',
+        },
+      });
+    }
+    if (rate !== null && (Number(rate) < 1 || Number(rate) > 5)) {
+      return response.status(400).json({
+        body: {
+          status_code: 400,
+          status: 'fail',
+          message: 'The /rate/ must be between 1 and 5',
         },
       });
     }
@@ -103,6 +161,7 @@ export class BookController {
         is_changed,
         is_read,
         is_deleted,
+        rate,
       });
       return response.status(200).json({
         body: {
@@ -130,7 +189,7 @@ export class BookController {
     }
   }
   public async deleteBook(request: Request, response: Response) {
-    const { owner_id = 'd6787723-01a1-466c-9fce-ea903fcbe8b2' } = response.locals;
+    const { owner_id } = response.locals;
     const { id: bookId } = request.params;
     if (!bookId) {
       return response.status(400).json({

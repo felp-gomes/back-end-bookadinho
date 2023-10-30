@@ -31,6 +31,7 @@ model Books {
   is_changed  Boolean  @default(false)
   is_read     Boolean  @default(false)
   is_deleted  Boolean  @default(false)
+  rate        String?  @db.VarChar(1)
   owner_id    String
   owner       Owners   @relation(fields: [owner_id], references: [id])
   created_at  DateTime @default(now())
