@@ -7,9 +7,19 @@ export class BookController {
   constructor() {}
 
   public async getAllBooks(request: Request, response: Response) {
-    const { allbooks: allBooks = false } = request.query;
+    const { allbooks: allBooks = false, quantity: quantityBooks = 10, page = 0 } = request.query;
+
+    if ((quantityBooks !== null && Number(quantityBooks) < 1) || (page !== null && Number(page) < 0)) {
+      return response.status(400).json({
+        body: {
+          status_code: 400,
+          status: 'fail',
+          message: '/quantity/ and /page/ must be positive numbers!',
+        },
+      });
+    }
     try {
-      const booksConsulted = await this.bookUseCase.getAllBooks(!!allBooks);
+      const booksConsulted = await this.bookUseCase.getAllBooks(!!allBooks, Number(quantityBooks), Number(page));
       return response.status(200).send({ body: { status_code: 200, status: 'success', books: booksConsulted } });
     } catch (error) {
       return response
@@ -40,7 +50,7 @@ export class BookController {
         body: {
           status_code: 400,
           status: 'fail',
-          message: 'The /rate/ must be between 1 and 5',
+          message: 'The /rate/ must be between 1 and 5!',
         },
       });
     }

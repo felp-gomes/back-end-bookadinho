@@ -4,10 +4,21 @@ import { BookValidation, BookValidationUpdated } from './dtos/books.dto.js';
 
 export class BookUsecase {
   constructor() {}
-  public async getAllBooks(allBooks = false) {
+  public async getAllBooks(allBooks = false, quantityBooks = 10, page = 0) {
     try {
       return await prismaClient.books.findMany({
-        where: allBooks ? undefined : { is_deleted: false },
+        where: allBooks
+          ? {
+              is_deleted: true,
+            }
+          : {
+              is_deleted: false,
+            },
+        orderBy: {
+          created_at: 'desc',
+        },
+        skip: quantityBooks * page,
+        take: quantityBooks,
       });
     } catch (error: unknown) {
       this.handleError(error);
@@ -37,7 +48,6 @@ export class BookUsecase {
     rate: string;
     owner_id: string;
   }) {
-    console.log(data);
     try {
       const bookValidation = BookValidation.safeParse({ id: randomUUID(), ...data });
       if (!bookValidation.success) throw bookValidation.error;
