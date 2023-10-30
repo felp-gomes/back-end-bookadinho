@@ -8,7 +8,6 @@ export class BookController {
 
   public async getAllBooks(request: Request, response: Response) {
     const { allbooks: allBooks = false, quantity: quantityBooks = 10, page = 0 } = request.query;
-
     if ((quantityBooks !== null && Number(quantityBooks) < 1) || (page !== null && Number(page) < 0)) {
       return response.status(400).json({
         body: {
@@ -27,10 +26,40 @@ export class BookController {
         .send({ body: { status_code: 500, status: 'fail', message: 'Internal Server Error!' } });
     }
   }
-  public async getBoosById(request: Request, response: Response) {
+  public async getBookById(request: Request, response: Response) {
     const { id: bookId } = request.params;
     try {
       const booksConsultedById = await this.bookUseCase.getBookById(bookId);
+      return booksConsultedById
+        ? response.status(200).send({ body: { status_code: 200, status: 'success', books: booksConsultedById } })
+        : response
+            .status(404)
+            .send({ body: { status_code: 404, status: 'fail', message: 'User not found by the id provided!' } });
+    } catch (error) {
+      return response
+        .status(500)
+        .send({ body: { status_code: 500, status: 'fail', message: 'Internal Server Error!' } });
+    }
+  }
+  public async getBooksByUserId(request: Request, response: Response) {
+    const { allbooks: allBooks = false, quantity: quantityBooks = 10, page = 0 } = request.query;
+    const { id: userId } = request.params;
+    if ((quantityBooks !== null && Number(quantityBooks) < 1) || (page !== null && Number(page) < 0)) {
+      return response.status(400).json({
+        body: {
+          status_code: 400,
+          status: 'fail',
+          message: '/quantity/ and /page/ must be positive numbers!',
+        },
+      });
+    }
+    try {
+      const booksConsultedById = await this.bookUseCase.getBooksByUserId(
+        !!allBooks,
+        userId,
+        Number(quantityBooks),
+        Number(page)
+      );
       return booksConsultedById
         ? response.status(200).send({ body: { status_code: 200, status: 'success', books: booksConsultedById } })
         : response

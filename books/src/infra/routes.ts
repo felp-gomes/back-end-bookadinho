@@ -10,7 +10,8 @@ const auth = new Auth();
 
 routes
   .get('/books', bookController.getAllBooks.bind(bookController))
-  .get('/books/:id', bookController.getBoosById.bind(bookController))
+  .get('/books/:id', bookController.getBookById.bind(bookController))
+  .get('/books/user/:id', bookController.getBooksByUserId.bind(bookController))
   .post('/books', auth.verifyAuthentication.bind(auth), bookController.createBook.bind(bookController))
   .put('/books/:id', auth.verifyAuthentication.bind(auth), bookController.updateBook.bind(bookController))
   .delete('/books/:id', auth.verifyAuthentication.bind(auth), bookController.deleteBook.bind(bookController))
