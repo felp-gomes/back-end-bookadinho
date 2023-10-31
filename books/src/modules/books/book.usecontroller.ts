@@ -7,7 +7,13 @@ export class BookController {
   constructor() {}
 
   public async getAllBooks(request: Request, response: Response) {
-    const { allbooks: allBooks = false, quantity: quantityBooks = 10, page = 0 } = request.query;
+    const {
+      allbooks: allBooks = false,
+      quantity: quantityBooks = 10,
+      page = 0,
+      name: searchName,
+      author: searchAuthor,
+    } = request.query;
     if ((quantityBooks !== null && Number(quantityBooks) < 1) || (page !== null && Number(page) < 0)) {
       return response.status(400).json({
         body: {
@@ -18,7 +24,13 @@ export class BookController {
       });
     }
     try {
-      const booksConsulted = await this.bookUseCase.getAllBooks(!!allBooks, Number(quantityBooks), Number(page));
+      const booksConsulted = await this.bookUseCase.getAllBooks(
+        !!allBooks,
+        Number(quantityBooks),
+        Number(page),
+        String(searchName),
+        String(searchAuthor)
+      );
       return response.status(200).send({ body: { status_code: 200, status: 'success', books: booksConsulted } });
     } catch (error) {
       return response
