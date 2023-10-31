@@ -4,16 +4,26 @@ import { BookValidation, BookValidationUpdated } from './dtos/books.dto.js';
 
 export class BookUsecase {
   constructor() {}
-  public async getAllBooks(allBooks = false, quantityBooks = 10, page = 0) {
+  public async getAllBooks(
+    allBooks = false,
+    quantityBooks = 10,
+    page = 0,
+    searchName: string | undefined,
+    searchAuthor: string | undefined
+  ) {
     try {
       return await prismaClient.books.findMany({
-        where: allBooks
-          ? {
-              is_deleted: true,
-            }
-          : {
-              is_deleted: false,
+        where: {
+          AND: {
+            is_deleted: allBooks ? true : false,
+            name: {
+              contains: searchName,
             },
+            author: {
+              contains: searchAuthor,
+            },
+          },
+        },
         orderBy: {
           created_at: 'desc',
         },
