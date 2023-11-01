@@ -11,9 +11,23 @@ export class UserController {
   constructor() {}
 
   public async getAllUsers(request: Request, response: Response) {
-    const { allusers: allUsers = false } = request.query;
+    const { allusers: allUsers, quantity: quantityUsers = 10, page = 0, name: searchName } = request.query;
+    if ((quantityUsers !== null && Number(quantityUsers) < 1) || (page !== null && Number(page) < 0)) {
+      return response.status(400).json({
+        body: {
+          status_code: 400,
+          status: 'fail',
+          message: '/quantity/ and /page/ must be positive numbers!',
+        },
+      });
+    }
     try {
-      const usersConsulted = await this.userUsecase.getAllUsers(!!allUsers);
+      const usersConsulted = await this.userUsecase.getAllUsers(
+        !!allUsers,
+        Number(quantityUsers),
+        Number(page),
+        searchName && String(searchName)
+      );
       return response.status(200).send({ body: { status_code: 200, status: 'success', users: usersConsulted } });
     } catch (error) {
       return response
@@ -105,7 +119,15 @@ export class UserController {
       });
     }
     try {
-      const user = await this.userUsecase.getDBUser({ user_name }, { id: true, password: true });
+      const user = await this.userUsecase.getDBUser(
+        { user_name },
+        {
+          id: true,
+          user_name: true,
+          password: true,
+          photo: true,
+        }
+      );
       const validatedPassword = await this.userUsecase.checkPassword(password, user?.password || '');
       if (!user || !validatedPassword) {
         return response.status(403).send({
@@ -117,7 +139,18 @@ export class UserController {
         });
       }
       const tokenByUser = await this.tokenUsercase.createToken(user.id);
-      return response.status(200).send({ body: { status_code: 200, status: 'success', token: tokenByUser.id } });
+      return response.status(200).send({
+        body: {
+          status_code: 200,
+          status: 'success',
+          user: {
+            id: user.id,
+            user_name: user.user_name,
+            photo: user.photo,
+          },
+          token: tokenByUser.id,
+        },
+      });
     } catch (error) {
       return response.status(500).send({ body: { status_code: 500, status: 'fail', message: 'Internal error!' } });
     }

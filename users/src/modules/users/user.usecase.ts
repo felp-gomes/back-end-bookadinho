@@ -11,13 +11,22 @@ export class UserUsecase {
   private tokenUserCase = new TokenUsercase();
   constructor() {}
 
-  public async getAllUsers(allUsers = false) {
-    const getUsersByOnlyActive = {
-      is_activated: true,
-    };
+  public async getAllUsers(
+    isGetSomeUsersActive: boolean | undefined = undefined,
+    quantityUsers = 10,
+    page = 0,
+    searchName: string | undefined
+  ) {
     try {
       return await prismaClient.users.findMany({
-        where: allUsers ? undefined : getUsersByOnlyActive,
+        where: {
+          is_activated: isGetSomeUsersActive ? undefined : true,
+          AND: {
+            user_name: {
+              contains: searchName,
+            },
+          },
+        },
         select: {
           id: true,
           user_name: true,
@@ -32,6 +41,11 @@ export class UserUsecase {
           created_at: true,
           updated_at: true,
         },
+        orderBy: {
+          created_at: 'desc',
+        },
+        skip: quantityUsers * page,
+        take: quantityUsers,
       });
     } catch (error: unknown) {
       this.handleError(error);
