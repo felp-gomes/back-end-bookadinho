@@ -11,9 +11,23 @@ export class UserController {
   constructor() {}
 
   public async getAllUsers(request: Request, response: Response) {
-    const { allusers: allUsers = false } = request.query;
+    const { allusers: allUsers, quantity: quantityUsers = 10, page = 0, name: searchName } = request.query;
+    if ((quantityUsers !== null && Number(quantityUsers) < 1) || (page !== null && Number(page) < 0)) {
+      return response.status(400).json({
+        body: {
+          status_code: 400,
+          status: 'fail',
+          message: '/quantity/ and /page/ must be positive numbers!',
+        },
+      });
+    }
     try {
-      const usersConsulted = await this.userUsecase.getAllUsers(!!allUsers);
+      const usersConsulted = await this.userUsecase.getAllUsers(
+        !!allUsers,
+        Number(quantityUsers),
+        Number(page),
+        searchName && String(searchName)
+      );
       return response.status(200).send({ body: { status_code: 200, status: 'success', users: usersConsulted } });
     } catch (error) {
       return response
