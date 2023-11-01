@@ -8,7 +8,7 @@ export class BookController {
 
   public async getAllBooks(request: Request, response: Response) {
     const {
-      allbooks: allBooks = false,
+      allbooks: allBooks,
       quantity: quantityBooks = 10,
       page = 0,
       name: searchName,
@@ -28,8 +28,8 @@ export class BookController {
         !!allBooks,
         Number(quantityBooks),
         Number(page),
-        String(searchName),
-        String(searchAuthor)
+        searchName && String(searchName),
+        searchAuthor && String(searchAuthor)
       );
       return response.status(200).send({ body: { status_code: 200, status: 'success', books: booksConsulted } });
     } catch (error) {
