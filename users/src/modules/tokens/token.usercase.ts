@@ -1,10 +1,12 @@
 import jwt from 'jsonwebtoken';
 import { prismaClient } from '../../infra/database/prismaUsers.js';
 import { KafkaSendMessage } from '../../infra/kafka/producer/users/user.producer.js';
+import { RedisUseCase } from '../../infra/Redis/redis.usecase.js';
 
 export class TokenUsercase {
   private key = process.env.JWT_KEY || 'bola';
   private kafkaMessage = new KafkaSendMessage();
+  private redisUseCase = new RedisUseCase();
   constructor() {}
 
   public async createToken(userId: string) {
@@ -13,15 +15,8 @@ export class TokenUsercase {
         expiresIn: '2 days',
         algorithm: 'HS256',
       });
-      const tokenCreated = await this.insertToken(token, userId);
-      await this.kafkaMessage.execute('tokens', {
-        action: 'create_token',
-        body: {
-          id: tokenCreated.user_id,
-          token: tokenCreated.id,
-        },
-      });
-      return tokenCreated;
+      await this.insertToken(userId, token);
+      return token;
     } catch (error: unknown) {
       this.handleError(error);
       throw error;
@@ -74,14 +69,9 @@ export class TokenUsercase {
       throw error;
     }
   }
-  private async insertToken(id: string, userId: string) {
+  private async insertToken(userId: string, token: string) {
     try {
-      return await prismaClient.tokens.create({
-        data: {
-          id,
-          user_id: userId,
-        },
-      });
+      await this.redisUseCase.set(`user:${userId}:${token}`, token);
     } catch (error) {
       this.handleError(error);
       throw error;

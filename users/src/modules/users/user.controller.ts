@@ -148,7 +148,7 @@ export class UserController {
             user_name: user.user_name,
             photo: user.photo,
           },
-          token: tokenByUser.id,
+          token: tokenByUser,
         },
       });
     } catch (error) {
