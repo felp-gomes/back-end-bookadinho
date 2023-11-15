@@ -1,9 +1,9 @@
 import jwt from 'jsonwebtoken';
 import { prismaClient } from '../../infra/database/prismaUsers.js';
 import { KafkaSendMessage } from '../../infra/kafka/producer/users/user.producer.js';
-import { RedisUseCase } from '../../infra/Redis/redis.usecase.js';
+import { RedisUsecase } from '../../infra/Redis/redis.usecase.js';
 
-export class TokenUsercase extends RedisUseCase {
+export class TokenUsercase extends RedisUsecase {
   private key = process.env.JWT_KEY || 'bola';
   private kafkaMessage = new KafkaSendMessage();
   constructor() {

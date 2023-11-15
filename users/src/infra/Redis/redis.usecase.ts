@@ -1,6 +1,6 @@
 import { redis } from '../../infra/database/redis/index.js';
 
-export class RedisUseCase {
+export class RedisUsecase {
   constructor() {}
 
   public async set(key: string, value: string, duration: number) {
