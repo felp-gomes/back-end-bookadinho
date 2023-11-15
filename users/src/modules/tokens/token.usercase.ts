@@ -3,11 +3,12 @@ import { prismaClient } from '../../infra/database/prismaUsers.js';
 import { KafkaSendMessage } from '../../infra/kafka/producer/users/user.producer.js';
 import { RedisUseCase } from '../../infra/Redis/redis.usecase.js';
 
-export class TokenUsercase {
+export class TokenUsercase extends RedisUseCase {
   private key = process.env.JWT_KEY || 'bola';
   private kafkaMessage = new KafkaSendMessage();
-  private redisUseCase = new RedisUseCase();
-  constructor() {}
+  constructor() {
+    super();
+  }
 
   public async createToken(userId: string) {
     try {
@@ -71,7 +72,7 @@ export class TokenUsercase {
   }
   private async insertToken(userId: string, token: string) {
     try {
-      await this.redisUseCase.set(`token:${userId}:${token}`, token);
+      await super.set(`token:${userId}:${token}`, token, 172800);
     } catch (error) {
       this.handleError(error);
       throw error;
@@ -86,10 +87,5 @@ export class TokenUsercase {
         id: newToken,
       },
     });
-  }
-  private handleError(error: unknown) {
-    console.debug('\x1b[31m[<<<---START ERROR--->>>]\x1b[0m');
-    console.error(error);
-    console.debug('\x1b[31m[<<<---END ERROR--->>>]\x1b[0m');
   }
 }
