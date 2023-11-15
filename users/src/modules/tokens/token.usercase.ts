@@ -71,7 +71,7 @@ export class TokenUsercase {
   }
   private async insertToken(userId: string, token: string) {
     try {
-      await this.redisUseCase.set(`user:${userId}:${token}`, token);
+      await this.redisUseCase.set(`token:${userId}:${token}`, token);
     } catch (error) {
       this.handleError(error);
       throw error;
