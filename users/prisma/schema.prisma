@@ -18,19 +18,8 @@ model Users {
   latest_readings String[] @db.VarChar(125)
   photo           String?
   is_activated    Boolean  @default(true)
-  Tokens          Tokens[]
   created_at      DateTime @default(now())
   updated_at      DateTime @updatedAt
 
   @@map("users")
-}
-
-model Tokens {
-  id         String   @id @unique
-  user_id    String
-  user       Users    @relation(fields: [user_id], references: [id])
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-
-  @@map("tokens")
 }
