@@ -8,7 +8,7 @@ import { TokenUsercase } from '../tokens/token.usercase.js';
 
 export class UserUsecase {
   private kafkaMessage = new KafkaSendMessage();
-  private tokenUserCase = new TokenUsercase();
+  private tokenUsercase = new TokenUsercase();
   constructor() {}
 
   public async getAllUsers(
@@ -226,6 +226,7 @@ export class UserUsecase {
       const validatedPassword = UserValidationPassword.safeParse({ password });
       if (!validatedPassword.success) throw validatedPassword.error;
       const encryptPassword = await this.encryptPassword(password);
+      await this.tokenUsercase.deleteTokens(userId);
       return await prismaClient.users.update({
         where: {
           id: userId,
@@ -241,7 +242,7 @@ export class UserUsecase {
   }
   public async deleteUser(userId: string) {
     try {
-      await this.tokenUserCase.deleteTokens(userId);
+      await this.tokenUsercase.deleteTokens(userId);
     } catch (error) {
       this.handleError(error);
       throw error;
@@ -271,6 +272,21 @@ export class UserUsecase {
       });
     } catch (error) {
       this.handleError(error);
+      throw error;
+    }
+  }
+  public async loginUser(userId: string) {
+    try {
+      return await this.tokenUsercase.createToken(userId);
+    } catch (error) {
+      this.handleError(error);
+      throw error;
+    }
+  }
+  public async logoutUser(userId: string, token: string) {
+    try {
+      await this.tokenUsercase.deleteToken(token, userId);
+    } catch (error) {
       throw error;
     }
   }

@@ -1,11 +1,9 @@
 import jwt from 'jsonwebtoken';
 import { prismaClient } from '../../infra/database/prismaUsers.js';
-import { KafkaSendMessage } from '../../infra/kafka/producer/users/user.producer.js';
 import { RedisUsecase } from '../../infra/Redis/redis.usecase.js';
 
 export class TokenUsercase extends RedisUsecase {
   private key = process.env.JWT_KEY || 'bola';
-  private kafkaMessage = new KafkaSendMessage();
   constructor() {
     super();
   }
@@ -19,62 +17,58 @@ export class TokenUsercase extends RedisUsecase {
       await this.insertToken(userId, token);
       return token;
     } catch (error: unknown) {
-      this.handleError(error);
+      super.handleError(error);
       throw error;
     }
   }
-  public verifyToken(token: string) {
+  public validationToken(token: string) {
     try {
       return jwt.verify(token, this.key);
-    } catch (error: unknown) {
-      this.handleError(error);
+    } catch (error) {
+      super.handleError(error);
       throw error;
     }
   }
-  public async getToken(token: string) {
-    return await prismaClient.tokens.findUnique({
-      where: {
-        id: token,
-      },
-    });
+  public async verifyToken(token: string) {
+    let valueToken: { userId: string; iat: number; exp: number };
+    try {
+      valueToken = this.validationToken(token) as { userId: string; iat: number; exp: number };
+    } catch (error) {
+      throw error;
+    }
+    try {
+      const validToken = await super.getValueKey(`token:${valueToken.userId}:${token}`);
+      if (!validToken) {
+        throw new Error('Not found token', {
+          cause: 'ERR:TOKEN:0001',
+        });
+      }
+      return valueToken.userId;
+    } catch (error) {
+      throw error;
+    }
   }
   public async deleteTokens(useId: string) {
     try {
-      await prismaClient.tokens.deleteMany({
-        where: {
-          user_id: useId,
-        },
-      });
-      await this.kafkaMessage.execute('tokens', {
-        action: 'delete_many_tokens',
-        body: {
-          id: useId,
-        },
-      });
+      await super.deleteKeys(`*token:${useId}*`);
     } catch (error) {
-      this.handleError(error);
+      super.handleError(error);
       throw error;
     }
   }
-  public async deleteToken(token: string) {
+  public async deleteToken(token: string, userId: string) {
     try {
-      await prismaClient.tokens.delete({ where: { id: token } });
-      await this.kafkaMessage.execute('tokens', {
-        action: 'delete_unique_token',
-        body: {
-          token: token,
-        },
-      });
+      await super.deleteKeys(`*token:${userId}:${token}*`);
     } catch (error) {
-      this.handleError(error);
+      super.handleError(error);
       throw error;
     }
   }
   private async insertToken(userId: string, token: string) {
     try {
-      await super.set(`token:${userId}:${token}`, token, 172800);
+      await super.setKey(`token:${userId}:${token}`, token, 172800);
     } catch (error) {
-      this.handleError(error);
+      super.handleError(error);
       throw error;
     }
   }
