@@ -1,5 +1,4 @@
 import jwt from 'jsonwebtoken';
-import { prismaClient } from '../../infra/database/prismaUsers.js';
 import { RedisUsecase } from '../../infra/Redis/redis.usecase.js';
 
 export class TokenUsercase extends RedisUsecase {
@@ -14,7 +13,7 @@ export class TokenUsercase extends RedisUsecase {
         expiresIn: '2 days',
         algorithm: 'HS256',
       });
-      await this.insertToken(userId, token);
+      await this.insertToken(token, userId);
       return token;
     } catch (error: unknown) {
       super.handleError(error);
@@ -43,6 +42,7 @@ export class TokenUsercase extends RedisUsecase {
           cause: 'ERR:TOKEN:0001',
         });
       }
+      await super.updatedDurationKey(`token:${valueToken.userId}:${token}`, 172800, 'GT');
       return valueToken.userId;
     } catch (error) {
       throw error;
@@ -64,22 +64,12 @@ export class TokenUsercase extends RedisUsecase {
       throw error;
     }
   }
-  private async insertToken(userId: string, token: string) {
+  private async insertToken(token: string, userId: string) {
     try {
       await super.setKey(`token:${userId}:${token}`, token, 172800);
     } catch (error) {
       super.handleError(error);
       throw error;
     }
-  }
-  private async updatedToken(token: string, newToken: string) {
-    await prismaClient.tokens.update({
-      where: {
-        id: token,
-      },
-      data: {
-        id: newToken,
-      },
-    });
   }
 }
