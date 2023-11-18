@@ -51,7 +51,6 @@ export class RedisUsecase {
       throw error;
     }
   }
-
   protected handleError(error: unknown) {
     console.debug('\x1b[31m[<<<---START ERROR--->>>]\x1b[0m');
     console.error(error);

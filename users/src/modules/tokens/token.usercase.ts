@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { RedisUsecase } from '../redis/redis.usecase.js';
+import { RedisUsecase } from '../redia/redis.usecase.js';
 
 export class TokenUsercase extends RedisUsecase {
   private key = process.env.JWT_KEY || 'bola';
