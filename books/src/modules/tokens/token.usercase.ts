@@ -1,72 +1,43 @@
 import jwt from 'jsonwebtoken';
-import { prismaClient } from '../../infra/database/prisma.js';
+import { RedisUsecase } from '../../infra/Redis/redis.usecase.js';
+import { UserUsecase } from '../users/user.usecase.js';
 
-export class TokenUsercase {
+export class TokenUsercase extends RedisUsecase {
   private key = process.env.JWT_KEY || 'bola';
-  constructor() {}
+  private userUsecase = new UserUsecase();
+  constructor() {
+    super();
+  }
 
-  public verifyToken(token: string) {
+  public validationToken(token: string) {
     try {
       return jwt.verify(token, this.key);
-    } catch (error: unknown) {
-      this.handleError(error);
-      throw error;
-    }
-  }
-  public async getToken(token: string) {
-    return await prismaClient.tokens.findUnique({
-      where: {
-        id: token,
-      },
-    });
-  }
-  public async insertToken(token: string, ownerId: string) {
-    try {
-      await prismaClient.tokens.create({
-        data: {
-          id: token,
-          owner_id: ownerId,
-        },
-      });
     } catch (error) {
-      this.handleError(error);
+      super.handleError(error);
       throw error;
     }
   }
-  public async deleteTokens(ownerId: string) {
+  public async verifyToken(token: string) {
+    let valueToken: { userId: string; iat: number; exp: number };
     try {
-      await prismaClient.tokens.deleteMany({
-        where: {
-          owner_id: ownerId,
-        },
-      });
+      valueToken = this.validationToken(token) as { userId: string; iat: number; exp: number };
     } catch (error) {
-      this.handleError(error);
       throw error;
     }
-  }
-  public async deleteToken(token: string) {
     try {
-      await prismaClient.tokens.delete({ where: { id: token } });
+      const [validTokenByRedis, validUserByDatabase] = await Promise.all([
+        await super.getValueKey(`token:${valueToken.userId}:${token}`),
+        await this.userUsecase.getDBOwner({ external_id: valueToken.userId }, { id: true }),
+      ]);
+      if (!validTokenByRedis || !validUserByDatabase) {
+        throw new Error('Invalid token for the request!', {
+          cause: 'ERR:TOKEN:0001',
+        });
+      }
+      await super.updatedDurationKey(`token:${valueToken.userId}:${token}`, 172800, 'GT');
+      return validUserByDatabase.id;
     } catch (error) {
-      this.handleError(error);
       throw error;
     }
-  }
-
-  private async updatedToken(token: string, newToken: string) {
-    await prismaClient.tokens.update({
-      where: {
-        id: token,
-      },
-      data: {
-        id: newToken,
-      },
-    });
-  }
-  private handleError(error: unknown) {
-    console.debug('\x1b[31m[<<<---START ERROR--->>>]\x1b[0m');
-    console.error(error);
-    console.debug('\x1b[31m[<<<---END ERROR--->>>]\x1b[0m');
   }
 }

@@ -1,9 +1,7 @@
 import moment from 'moment';
-import { TokenUsercase } from '../tokens/token.usercase.js';
 import { prismaClient } from '../../infra/database/prisma.js';
 
 export class UserUsecase {
-  private tokenUsercase = new TokenUsercase();
   constructor() {}
 
   public async createOwner({ externalId, user_name }: { externalId: string; user_name: string }) {
@@ -78,7 +76,6 @@ export class UserUsecase {
     try {
       const userConsulted = await this.getDBOwner({ external_id: externalId }, { id: true });
       if (!userConsulted) throw Error('database-404', { cause: 'Not found user by /external_id/!' });
-      await this.tokenUsercase.deleteTokens(userConsulted.id);
     } catch (error) {
       this.handleError(error);
       throw error;

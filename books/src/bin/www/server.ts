@@ -3,6 +3,7 @@ import os from 'node:os';
 import 'dotenv/config';
 import '../../infra/kafka/consumers/intex.js';
 import app from '../../app.js';
+import '../../infra/database/redis/index.js';
 
 const cpus = os.cpus();
 const port = process.env.PORT || 3001;
