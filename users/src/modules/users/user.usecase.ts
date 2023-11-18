@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import bcrypt from 'bcrypt';
 import moment from 'moment';
-import { prismaClient } from '../../infra/database/prismaUsers.js';
+import { prismaClient } from '../../infra/database/prisma/prisma.js';
 import { UserValidation, UserValidationUpdated, UserValidationPassword } from './dtos/users.dto.js';
 import { KafkaSendMessage } from '../../infra/kafka/producer/users/user.producer.js';
 import { TokenUsercase } from '../tokens/token.usercase.js';
