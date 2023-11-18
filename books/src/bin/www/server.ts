@@ -1,7 +1,7 @@
 import cluster from 'node:cluster';
 import os from 'node:os';
 import 'dotenv/config';
-import '../../infra/kafka/consumers/intex.js';
+import '../../infra/kafka/intex.js';
 import app from '../../app.js';
 import '../../infra/database/redis/index.js';
 

@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { RedisUsecase } from '../../infra/Redis/redis.usecase.js';
+import { RedisUsecase } from '../redis/redis.usecase.js';
 import { UserUsecase } from '../users/user.usecase.js';
 
 export class TokenUsercase extends RedisUsecase {

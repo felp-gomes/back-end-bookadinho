@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { prismaClient } from '../../infra/database/prisma.js';
+import { prismaClient } from '../../infra/database/prisma/prisma.js';
 
 export class UserUsecase {
   constructor() {}

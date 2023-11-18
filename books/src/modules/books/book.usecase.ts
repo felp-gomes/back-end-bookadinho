@@ -1,4 +1,4 @@
-import { prismaClient } from '../../infra/database/prisma.js';
+import { prismaClient } from '../../infra/database/prisma/prisma.js';
 import { randomUUID } from 'node:crypto';
 import { BookValidation, BookValidationUpdated } from './dtos/books.dto.js';
 
