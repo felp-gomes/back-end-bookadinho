@@ -24,6 +24,7 @@
     "jsonwebtoken": "^9.0.0",
     "kafkajs": "^2.2.4",
     "moment": "^2.29.4",
+    "redis": "^4.6.10",
     "zod": "^3.22.2"
   },
   "devDependencies": {

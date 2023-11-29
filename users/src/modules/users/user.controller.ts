@@ -2,11 +2,9 @@ import { Request, Response } from 'express';
 import { ZodError } from 'zod';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library.js';
 import { UserUsecase } from './user.usecase.js';
-import { TokenUsercase } from '../tokens/token.usercase.js';
 
 export class UserController {
   private userUsecase = new UserUsecase();
-  private tokenUsercase = new TokenUsercase();
 
   constructor() {}
 
@@ -138,7 +136,7 @@ export class UserController {
           },
         });
       }
-      const tokenByUser = await this.tokenUsercase.createToken(user.id);
+      const tokenByUser = await this.userUsecase.loginUser(user.id);
       return response.status(200).send({
         body: {
           status_code: 200,
@@ -148,7 +146,7 @@ export class UserController {
             user_name: user.user_name,
             photo: user.photo,
           },
-          token: tokenByUser.id,
+          token: tokenByUser,
         },
       });
     } catch (error) {
@@ -233,7 +231,6 @@ export class UserController {
       });
       if (password) {
         await this.userUsecase.updatedPassword(userId, password);
-        await this.tokenUsercase.deleteTokens(userId);
         return response
           .status(200)
           .send({ body: { status_code: 200, status: 'success', message: 'User changed successfully!' } });
@@ -342,7 +339,7 @@ export class UserController {
       });
     }
     try {
-      await this.tokenUsercase.deleteToken(token);
+      await this.userUsecase.logoutUser(userId, token);
       return response.status(200).json({
         body: {
           status_code: 200,

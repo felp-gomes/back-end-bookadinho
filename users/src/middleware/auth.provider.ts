@@ -18,8 +18,7 @@ export class Auth {
       });
     }
     try {
-      // this.tokenUserCase.verifyToken(authorization);
-      const tokenConsulted = await this.tokenUserCase.getToken(authorization);
+      const tokenConsulted = await this.tokenUserCase.verifyToken(authorization);
       if (!tokenConsulted) {
         return response.status(401).json({
           body: {
@@ -29,10 +28,20 @@ export class Auth {
           },
         });
       }
-      response.locals.user_id = tokenConsulted.user_id;
+      response.locals.user_id = tokenConsulted;
       return next();
-    } catch (error: unknown) {
-      this.handleError(error);
+    } catch (error) {
+      if (error instanceof Error) {
+        if (error.cause === 'ERR:TOKEN:0001') {
+          return response.status(404).json({
+            body: {
+              status_code: 401,
+              status: 'fail',
+              message: error.message,
+            },
+          });
+        }
+      }
       if (error instanceof jwt.TokenExpiredError || error instanceof jwt.JsonWebTokenError) {
         return response.status(401).json({
           body: {

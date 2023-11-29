@@ -12,6 +12,7 @@
   "plugins": ["@typescript-eslint"],
   "rules": {
     "no-unused-vars": "error",
-    "eqeqeq": "error"
+    "eqeqeq": "error",
+    "no-useless-catch": "off"
   }
 }

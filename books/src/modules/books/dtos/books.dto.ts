@@ -6,7 +6,7 @@ export const BookValidation = z.object({
     .string()
     .trim()
     .min(4, { message: 'Must be at least 4 characters long' })
-    .max(255, { message: 'Must be a maximum of 255 characters' }),
+    .max(45, { message: 'Must be a maximum of 45 characters' }),
   author: z
     .string()
     .trim()
