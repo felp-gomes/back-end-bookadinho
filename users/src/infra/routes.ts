@@ -14,6 +14,7 @@ routes
   .post('/users', userController.createUser.bind(userController))
   .post('/users/auth', userController.loginUser.bind(userController))
   .put('/users/:id', auth.verifyAuthentication.bind(auth), userController.updateUser.bind(userController))
+  .patch('/users/:userid/:bookid', auth.verifyAuthentication.bind(auth), userController.saveBook.bind(userController))
   .delete('/users/:id', auth.verifyAuthentication.bind(auth), userController.deleteUser.bind(userController))
   .delete('/users/logout/:id', auth.verifyAuthentication.bind(auth), userController.logoutUser.bind(userController))
   .get('/', new ExceptionRoutesController().routeRoot);

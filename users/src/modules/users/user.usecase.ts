@@ -36,6 +36,7 @@ export class UserUsecase {
           description: true,
           likes: true,
           latest_readings: true,
+          saved_books: true,
           photo: true,
           is_activated: true,
           created_at: true,
@@ -221,6 +222,23 @@ export class UserUsecase {
       throw error;
     }
   }
+  public async saveBook(userId: string, bookId: string) {
+    try {
+      return await prismaClient.users.update({
+        where: {
+          id: userId,
+        },
+        data: {
+          saved_books: {
+            push: bookId,
+          },
+        },
+      });
+    } catch (error) {
+      this.handleError(error);
+      throw error;
+    }
+  }
   public async updatedPassword(userId: string, password: string) {
     try {
       const validatedPassword = UserValidationPassword.safeParse({ password });
@@ -300,6 +318,7 @@ export class UserUsecase {
       description?: string;
       photo?: string;
       is_activated?: boolean;
+      saved_books?: boolean;
     },
     select: {
       id?: boolean;
@@ -311,6 +330,7 @@ export class UserUsecase {
       likes?: boolean;
       latest_readings?: boolean;
       photo?: boolean;
+      saved_books?: boolean;
       is_activated?: boolean;
     }
   ) {
