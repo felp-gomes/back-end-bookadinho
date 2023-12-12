@@ -20,7 +20,6 @@ export const UserValidation = z.object({
     .max(256, { message: 'Must be a maximum of 256 characters' }),
   description: z.string().trim().max(256, { message: 'Must be a maximum of 255 characters' }).nullable(),
   likes: z.string().array().max(125, { message: 'Must be a maximum of 255 characters' }),
-  latest_readings: z.string().array().max(125, { message: 'Must be a maximum of 255 characters' }),
   photo: z.string().trim().url().nullable(),
   is_activated: z.boolean(),
 });
@@ -48,7 +47,6 @@ export const UserValidationUpdated = z.object({
     .optional(),
   description: z.string().trim().max(256, { message: 'Must be a maximum of 255 characters' }).nullable(),
   likes: z.string().array().max(125, { message: 'Must be a maximum of 255 characters' }).optional(),
-  latest_readings: z.string().array().max(125, { message: 'Must be a maximum of 255 characters' }).optional(),
   photo: z.string().trim().url().nullable().optional(),
   is_activated: z.boolean().optional(),
 });
