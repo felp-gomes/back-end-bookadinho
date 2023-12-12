@@ -8,19 +8,17 @@ datasource db {
 }
 
 model Users {
-  id              String   @id @unique @default(uuid())
-  user_name       String   @unique @db.VarChar(25)
-  name            String   @db.VarChar(45)
-  email           String   @unique
-  password        String   @db.VarChar(256)
-  description     String?  @db.VarChar(256)
-  likes           String[] @db.VarChar(125)
-  latest_readings String[] @db.VarChar(125)
-  saved_books     String[]
-  photo           String?
-  is_activated    Boolean  @default(true)
-  created_at      DateTime @default(now())
-  updated_at      DateTime @updatedAt
+  id           String   @id @unique @default(uuid())
+  user_name    String   @unique @db.VarChar(25)
+  name         String   @db.VarChar(45)
+  email        String   @unique
+  password     String   @db.VarChar(256)
+  description  String?  @db.VarChar(256)
+  likes        String[] @db.VarChar(125)
+  photo        String?
+  is_activated Boolean  @default(true)
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
 
   @@map("users")
 }

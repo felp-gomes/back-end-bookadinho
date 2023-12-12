@@ -56,7 +56,6 @@ export class UserController {
       password,
       description = null,
       likes = [],
-      latest_readings = [],
       photo = null,
     }: {
       user_name: string;
@@ -65,7 +64,6 @@ export class UserController {
       password: string;
       description: string | null;
       likes: [] | null;
-      latest_readings: [] | null;
       photo: string | null;
     } = request.body;
     try {
@@ -76,7 +74,6 @@ export class UserController {
         password,
         description,
         likes,
-        latest_readings,
         photo,
       });
       return response.status(201).send({
@@ -124,7 +121,6 @@ export class UserController {
           user_name: true,
           password: true,
           photo: true,
-          saved_books: true,
         }
       );
       const validatedPassword = await this.userUsecase.checkPassword(password, user?.password || '');
@@ -146,7 +142,6 @@ export class UserController {
             id: user.id,
             user_name: user.user_name,
             photo: user.photo,
-            saved_books: user.saved_books,
           },
           token: tokenByUser,
         },
@@ -174,7 +169,6 @@ export class UserController {
       password,
       description = null,
       likes,
-      latest_readings,
       photo = null,
     }: {
       user_name: string;
@@ -183,7 +177,6 @@ export class UserController {
       password: string;
       description: string | null;
       likes: string[];
-      latest_readings: string[];
       photo: string | null;
     } = request.body;
     if (!userId) {
@@ -206,7 +199,6 @@ export class UserController {
           password: true,
           description: true,
           likes: true,
-          latest_readings: true,
           photo: true,
           is_activated: true,
         }
@@ -227,7 +219,6 @@ export class UserController {
         email: email,
         description: description,
         likes: likes,
-        latest_readings: latest_readings,
         photo: photo,
         is_activated: true,
       });
@@ -264,42 +255,6 @@ export class UserController {
             .send({ body: { status_code: 409, status: 'fail', message: 'Username or email is already in use!' } });
         }
       }
-      return response
-        .status(500)
-        .send({ body: { status_code: 500, status: 'fail', message: 'Internal Server Error!' } });
-    }
-  }
-  public async saveBook(request: Request, response: Response) {
-    const { user_id: userIdByAuthorization } = response.locals;
-    const { userid: userId, bookid: bookId } = request.params;
-    if (userId !== userIdByAuthorization) {
-      return response.status(403).json({
-        body: {
-          status_code: 403,
-          status: 'fail',
-          message: 'The user has no authorization for the action!',
-        },
-      });
-    }
-    if (!userId || !bookId) {
-      return response.status(403).json({
-        body: {
-          status_code: 403,
-          status: 'fail',
-          message: 'The /userid/ or /bookid/ are required!',
-        },
-      });
-    }
-    try {
-      await this.userUsecase.saveBook(userId, bookId);
-      return response.status(200).json({
-        body: {
-          status_code: 200,
-          status: 'sucess',
-          message: 'The book was successfully saved!',
-        },
-      });
-    } catch (error) {
       return response
         .status(500)
         .send({ body: { status_code: 500, status: 'fail', message: 'Internal Server Error!' } });

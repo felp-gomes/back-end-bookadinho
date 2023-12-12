@@ -35,8 +35,6 @@ export class UserUsecase {
           password: false,
           description: true,
           likes: true,
-          latest_readings: true,
-          saved_books: true,
           photo: true,
           is_activated: true,
           created_at: true,
@@ -67,7 +65,6 @@ export class UserUsecase {
           password: false,
           description: true,
           likes: true,
-          latest_readings: true,
           photo: true,
           is_activated: true,
           created_at: true,
@@ -86,7 +83,6 @@ export class UserUsecase {
     password,
     description,
     likes,
-    latest_readings,
     photo,
   }: {
     user_name: string;
@@ -95,7 +91,6 @@ export class UserUsecase {
     password: string;
     description: string | null;
     likes: [] | null;
-    latest_readings: [] | null;
     photo: string | null;
   }) {
     try {
@@ -134,7 +129,6 @@ export class UserUsecase {
         password,
         description,
         likes,
-        latest_readings,
         photo,
         is_activated: true,
       });
@@ -152,7 +146,6 @@ export class UserUsecase {
           password: false,
           description: true,
           likes: true,
-          latest_readings: true,
           photo: true,
           is_activated: true,
           created_at: true,
@@ -181,7 +174,6 @@ export class UserUsecase {
       email?: string;
       description?: string | null;
       likes?: string[];
-      latest_readings?: string[];
       photo?: string | null;
       is_activated: true;
     }
@@ -202,7 +194,6 @@ export class UserUsecase {
           password: false,
           description: true,
           likes: true,
-          latest_readings: true,
           photo: true,
           is_activated: true,
         },
@@ -217,23 +208,6 @@ export class UserUsecase {
         });
       }
       return userUpdated;
-    } catch (error) {
-      this.handleError(error);
-      throw error;
-    }
-  }
-  public async saveBook(userId: string, bookId: string) {
-    try {
-      return await prismaClient.users.update({
-        where: {
-          id: userId,
-        },
-        data: {
-          saved_books: {
-            push: bookId,
-          },
-        },
-      });
     } catch (error) {
       this.handleError(error);
       throw error;
@@ -277,7 +251,6 @@ export class UserUsecase {
           password: randomUUID(),
           description: null,
           likes: [],
-          latest_readings: [],
           photo: null,
           is_activated: false,
         },
@@ -318,7 +291,6 @@ export class UserUsecase {
       description?: string;
       photo?: string;
       is_activated?: boolean;
-      saved_books?: boolean;
     },
     select: {
       id?: boolean;
@@ -328,9 +300,7 @@ export class UserUsecase {
       password?: boolean;
       description?: boolean;
       likes?: boolean;
-      latest_readings?: boolean;
       photo?: boolean;
-      saved_books?: boolean;
       is_activated?: boolean;
     }
   ) {
