@@ -11,6 +11,7 @@ const auth = new Auth();
 routes
   .get('/posts/:allposts(true)?', postController.getAllPosts.bind(postController))
   .get('/posts/:id', postController.getPostById.bind(postController))
+  .post('/posts')
   .get('/', new ExceptionRoutesController().routeRoot);
 
 export default routes;
