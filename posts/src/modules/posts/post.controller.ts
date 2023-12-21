@@ -8,7 +8,6 @@ export class PostController {
   public async getAllPosts(request: Request, response: Response) {
     const { quantity: quantityPosts = 10, page = 0 } = request.query;
     const { allposts: allPosts = false } = request.params;
-
     if (isNaN(Number(quantityPosts)) || isNaN(Number(page)) || Number(quantityPosts) < 1 || Number(page) < 0) {
       return response.status(400).json({
         body: {
@@ -18,7 +17,6 @@ export class PostController {
         },
       });
     }
-
     try {
       const postsConsulted = await this.postUsercase.getAllPosts(!!allPosts, Number(quantityPosts), Number(page));
       return response.status(200).send({ body: { status_code: 200, status: 'success', posts: postsConsulted } });
@@ -27,7 +25,6 @@ export class PostController {
     }
     return response.status(200).json('parabens');
   }
-
   public async getPostById(request: Request, response: Response) {
     const { id: postId } = request.params;
     try {
@@ -39,6 +36,45 @@ export class PostController {
             .send({ body: { status_code: 404, status: 'fail', message: 'Post not found by the id provided!' } });
     } catch (error) {
       response.status(500).send({ body: { status_code: 500, status: 'fail', message: 'Internal Server Error!' } });
+    }
+  }
+  public async getPostByUserId(request: Request, response: Response) {
+    const { quantity: quantityPosts = 10, page = 0 } = request.query;
+    const { id: userId, allposts: allPosts = false } = request.params;
+    if (!userId) {
+      return response.status(400).json({
+        body: {
+          status_code: 400,
+          status: 'fail',
+          message: '/userid/ is required!',
+        },
+      });
+    }
+    if (isNaN(Number(quantityPosts)) || isNaN(Number(page)) || Number(quantityPosts) < 1 || Number(page) < 0) {
+      return response.status(400).json({
+        body: {
+          status_code: 400,
+          status: 'fail',
+          message: '/quantity/ and /page/ must be positive numbers!',
+        },
+      });
+    }
+    try {
+      const postsConsultedByUserId = await this.postUsercase.getPostByUserId(
+        !!allPosts,
+        userId,
+        Number(quantityPosts),
+        Number(page)
+      );
+      return postsConsultedByUserId.length !== 0
+        ? response.status(200).send({ body: { status_code: 200, status: 'success', posts: postsConsultedByUserId } })
+        : response
+            .status(404)
+            .send({ body: { status_code: 404, status: 'fail', message: 'User not found by the id provided!' } });
+    } catch (error) {
+      return response
+        .status(500)
+        .send({ body: { status_code: 500, status: 'fail', message: 'Internal Server Error!' } });
     }
   }
 }

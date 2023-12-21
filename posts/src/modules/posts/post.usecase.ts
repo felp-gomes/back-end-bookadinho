@@ -20,13 +20,30 @@ export class PostUsercase {
       throw error;
     }
   }
-
   public async getPostById(postId: string) {
     try {
       return await prismaClient.posts.findFirst({
         where: {
           id: postId,
         },
+      });
+    } catch (error) {
+      this.handleError(error);
+      throw error;
+    }
+  }
+  public async getPostByUserId(isGetAllPosts: boolean, userId: string, quantityPosts = 10, page = 0) {
+    try {
+      return await prismaClient.posts.findMany({
+        where: {
+          user_id: userId,
+          is_deleted: isGetAllPosts ? undefined : false,
+        },
+        orderBy: {
+          created_at: 'desc',
+        },
+        skip: quantityPosts * page,
+        take: quantityPosts,
       });
     } catch (error) {
       this.handleError(error);
