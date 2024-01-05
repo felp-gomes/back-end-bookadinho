@@ -1,4 +1,6 @@
+import { randomUUID } from 'crypto';
 import { prismaClient } from '../../infra/database/prisma/prisma.js';
+import { PostValidation } from './dtos/posts.dtos.js';
 
 export class PostUsercase {
   constructor() {}
@@ -46,6 +48,23 @@ export class PostUsercase {
         take: quantityPosts,
       });
     } catch (error) {
+      this.handleError(error);
+      throw error;
+    }
+  }
+  public async createPost(data: { user_id: string; text: string }) {
+    try {
+      if (!data.text) {
+        throw new Error('ERR:DATABASE:0001', {
+          cause: 'Invalid text for save database!',
+        });
+      }
+      const postValidation = PostValidation.safeParse({ id: randomUUID(), ...data });
+      if (!postValidation.success) throw postValidation.error;
+      return await prismaClient.posts.create({
+        data,
+      });
+    } catch (error: unknown) {
       this.handleError(error);
       throw error;
     }

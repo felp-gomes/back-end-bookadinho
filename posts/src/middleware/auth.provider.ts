@@ -60,9 +60,4 @@ export class Auth {
       });
     }
   }
-  private handleError(error: unknown) {
-    console.debug('\x1b[31m[<<<---START ERROR--->>>]\x1b[0m');
-    console.error(error);
-    console.debug('\x1b[31m[<<<---END ERROR--->>>]\x1b[0m');
-  }
 }

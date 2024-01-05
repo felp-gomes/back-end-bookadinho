@@ -12,6 +12,7 @@ routes
   .get('/posts/:allposts(true)?', postController.getAllPosts.bind(postController))
   .get('/posts/:id', postController.getPostById.bind(postController))
   .get('/posts/user/:id', postController.getPostByUserId.bind(postController))
+  .post('/posts', auth.verifyAuthentication.bind(auth), postController.createPost.bind(postController))
   .get('/', new ExceptionRoutesController().routeRoot);
 
 export default routes;

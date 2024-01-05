@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { PostUsercase } from './post.usecase.js';
+import { ZodError } from 'zod';
 
 export class PostController {
   private postUsercase = new PostUsercase();
@@ -72,6 +73,44 @@ export class PostController {
             .status(404)
             .send({ body: { status_code: 404, status: 'fail', message: 'User not found by the id provided!' } });
     } catch (error) {
+      return response
+        .status(500)
+        .send({ body: { status_code: 500, status: 'fail', message: 'Internal Server Error!' } });
+    }
+  }
+  public async createPost(request: Request, response: Response) {
+    const { user_id } = response.locals;
+    const { text = '' } = request.body;
+    if (!text) {
+      return response.status(400).json({
+        body: {
+          status_code: 400,
+          status: 'fail',
+          message: 'The /text/ must be between 1 and 5!',
+        },
+      });
+    }
+    try {
+      const createdPost = await this.postUsercase.createPost({ user_id, text });
+      return response.status(201).json({ body: { status_code: 201, status: 'succes', posts: createdPost } });
+    } catch (error: unknown) {
+      if (error instanceof Error && error.message === 'ERR:DATABASE:0001') {
+        return response.status(400).send({
+          body: { status_code: 400, status: 'fail', message: error.cause },
+        });
+      }
+      if (error instanceof ZodError) {
+        const { errors } = error;
+        let messageError = '';
+        errors.forEach((error) => (messageError += `The parameter /${error.path[0]}/ ${error.message}; `));
+        return response.status(400).send({
+          body: {
+            status_code: 400,
+            status: 'fail',
+            message: messageError,
+          },
+        });
+      }
       return response
         .status(500)
         .send({ body: { status_code: 500, status: 'fail', message: 'Internal Server Error!' } });
