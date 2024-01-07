@@ -21,6 +21,7 @@ model Posts {
   id         String   @id @unique @default(uuid())
   text       String   @db.VarChar(600)
   is_deleted Boolean  @default(false)
+  is_edited  Boolean  @default(false)
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
   user_id    String
