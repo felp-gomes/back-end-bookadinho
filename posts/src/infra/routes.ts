@@ -14,6 +14,7 @@ routes
   .get('/posts/user/:id', postController.getPostByUserId.bind(postController))
   .post('/posts', auth.verifyAuthentication.bind(auth), postController.createPost.bind(postController))
   .patch('/posts/:id', auth.verifyAuthentication.bind(auth), postController.updatePost.bind(postController))
+  .delete('/posts/:id', auth.verifyAuthentication.bind(auth), postController.deletePost.bind(postController))
   .get('/', new ExceptionRoutesController().routeRoot);
 
 export default routes;

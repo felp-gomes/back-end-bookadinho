@@ -79,6 +79,14 @@ export class PostUsercase {
       throw error;
     }
   }
+  public async deletePost(postId: string) {
+    try {
+      return await prismaClient.posts.delete({ where: { id: postId } });
+    } catch (error) {
+      this.handleError(error);
+      throw error;
+    }
+  }
   public async getDBPosts(
     where: {
       id?: string;

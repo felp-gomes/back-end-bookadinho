@@ -152,6 +152,52 @@ export class PostController {
         },
       });
     } catch (error) {
+      if (error instanceof ZodError) {
+        const { errors } = error;
+        let messageError = '';
+        errors.forEach((error) => (messageError += `The parameter /${error.path[0]}/ ${error.message}; `));
+        return response.status(400).send({
+          body: {
+            status_code: 400,
+            status: 'fail',
+            message: messageError,
+          },
+        });
+      }
+      response.status(500).send({ body: { status_code: 500, status: 'fail', message: 'Internal Server Error!' } });
+    }
+  }
+  public async deletePost(request: Request, response: Response) {
+    const { user_id: userId } = response.locals;
+    const { id: postId } = request.params;
+    if (!postId) {
+      return response.status(400).json({
+        body: {
+          status_code: 400,
+          status: 'fail',
+          message: '/postId/ is required!',
+        },
+      });
+    }
+    try {
+      if ((await this.postUsercase.getPostById(postId))?.user_id !== userId) {
+        return response.status(403).json({
+          body: {
+            status_code: 403,
+            status: 'fail',
+            message: 'The user does not own the post!',
+          },
+        });
+      }
+    } catch (error) {
+      response.status(500).send({ body: { status_code: 500, status: 'fail', message: 'Internal Server Error!' } });
+    }
+    try {
+      await this.postUsercase.deletePost(postId);
+      return response
+        .status(200)
+        .json({ body: { status_code: 200, status: 'succes', message: 'Post successfully deleted!' } });
+    } catch (error) {
       response.status(500).send({ body: { status_code: 500, status: 'fail', message: 'Internal Server Error!' } });
     }
   }
