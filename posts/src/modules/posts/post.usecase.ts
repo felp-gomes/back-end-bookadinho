@@ -81,7 +81,12 @@ export class PostUsercase {
   }
   public async deletePost(postId: string) {
     try {
-      return await prismaClient.posts.delete({ where: { id: postId } });
+      return await prismaClient.posts.update({
+        where: { id: postId },
+        data: {
+          is_deleted: true,
+        },
+      });
     } catch (error) {
       this.handleError(error);
       throw error;
