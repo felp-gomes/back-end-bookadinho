@@ -116,4 +116,43 @@ export class PostController {
         .send({ body: { status_code: 500, status: 'fail', message: 'Internal Server Error!' } });
     }
   }
+  public async updatePost(request: Request, response: Response) {
+    const { user_id: userId } = response.locals;
+    const { id: postId } = request.params;
+    const { text: newText } = request.body;
+    if (!postId || !newText) {
+      return response.status(400).json({
+        body: {
+          status_code: 400,
+          status: 'fail',
+          message: '/postId/ and /newText/ is required!',
+        },
+      });
+    }
+    try {
+      if ((await this.postUsercase.getPostById(postId))?.user_id !== userId) {
+        return response.status(403).json({
+          body: {
+            status_code: 403,
+            status: 'fail',
+            message: 'The user does not own the post!',
+          },
+        });
+      }
+    } catch (error) {
+      response.status(500).send({ body: { status_code: 500, status: 'fail', message: 'Internal Server Error!' } });
+    }
+    try {
+      const postEdited = await this.postUsercase.updatePost(postId, { text: newText, user_id: userId });
+      return response.status(200).json({
+        body: {
+          status_code: 200,
+          status: 'succes',
+          posts: postEdited,
+        },
+      });
+    } catch (error) {
+      response.status(500).send({ body: { status_code: 500, status: 'fail', message: 'Internal Server Error!' } });
+    }
+  }
 }

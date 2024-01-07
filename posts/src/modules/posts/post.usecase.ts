@@ -1,6 +1,6 @@
 import { randomUUID } from 'crypto';
 import { prismaClient } from '../../infra/database/prisma/prisma.js';
-import { PostValidation } from './dtos/posts.dtos.js';
+import { PostValidation, PostValidationUpdated } from './dtos/posts.dtos.js';
 
 export class PostUsercase {
   constructor() {}
@@ -54,17 +54,59 @@ export class PostUsercase {
   }
   public async createPost(data: { user_id: string; text: string }) {
     try {
-      if (!data.text) {
-        throw new Error('ERR:DATABASE:0001', {
-          cause: 'Invalid text for save database!',
-        });
-      }
       const postValidation = PostValidation.safeParse({ id: randomUUID(), ...data });
       if (!postValidation.success) throw postValidation.error;
       return await prismaClient.posts.create({
         data,
       });
     } catch (error: unknown) {
+      this.handleError(error);
+      throw error;
+    }
+  }
+  public async updatePost(postId: string, data: { text: string; user_id: string }) {
+    try {
+      const postValidation = PostValidationUpdated.safeParse({ id: postId, ...data, is_edited: true });
+      if (!postValidation.success) throw postValidation.error;
+      return await prismaClient.posts.update({
+        where: {
+          id: postId,
+        },
+        data: { ...data, is_edited: true },
+      });
+    } catch (error: unknown) {
+      this.handleError(error);
+      throw error;
+    }
+  }
+  public async getDBPosts(
+    where: {
+      id?: string;
+      text?: string;
+      is_deleted?: boolean;
+      is_edited?: boolean;
+      user_id?: string;
+    },
+    select: {
+      id?: boolean;
+      text?: boolean;
+      is_deleted?: boolean;
+      is_edited?: boolean;
+      user_id?: boolean;
+    }
+  ) {
+    try {
+      return await prismaClient.posts.findUnique({
+        where: {
+          id: where.id,
+          text: where.text,
+          is_deleted: where.is_deleted,
+          is_edited: where.is_edited,
+          user_id: where.user_id,
+        },
+        select,
+      });
+    } catch (error) {
       this.handleError(error);
       throw error;
     }
