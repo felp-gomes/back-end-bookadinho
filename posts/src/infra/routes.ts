@@ -11,7 +11,7 @@ const auth = new Auth();
 routes
   .get('/posts/:allposts(true)?', postController.getAllPosts.bind(postController))
   .get('/posts/:id', postController.getPostById.bind(postController))
-  .get('/posts/user/:id', postController.getPostByUserId.bind(postController))
+  .get('/posts/user/:id/:allposts(true)?', postController.getPostByUserId.bind(postController))
   .post('/posts', auth.verifyAuthentication.bind(auth), postController.createPost.bind(postController))
   .patch('/posts/:id', auth.verifyAuthentication.bind(auth), postController.updatePost.bind(postController))
   .delete('/posts/:id', auth.verifyAuthentication.bind(auth), postController.deletePost.bind(postController))
