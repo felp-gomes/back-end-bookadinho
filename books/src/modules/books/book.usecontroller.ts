@@ -7,14 +7,9 @@ export class BookController {
   constructor() {}
 
   public async getAllBooks(request: Request, response: Response) {
-    const {
-      allbooks: allBooks,
-      quantity: quantityBooks = 10,
-      page = 0,
-      name: searchName,
-      author: searchAuthor,
-    } = request.query;
-    if ((quantityBooks !== null && Number(quantityBooks) < 1) || (page !== null && Number(page) < 0)) {
+    const { allbooks: allBooks = false } = request.params;
+    const { quantity: quantityBooks = 10, page = 0, name: searchName, author: searchAuthor } = request.query;
+    if (isNaN(Number(quantityBooks)) || isNaN(Number(page)) || Number(quantityBooks) < 1 || Number(page) < 0) {
       return response.status(400).json({
         body: {
           status_code: 400,
@@ -54,7 +49,8 @@ export class BookController {
     }
   }
   public async getBooksByUserId(request: Request, response: Response) {
-    const { allbooks: allBooks = false, quantity: quantityBooks = 10, page = 0 } = request.query;
+    const { allbooks: allBooks = false } = request.params;
+    const { quantity: quantityBooks = 10, page = 0 } = request.query;
     const { id: userId } = request.params;
     if ((quantityBooks !== null && Number(quantityBooks) < 1) || (page !== null && Number(page) < 0)) {
       return response.status(400).json({

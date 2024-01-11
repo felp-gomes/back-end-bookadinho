@@ -12,7 +12,7 @@ export class UserUsecase {
   constructor() {}
 
   public async getAllUsers(
-    isGetSomeUsersActive: boolean | undefined = undefined,
+    isGetSomeUsersActive: boolean,
     quantityUsers = 10,
     page = 0,
     searchName: string | undefined
