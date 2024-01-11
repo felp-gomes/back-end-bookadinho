@@ -5,7 +5,7 @@ import { BookValidation, BookValidationUpdated } from './dtos/books.dto.js';
 export class BookUsecase {
   constructor() {}
   public async getAllBooks(
-    isGetSomeBooksActive: boolean | undefined = undefined,
+    isGetSomeBooksActive: boolean,
     quantityBooks = 10,
     page = 0,
     searchName: string | undefined,
@@ -56,7 +56,6 @@ export class BookUsecase {
     if (!user) {
       return null;
     }
-    console.log(user);
     return await prismaClient.books.findMany({
       where: {
         owner_id: user.id,

@@ -9,8 +9,9 @@ export class UserController {
   constructor() {}
 
   public async getAllUsers(request: Request, response: Response) {
-    const { allusers: allUsers, quantity: quantityUsers = 10, page = 0, name: searchName } = request.query;
-    if ((quantityUsers !== null && Number(quantityUsers) < 1) || (page !== null && Number(page) < 0)) {
+    const { allusers: allUsers = false } = request.params;
+    const { quantity: quantityUsers = 10, page = 0, name: searchName } = request.query;
+    if (isNaN(Number(quantityUsers)) || isNaN(Number(page)) || Number(quantityUsers) < 1 || Number(page) < 0) {
       return response.status(400).json({
         body: {
           status_code: 400,

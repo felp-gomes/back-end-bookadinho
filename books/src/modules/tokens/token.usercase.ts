@@ -26,8 +26,8 @@ export class TokenUsercase extends RedisUsecase {
     }
     try {
       const [validTokenByRedis, validUserByDatabase] = await Promise.all([
-        await super.getValueKey(`token:${valueToken.userId}:${token}`),
-        await this.userUsecase.getDBOwner({ external_id: valueToken.userId }, { id: true }),
+        super.getValueKey(`token:${valueToken.userId}:${token}`),
+        this.userUsecase.getDBOwner({ external_id: valueToken.userId }, { id: true }),
       ]);
       if (!validTokenByRedis || !validUserByDatabase) {
         throw new Error('Invalid token for the request!', {
