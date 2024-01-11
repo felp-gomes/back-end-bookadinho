@@ -3,9 +3,10 @@ import os from 'node:os';
 import 'dotenv/config';
 import app from '../../app.js';
 import '../../infra/database/redis/index.js';
+import '../../infra/kafka/intex.js';
 
 const cpus = os.cpus();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3002;
 
 const onWorkerError = (code: unknown, signal: unknown) => {
   console.debug(code, signal);
