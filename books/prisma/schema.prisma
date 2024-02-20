@@ -8,12 +8,13 @@ datasource db {
 }
 
 model Owners {
-  id          String   @id @unique @default(uuid())
-  user_name   String   @unique @db.VarChar(25)
-  external_id String   @unique
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
-  Books       Books[]
+  id          String       @id @unique @default(uuid())
+  user_name   String       @unique @db.VarChar(25)
+  external_id String       @unique
+  created_at  DateTime     @default(now())
+  updated_at  DateTime     @updatedAt
+  books       Books[]
+  saved_books SavedBooks[]
 
   @@map("owners")
 }
@@ -34,4 +35,19 @@ model Books {
   updated_at  DateTime @updatedAt
 
   @@map("books")
+}
+
+model SavedBooks {
+  id          String   @id @unique @default(uuid())
+  name        String   @db.VarChar(45)
+  author      String   @db.VarChar(45)
+  description String   @db.VarChar(255)
+  photo       String?  @db.VarChar(255)
+  rate        String?  @db.VarChar(1)
+  owner_id    String
+  owner       Owners   @relation(fields: [owner_id], references: [id])
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  @@map("saved_books")
 }
