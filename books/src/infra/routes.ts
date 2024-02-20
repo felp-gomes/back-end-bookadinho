@@ -1,12 +1,31 @@
 import { Router } from 'express';
 import { BookController } from '../modules/books/book.usecontroller.js';
+import { SavedBooksController } from '../modules/saved_books/savedbook.usecontroller.js';
 import { Auth } from '../middleware/auth.provider.js';
 import { ExceptionRoutesController } from '../modules/errors/exceptionRoutes.controller.js';
 
 const routes = Router();
 
 const bookController = new BookController();
+const savedBooksController = new SavedBooksController();
 const auth = new Auth();
+
+routes
+  .get(
+    '/books/save/user/:id',
+    auth.verifyAuthentication.bind(auth),
+    savedBooksController.getAllSavedBooksByUserId.bind(savedBooksController)
+  )
+  .post(
+    '/books/save',
+    auth.verifyAuthentication.bind(auth),
+    savedBooksController.createSavedBook.bind(savedBooksController)
+  )
+  .delete(
+    '/books/save/:id',
+    auth.verifyAuthentication.bind(auth),
+    savedBooksController.deleteSavedBook.bind(savedBooksController)
+  );
 
 routes
   .get('/books/:allbooks(true)?', bookController.getAllBooks.bind(bookController))

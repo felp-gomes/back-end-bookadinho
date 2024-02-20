@@ -48,25 +48,29 @@ export class BookUsecase {
     }
   }
   public async getBooksByUserId(allBooks: boolean, userId: string, quantityBooks = 10, page = 0) {
-    const user = await prismaClient.owners.findFirst({
-      where: {
-        external_id: userId,
-      },
-    });
-    if (!user) {
-      return null;
+    try {
+      const user = await prismaClient.owners.findFirst({
+        where: {
+          external_id: userId,
+        },
+      });
+      if (!user) {
+        return null;
+      }
+      return await prismaClient.books.findMany({
+        where: {
+          owner_id: user.id,
+          is_deleted: allBooks ? true : false,
+        },
+        orderBy: {
+          created_at: 'desc',
+        },
+        skip: quantityBooks * page,
+        take: quantityBooks,
+      });
+    } catch (error) {
+      throw error;
     }
-    return await prismaClient.books.findMany({
-      where: {
-        owner_id: user.id,
-        is_deleted: allBooks ? true : false,
-      },
-      orderBy: {
-        created_at: 'desc',
-      },
-      skip: quantityBooks * page,
-      take: quantityBooks,
-    });
   }
   public async createBook(data: {
     name: string;
