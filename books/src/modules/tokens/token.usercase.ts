@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { RedisUsecase } from '../redis/redis.usecase.js';
-import { UserUsecase } from '../users/user.usecase.js';
+import { UserUsecase } from '../owners/user.usecase.js';
 
 export class TokenUsercase extends RedisUsecase {
   private key = process.env.JWT_KEY || 'bola';
@@ -27,7 +27,7 @@ export class TokenUsercase extends RedisUsecase {
     try {
       const [validTokenByRedis, validUserByDatabase] = await Promise.all([
         super.getValueKey(`token:${valueToken.userId}:${token}`),
-        this.userUsecase.getDBOwner({ external_id: valueToken.userId }, { id: true }),
+        this.userUsecase.getDBOwner({ id: valueToken.userId }, { id: true }),
       ]);
       if (!validTokenByRedis || !validUserByDatabase) {
         throw new Error('Invalid token for the request!', {

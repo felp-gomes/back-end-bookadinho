@@ -5,7 +5,6 @@ type UserConsumer = {
   action: string;
   body: {
     id: string;
-    user_name: string;
   };
 };
 
@@ -19,7 +18,14 @@ export async function userKafkaConsumer() {
       switch (userConsumer.action) {
         case 'create':
           try {
-            await userUsecase.createUser({ externalId: userConsumer.body.id });
+            await userUsecase.createUser(userConsumer.body.id);
+          } catch (error) {
+            console.debug('\x1b[31m[ERROR CREATEOWNER]\x1b[31m');
+          }
+          break;
+        case 'delete':
+          try {
+            await userUsecase.deleteUser(userConsumer.body.id);
           } catch (error) {
             console.debug('\x1b[31m[ERROR CREATEOWNER]\x1b[31m');
           }

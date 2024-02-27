@@ -51,7 +51,7 @@ export class BookUsecase {
     try {
       const user = await prismaClient.owners.findFirst({
         where: {
-          external_id: userId,
+          id: userId,
         },
       });
       if (!user) {

@@ -8,11 +8,10 @@ datasource db {
 }
 
 model Users {
-  id          String   @id @unique @default(uuid())
-  external_id String   @unique
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
-  posts       Posts[]
+  id         String   @id @unique
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  posts      Posts[]
 
   @@map("users")
 }

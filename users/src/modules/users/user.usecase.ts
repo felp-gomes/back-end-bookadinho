@@ -1,6 +1,5 @@
 import { randomUUID } from 'node:crypto';
 import bcrypt from 'bcrypt';
-import moment from 'moment';
 import { prismaClient } from '../../infra/database/prisma/prisma.js';
 import { UserValidation, UserValidationUpdated, UserValidationPassword } from './dtos/users.dto.js';
 import { KafkaSendMessage } from '../../infra/kafka/producer/users/user.producer.js';
@@ -156,7 +155,6 @@ export class UserUsecase {
         action: 'create',
         body: {
           id: userCreated.id,
-          user_name: userCreated.user_name,
         },
       });
       return userCreated;
@@ -198,15 +196,6 @@ export class UserUsecase {
           is_activated: true,
         },
       });
-      if (data.user_name) {
-        await this.kafkaMessage.execute('users', {
-          action: 'update',
-          body: {
-            id: userUpdated.id,
-            user_name: userUpdated.user_name,
-          },
-        });
-      }
       return userUpdated;
     } catch (error) {
       this.handleError(error);
@@ -240,19 +229,9 @@ export class UserUsecase {
       throw error;
     }
     try {
-      const timeStamp = moment().unix();
-      await prismaClient.users.update({
+      await prismaClient.users.delete({
         where: {
           id: userId,
-        },
-        data: {
-          user_name: `deleteduser@${timeStamp}`,
-          email: `${randomUUID()}@bookadinho.com`,
-          password: randomUUID(),
-          description: null,
-          likes: [],
-          photo: null,
-          is_activated: false,
         },
       });
       await this.kafkaMessage.execute('users', {

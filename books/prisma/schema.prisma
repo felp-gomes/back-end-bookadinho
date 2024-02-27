@@ -8,9 +8,7 @@ datasource db {
 }
 
 model Owners {
-  id          String       @id @unique @default(uuid())
-  user_name   String       @unique @db.VarChar(25)
-  external_id String       @unique
+  id          String       @id @unique
   created_at  DateTime     @default(now())
   updated_at  DateTime     @updatedAt
   books       Books[]
