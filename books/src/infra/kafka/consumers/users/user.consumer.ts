@@ -20,14 +20,14 @@ export async function userKafkaConsumer() {
           try {
             await userUsecase.createOwner(userConsumer.body.id);
           } catch (error) {
-            console.debug('\x1b[31m[ERROR CREATEOWNER]\x1b[31m');
+            console.debug('\x1b[31m[ERROR CREATEOWNER]\x1b[0m');
           }
           break;
         case 'delete':
           try {
             await userUsecase.deleteOwner(userConsumer.body.id);
           } catch (error) {
-            console.debug('\x1b[31m[ERROR DELETEOWNER]\x1b[31m', error);
+            console.debug('\x1b[31m[ERROR DELETEOWNER]\x1b[0m', error);
           }
           break;
         default:
