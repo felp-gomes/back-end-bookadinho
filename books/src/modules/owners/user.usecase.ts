@@ -3,11 +3,11 @@ import { prismaClient } from '../../infra/database/prisma/prisma.js';
 export class UserUsecase {
   constructor() {}
 
-  public async createUser(userId: string) {
+  public async createOwner(ownerId: string) {
     try {
-      await prismaClient.users.create({
+      await prismaClient.owners.create({
         data: {
-          id: userId,
+          id: ownerId,
         },
       });
     } catch (error) {
@@ -15,9 +15,9 @@ export class UserUsecase {
       throw error;
     }
   }
-  public async deleteUser(ownerId: string) {
+  public async deleteOwner(ownerId: string) {
     try {
-      await prismaClient.users.delete({
+      await prismaClient.owners.delete({
         where: {
           id: ownerId,
         },
@@ -27,7 +27,7 @@ export class UserUsecase {
       throw error;
     }
   }
-  public async getDBUser(
+  public async getDBOwner(
     where: {
       id?: string;
     },
@@ -36,7 +36,7 @@ export class UserUsecase {
     }
   ) {
     try {
-      return await prismaClient.users.findUnique({
+      return await prismaClient.owners.findUnique({
         where: {
           id: where.id,
         },
