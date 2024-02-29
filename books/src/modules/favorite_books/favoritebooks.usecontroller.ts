@@ -1,12 +1,12 @@
 import { Request, Response } from 'express';
-import { SavedBooksUseCase } from './savedbook.usecase.js';
+import { FavoriteBooksUseCase } from './favoritebooks.usecase.js';
 import { ZodError } from 'zod';
 
-export class SavedBooksController {
-  private savedBooksUseCase = new SavedBooksUseCase();
+export class FavoriteBooksController {
+  private favoriteBooksUseCase = new FavoriteBooksUseCase();
   constructor() {}
 
-  public async getAllSavedBooksByUserId(request: Request, response: Response) {
+  public async getAllFavoriteBooksByUserId(request: Request, response: Response) {
     const { id: userId } = request.params;
     const { quantity: quantityBooks = 10, page = 0 } = request.query;
     if (!userId) {
@@ -28,42 +28,38 @@ export class SavedBooksController {
       });
     }
     try {
-      const getAllSavedBooks = await this.savedBooksUseCase.getAllSavedBooksByUserId(
+      const getAllFavoriteBooks = await this.favoriteBooksUseCase.getAllFavoriteBooksByUserId(
         userId,
         Number(quantityBooks),
         Number(page)
       );
       return response
         .status(200)
-        .send({ body: { status_code: 200, status: 'success', saved_books: getAllSavedBooks } });
+        .send({ body: { status_code: 200, status: 'success', favorite_books: getAllFavoriteBooks } });
     } catch (error) {
       return response
         .status(500)
         .send({ body: { status_code: 500, status: 'fail', message: 'Internal Server Error!' } });
     }
   }
-  public async createSavedBook(request: Request, response: Response) {
-    const { owner_id } = response.locals;
-    const { name, author, description, photo, rate = null } = request.body;
-    if (rate !== null && (Number(rate) < 1 || Number(rate) > 5)) {
-      return response.status(400).json({
+  public async createFavoriteBook(request: Request, response: Response) {
+    const { owner_id: userIdbytoken } = response.locals;
+    const { owner_id, book_id } = request.body;
+    if (userIdbytoken !== owner_id) {
+      return response.status(403).json({
         body: {
-          status_code: 400,
+          status_code: 403,
           status: 'fail',
-          message: 'The /rate/ must be between 1 and 5!',
+          message: 'The user has no authorization for the action!',
         },
       });
     }
     try {
-      const bookCreated = await this.savedBooksUseCase.createSavedBook({
-        name,
-        author,
-        description,
-        photo,
-        rate,
+      const bookCreated = await this.favoriteBooksUseCase.createFavoriteBook({
+        book_id,
         owner_id,
       });
-      return response.status(201).json({ body: { status_code: 201, status: 'succes', books: bookCreated } });
+      return response.status(201).json({ body: { status_code: 201, status: 'succes', favorite_books: bookCreated } });
     } catch (error: unknown) {
       if (error instanceof ZodError) {
         const { errors } = error;
@@ -82,26 +78,36 @@ export class SavedBooksController {
         .send({ body: { status_code: 500, status: 'fail', message: 'Internal Server Error!' } });
     }
   }
-  public async deleteSavedBook(request: Request, response: Response) {
-    const { owner_id } = response.locals;
-    const { id: bookId } = request.params;
-    if (!bookId) {
+  public async deleteFavoriteBook(request: Request, response: Response) {
+    const { owner_id: userIdbytoken } = response.locals;
+    const { owner_id, book_id } = request.body;
+    if (!book_id || !owner_id) {
       return response.status(400).json({
         body: {
           status_code: 400,
           status: 'fail',
-          message: '/bookid/ is required!',
+          message: '/book_id/ and /owner_id/ is required!',
         },
       });
     }
+    if (userIdbytoken !== owner_id) {
+      return response.status(403).json({
+        body: {
+          status_code: 403,
+          status: 'fail',
+          message: 'The user has no authorization for the action!',
+        },
+      });
+    }
+    const booksConsultedById = await this.favoriteBooksUseCase.getFavoriteBooksById(book_id);
+    const findBookByOwnerId = booksConsultedById.find((book) => book.owner_id === owner_id);
     try {
-      const bookConsultedById = await this.savedBooksUseCase.getSavedBookById(bookId);
-      if (bookConsultedById?.owner_id !== owner_id) {
+      if (!findBookByOwnerId) {
         return response.status(403).json({
           body: {
             status_code: 403,
             status: 'fail',
-            message: 'The user does not own the saved book!',
+            message: 'The user does not own the favorite book!',
           },
         });
       }
@@ -112,10 +118,10 @@ export class SavedBooksController {
     }
 
     try {
-      await this.savedBooksUseCase.deleteSavedBook(bookId);
+      await this.favoriteBooksUseCase.deleteFavoriteBook({ book_id, owner_id });
       return response
         .status(200)
-        .json({ body: { status_code: 200, status: 'succes', message: 'Save book successfully deleted!' } });
+        .json({ body: { status_code: 200, status: 'succes', message: 'Favorite book successfully deleted!' } });
     } catch (error) {
       return response
         .status(500)

@@ -2,21 +2,13 @@ import { randomUUID } from 'crypto';
 import { prismaClient } from '../../infra/database/prisma/prisma.js';
 import { BookValidation } from './dtos/books.dto.js';
 
-export class SavedBooksUseCase {
+export class FavoriteBooksUseCase {
   constructor() {}
-  public async getAllSavedBooksByUserId(userId: string, quantityBooks = 10, page = 0) {
+  public async getAllFavoriteBooksByUserId(userId: string, quantityBooks = 10, page = 0) {
     try {
-      const user = await prismaClient.owners.findFirst({
+      return await prismaClient.favoriteBooks.findMany({
         where: {
-          id: userId,
-        },
-      });
-      if (!user) {
-        return null;
-      }
-      return await prismaClient.savedBooks.findMany({
-        where: {
-          owner_id: user.id,
+          owner_id: userId,
         },
         orderBy: {
           created_at: 'desc',
@@ -29,11 +21,11 @@ export class SavedBooksUseCase {
       throw error;
     }
   }
-  public async getSavedBookById(bookId: string) {
+  public async getFavoriteBooksById(bookId: string) {
     try {
-      return await prismaClient.savedBooks.findUnique({
+      return await prismaClient.favoriteBooks.findMany({
         where: {
-          id: bookId,
+          book_id: bookId,
         },
       });
     } catch (error: unknown) {
@@ -41,18 +33,11 @@ export class SavedBooksUseCase {
       throw error;
     }
   }
-  public async createSavedBook(data: {
-    name: string;
-    author: string;
-    description: string;
-    photo: string;
-    rate: string;
-    owner_id: string;
-  }) {
+  public async createFavoriteBook(data: { book_id: string; owner_id: string }) {
     try {
       const bookValidation = BookValidation.safeParse({ id: randomUUID(), ...data });
       if (!bookValidation.success) throw bookValidation.error;
-      return await prismaClient.savedBooks.create({
+      return await prismaClient.favoriteBooks.create({
         data,
       });
     } catch (error: unknown) {
@@ -60,11 +45,14 @@ export class SavedBooksUseCase {
       throw error;
     }
   }
-  public async deleteSavedBook(bookId: string) {
+  public async deleteFavoriteBook({ book_id, owner_id }: { book_id: string; owner_id: string }) {
     try {
-      return await prismaClient.savedBooks.delete({
+      return await prismaClient.favoriteBooks.delete({
         where: {
-          id: bookId,
+          owner_id_book_id: {
+            book_id: book_id,
+            owner_id: owner_id,
+          },
         },
       });
     } catch (error: unknown) {
