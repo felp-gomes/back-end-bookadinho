@@ -1,30 +1,40 @@
 import { Router } from 'express';
 import { BookController } from '../modules/books/book.usecontroller.js';
-import { SavedBooksController } from '../modules/saved_books/savedbook.usecontroller.js';
+import { FavoriteBooksController } from '../modules/favorite_books/favoritebooks.usecontroller.js';
 import { Auth } from '../middleware/auth.provider.js';
 import { ExceptionRoutesController } from '../modules/errors/exceptionRoutes.controller.js';
 
 const routes = Router();
 
 const bookController = new BookController();
-const savedBooksController = new SavedBooksController();
+const favoriteBooksController = new FavoriteBooksController();
 const auth = new Auth();
 
 routes
   .get(
-    '/books/save/user/:id',
+    '/books/favorite/user/:owner_id/book/:book_id',
     auth.verifyAuthentication.bind(auth),
-    savedBooksController.getAllSavedBooksByUserId.bind(savedBooksController)
+    favoriteBooksController.getFavoriteBookByUserIdAndBookId.bind(favoriteBooksController)
+  )
+  .get(
+    '/books/favorite/user/:id',
+    auth.verifyAuthentication.bind(auth),
+    favoriteBooksController.getAllFavoriteBooksByUserId.bind(favoriteBooksController)
+  )
+  .get(
+    '/books/favorite/book/:id',
+    auth.verifyAuthentication.bind(auth),
+    favoriteBooksController.getFavoriteBooksById.bind(favoriteBooksController)
   )
   .post(
-    '/books/save',
+    '/books/favorite',
     auth.verifyAuthentication.bind(auth),
-    savedBooksController.createSavedBook.bind(savedBooksController)
+    favoriteBooksController.createFavoriteBook.bind(favoriteBooksController)
   )
   .delete(
-    '/books/save/:id',
+    '/books/favorite',
     auth.verifyAuthentication.bind(auth),
-    savedBooksController.deleteSavedBook.bind(savedBooksController)
+    favoriteBooksController.deleteFavoriteBook.bind(favoriteBooksController)
   );
 
 routes

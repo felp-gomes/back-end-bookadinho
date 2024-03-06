@@ -8,44 +8,41 @@ datasource db {
 }
 
 model Owners {
-  id          String       @id @unique
-  created_at  DateTime     @default(now())
-  updated_at  DateTime     @updatedAt
-  books       Books[]
-  saved_books SavedBooks[]
+  id            String          @id @unique
+  created_at    DateTime        @default(now())
+  updated_at    DateTime        @updatedAt
+  books         Books[]
+  FavoriteBooks FavoriteBooks[]
 
   @@map("owners")
 }
 
 model Books {
-  id          String   @id @unique @default(uuid())
-  name        String   @db.VarChar(45)
-  author      String   @db.VarChar(45)
-  description String   @db.VarChar(255)
-  photo       String?  @db.VarChar(255)
-  is_changed  Boolean  @default(false)
-  is_read     Boolean  @default(false)
-  is_deleted  Boolean  @default(false)
-  rate        String?  @db.VarChar(1)
-  owner_id    String
-  owner       Owners   @relation(fields: [owner_id], references: [id])
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
+  id            String          @id @unique @default(uuid())
+  name          String          @db.VarChar(45)
+  author        String          @db.VarChar(45)
+  description   String          @db.VarChar(255)
+  photo         String?         @db.VarChar(255)
+  is_changed    Boolean         @default(false)
+  is_read       Boolean         @default(false)
+  is_deleted    Boolean         @default(false)
+  rate          String?         @db.VarChar(1)
+  owner_id      String
+  owner         Owners          @relation(fields: [owner_id], references: [id])
+  created_at    DateTime        @default(now())
+  updated_at    DateTime        @updatedAt
+  FavoriteBooks FavoriteBooks[]
 
   @@map("books")
 }
 
-model SavedBooks {
-  id          String   @id @unique @default(uuid())
-  name        String   @db.VarChar(45)
-  author      String   @db.VarChar(45)
-  description String   @db.VarChar(255)
-  photo       String?  @db.VarChar(255)
-  rate        String?  @db.VarChar(1)
-  owner_id    String
-  owner       Owners   @relation(fields: [owner_id], references: [id])
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
+model FavoriteBooks {
+  owner_id   String
+  owner      Owners   @relation(fields: [owner_id], references: [id])
+  book_id    String
+  books      Books    @relation(fields: [book_id], references: [id])
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
-  @@map("saved_books")
+  @@id([owner_id, book_id])
 }
