@@ -7,24 +7,34 @@ import { ExceptionRoutesController } from '../modules/errors/exceptionRoutes.con
 const routes = Router();
 
 const bookController = new BookController();
-const savedBooksController = new FavoriteBooksController();
+const favoriteBooksController = new FavoriteBooksController();
 const auth = new Auth();
 
 routes
   .get(
+    '/books/favorite/user/:owner_id/book/:book_id',
+    auth.verifyAuthentication.bind(auth),
+    favoriteBooksController.getFavoriteBookByUserIdAndBookId.bind(favoriteBooksController)
+  )
+  .get(
     '/books/favorite/user/:id',
     auth.verifyAuthentication.bind(auth),
-    savedBooksController.getAllFavoriteBooksByUserId.bind(savedBooksController)
+    favoriteBooksController.getAllFavoriteBooksByUserId.bind(favoriteBooksController)
+  )
+  .get(
+    '/books/favorite/book/:id',
+    auth.verifyAuthentication.bind(auth),
+    favoriteBooksController.getFavoriteBooksById.bind(favoriteBooksController)
   )
   .post(
     '/books/favorite',
     auth.verifyAuthentication.bind(auth),
-    savedBooksController.createFavoriteBook.bind(savedBooksController)
+    favoriteBooksController.createFavoriteBook.bind(favoriteBooksController)
   )
   .delete(
     '/books/favorite',
     auth.verifyAuthentication.bind(auth),
-    savedBooksController.deleteFavoriteBook.bind(savedBooksController)
+    favoriteBooksController.deleteFavoriteBook.bind(favoriteBooksController)
   );
 
 routes

@@ -2,7 +2,7 @@ import { randomUUID } from 'crypto';
 import { prismaClient } from '../../infra/database/prisma/prisma.js';
 import { BookValidation } from './dtos/books.dto.js';
 
-export class FavoriteBooksUseCase {
+export class FavoriteBooksUsecase {
   constructor() {}
   public async getAllFavoriteBooksByUserId(userId: string, quantityBooks = 10, page = 0) {
     try {
@@ -26,6 +26,18 @@ export class FavoriteBooksUseCase {
       return await prismaClient.favoriteBooks.findMany({
         where: {
           book_id: bookId,
+        },
+      });
+    } catch (error: unknown) {
+      this.handleError(error);
+      throw error;
+    }
+  }
+  public async getFavoriteBookByUserIdAndBookId({ book_id, owner_id }: { book_id: string; owner_id: string }) {
+    try {
+      return await prismaClient.favoriteBooks.findFirst({
+        where: {
+          AND: [{ book_id: book_id }, { owner_id: owner_id }],
         },
       });
     } catch (error: unknown) {

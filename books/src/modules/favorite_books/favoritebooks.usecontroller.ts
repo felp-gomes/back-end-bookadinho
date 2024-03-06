@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
-import { FavoriteBooksUseCase } from './favoritebooks.usecase.js';
+import { FavoriteBooksUsecase } from './favoritebooks.usecase.js';
 import { ZodError } from 'zod';
 
 export class FavoriteBooksController {
-  private favoriteBooksUseCase = new FavoriteBooksUseCase();
+  private favoriteBooksUsecase = new FavoriteBooksUsecase();
   constructor() {}
 
   public async getAllFavoriteBooksByUserId(request: Request, response: Response) {
@@ -28,7 +28,7 @@ export class FavoriteBooksController {
       });
     }
     try {
-      const getAllFavoriteBooks = await this.favoriteBooksUseCase.getAllFavoriteBooksByUserId(
+      const getAllFavoriteBooks = await this.favoriteBooksUsecase.getAllFavoriteBooksByUserId(
         userId,
         Number(quantityBooks),
         Number(page)
@@ -36,6 +36,36 @@ export class FavoriteBooksController {
       return response
         .status(200)
         .send({ body: { status_code: 200, status: 'success', favorite_books: getAllFavoriteBooks } });
+    } catch (error) {
+      return response
+        .status(500)
+        .send({ body: { status_code: 500, status: 'fail', message: 'Internal Server Error!' } });
+    }
+  }
+  public async getFavoriteBooksById(request: Request, response: Response) {
+    const { id: bookId } = request.params;
+    try {
+      const booksConsultedById = await this.favoriteBooksUsecase.getFavoriteBooksById(bookId);
+      return response
+        .status(200)
+        .send({ body: { status_code: 200, status: 'success', favorite_books: booksConsultedById } });
+    } catch (error) {
+      return response
+        .status(500)
+        .send({ body: { status_code: 500, status: 'fail', message: 'Internal Server Error!' } });
+    }
+  }
+  public async getFavoriteBookByUserIdAndBookId(request: Request, response: Response) {
+    const { book_id, owner_id } = request.params;
+    try {
+      const bookConsulted = await this.favoriteBooksUsecase.getFavoriteBookByUserIdAndBookId({
+        book_id,
+        owner_id,
+      });
+      const favoriteBooks = bookConsulted ? [bookConsulted] : [];
+      return response.status(200).send({
+        body: { status_code: 200, status: 'success', favorite_books: favoriteBooks },
+      });
     } catch (error) {
       return response
         .status(500)
@@ -55,7 +85,7 @@ export class FavoriteBooksController {
       });
     }
     try {
-      const bookCreated = await this.favoriteBooksUseCase.createFavoriteBook({
+      const bookCreated = await this.favoriteBooksUsecase.createFavoriteBook({
         book_id,
         owner_id,
       });
@@ -79,7 +109,7 @@ export class FavoriteBooksController {
     }
   }
   public async deleteFavoriteBook(request: Request, response: Response) {
-    const { owner_id: userIdbytoken } = response.locals;
+    const { owner_id: userIdByToken } = response.locals;
     const { owner_id, book_id } = request.body;
     if (!book_id || !owner_id) {
       return response.status(400).json({
@@ -90,7 +120,7 @@ export class FavoriteBooksController {
         },
       });
     }
-    if (userIdbytoken !== owner_id) {
+    if (userIdByToken !== owner_id) {
       return response.status(403).json({
         body: {
           status_code: 403,
@@ -99,7 +129,7 @@ export class FavoriteBooksController {
         },
       });
     }
-    const booksConsultedById = await this.favoriteBooksUseCase.getFavoriteBooksById(book_id);
+    const booksConsultedById = await this.favoriteBooksUsecase.getFavoriteBooksById(book_id);
     const findBookByOwnerId = booksConsultedById.find((book) => book.owner_id === owner_id);
     try {
       if (!findBookByOwnerId) {
@@ -118,7 +148,7 @@ export class FavoriteBooksController {
     }
 
     try {
-      await this.favoriteBooksUseCase.deleteFavoriteBook({ book_id, owner_id });
+      await this.favoriteBooksUsecase.deleteFavoriteBook({ book_id, owner_id });
       return response
         .status(200)
         .json({ body: { status_code: 200, status: 'succes', message: 'Favorite book successfully deleted!' } });
